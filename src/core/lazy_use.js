@@ -1,25 +1,49 @@
 import Vue from 'vue'
 import VueStorage from 'vue-ls'
-import config from '@/config/defaultSettings'
+import {
+  Layout,
+  ConfigProvider,
+  Button,
+  Form,
+  Row,
+  Col,
+  Switch,
+  Checkbox,
+  Modal,
+  message,
+  notification,
+  Alert,
+  Icon,
+  Input,
+  Popover,
+  Tooltip
+} from 'ant-design-vue'
 
-// base library
-import '@/core/lazy_lib/components_use'
-import Viser from 'viser-vue'
+Vue.use(Layout)
+Vue.use(ConfigProvider)
+Vue.use(Icon)
+Vue.use(Alert)
+Vue.use(Input)
+Vue.use(Button)
+Vue.use(Switch)
+Vue.use(Form)
+Vue.use(Row)
+Vue.use(Col)
+Vue.use(Checkbox)
+Vue.use(Popover)
+Vue.use(message)
+Vue.use(notification)
+Vue.use(Tooltip)
+Vue.use(VueStorage, {
+  namespace: 'pro__',
+  name: 'ls',
+  storage: 'local'
+})
 
-// ext library
-import VueClipboard from 'vue-clipboard2'
-import VueCropper from 'vue-cropper'
-import MultiTab from '@/components/MultiTab'
-import PageLoading from '@/components/PageLoading'
-import PermissionHelper from '@/utils/helper/permission'
-import './directives/action'
-
-VueClipboard.config.autoSetContainer = true
-
-Vue.use(Viser)
-Vue.use(MultiTab)
-Vue.use(PageLoading)
-Vue.use(VueStorage, config.storageOptions)
-Vue.use(VueClipboard)
-Vue.use(PermissionHelper)
-Vue.use(VueCropper)
+Vue.prototype.$confirm = Modal.confirm
+Vue.prototype.$message = message
+Vue.prototype.$notification = notification
+Vue.prototype.$info = Modal.info
+Vue.prototype.$success = Modal.success
+Vue.prototype.$error = Modal.error
+Vue.prototype.$warning = Modal.warning

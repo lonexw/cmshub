@@ -1,176 +1,106 @@
 <template>
-  <a-layout :class="['layout', device]">
-    <!-- SideMenu -->
-    <a-drawer
-      v-if="isMobile()"
-      placement="left"
-      :wrapClassName="`drawer-sider ${navTheme}`"
-      :closable="false"
-      :visible="collapsed"
-      @close="drawerClose"
-    >
-      <side-menu
-        mode="inline"
-        :menus="menus"
-        :theme="navTheme"
-        :collapsed="false"
-        :collapsible="true"
-        @menuSelect="menuSelect"
-      ></side-menu>
-    </a-drawer>
-
-    <side-menu
-      v-else-if="isSideMenu()"
-      mode="inline"
-      :menus="menus"
-      :theme="navTheme"
-      :collapsed="collapsed"
-      :collapsible="true"
-    ></side-menu>
-
-    <a-layout :class="[layoutMode, `content-width-${contentWidth}`]" :style="{ paddingLeft: contentPaddingLeft, minHeight: '100vh' }">
-      <!-- layout header -->
-      <global-header
-        :mode="layoutMode"
-        :menus="menus"
-        :theme="navTheme"
-        :collapsed="collapsed"
-        :device="device"
-        @toggle="toggle"
-      />
-
-      <!-- layout content -->
-      <a-layout-content :style="{ height: '100%', margin: '24px 24px 0', paddingTop: fixedHeader ? '64px' : '0' }">
-        <multi-tab v-if="multiTab"></multi-tab>
-        <transition name="page-transition">
-          <route-view />
-        </transition>
+  <a-layout class="layout">
+    <a-layout-sider class="sider light">
+      <div class="flex flex-direction align-center justify-between" style="height: 100%;">
+        <div>
+          <img src="~@/assets/logo.svg" width="45px" class="margin-bottom-sm pointer" @click="goProject" />
+          <div class="icon margin-bottom pointer" @click="goProject">小</div>
+          <a-tooltip placement="right" class="margin-bottom-sm">
+            <template slot="title">
+              <span>Schema 管理</span>
+            </template>
+            <div class="pointer text-xxl text-blue"><a-icon type="profile" /></div>
+          </a-tooltip>
+          <a-tooltip placement="right" class="margin-bottom-sm">
+            <template slot="title">
+              <span>内容管理</span>
+            </template>
+            <div class="pointer text-xxl"><a-icon type="edit" /></div>
+          </a-tooltip>
+          <a-tooltip placement="right" class="margin-bottom-sm">
+            <template slot="title">
+              <span>资源管理</span>
+            </template>
+            <div class="pointer text-xxl"><a-icon type="link" /></div>
+          </a-tooltip>
+        </div>
+        <div>
+          <a-popover placement="rightBottom">
+            <template slot="content">
+              <a-button type="link" @click="logout"><a-icon type="logout" />退出</a-button>
+            </template>
+            <img src="~@/assets/logo.svg" width="40px" class="round pointer" />
+          </a-popover>
+        </div>
+      </div>
+    </a-layout-sider>
+    <a-layout style="background-color: white;">
+      <a-layout-content>
+        <router-view />
       </a-layout-content>
-
-      <!-- layout footer -->
-      <a-layout-footer>
-        <global-footer />
-      </a-layout-footer>
-
-      <!-- Setting Drawer (show in development mode) -->
-      <setting-drawer v-if="!production"></setting-drawer>
     </a-layout>
   </a-layout>
-
 </template>
 
 <script>
-import { triggerWindowResizeEvent } from '@/utils/util'
-import { mapState, mapActions } from 'vuex'
-import { mixin, mixinDevice } from '@/utils/mixin'
-import config from '@/config/defaultSettings'
-
-import RouteView from './RouteView'
-import SideMenu from '@/components/Menu/SideMenu'
-import GlobalHeader from '@/components/GlobalHeader'
-import GlobalFooter from '@/components/GlobalFooter'
-import SettingDrawer from '@/components/SettingDrawer'
-import { convertRoutes } from '@/utils/routeConvert'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'BasicLayout',
-  mixins: [mixin, mixinDevice],
-  components: {
-    RouteView,
-    SideMenu,
-    GlobalHeader,
-    GlobalFooter,
-    SettingDrawer
+  components: {},
+  data() {
+    return {}
   },
-  data () {
-    return {
-      production: config.production,
-      collapsed: false,
-      menus: []
-    }
-  },
-  computed: {
-    ...mapState({
-      // 动态主路由
-      mainMenu: state => state.permission.addRouters
-    }),
-    contentPaddingLeft () {
-      if (!this.fixSidebar || this.isMobile()) {
-        return '0'
-      }
-      if (this.sidebarOpened) {
-        return '256px'
-      }
-      return '80px'
-    }
-  },
-  watch: {
-    sidebarOpened (val) {
-      this.collapsed = !val
-    }
-  },
-  created () {
-    const routes = convertRoutes(this.mainMenu.find(item => item.path === '/'))
-    this.menus = (routes && routes.children) || []
-    this.collapsed = !this.sidebarOpened
-  },
-  mounted () {
-    const userAgent = navigator.userAgent
-    if (userAgent.indexOf('Edge') > -1) {
-      this.$nextTick(() => {
-        this.collapsed = !this.collapsed
-        setTimeout(() => {
-          this.collapsed = !this.collapsed
-        }, 16)
-      })
-    }
-  },
+  computed: {},
+  watch: {},
+  created() {},
+  mounted() {},
   methods: {
-    ...mapActions(['setSidebar']),
-    toggle () {
-      this.collapsed = !this.collapsed
-      this.setSidebar(!this.collapsed)
-      triggerWindowResizeEvent()
+    ...mapActions(['Logout']),
+    goProject() {
+      this.$router.push({ name: 'Project' })
     },
-    paddingCalc () {
-      let left = ''
-      if (this.sidebarOpened) {
-        left = this.isDesktop() ? '256px' : '80px'
-      } else {
-        left = (this.isMobile() && '0') || ((this.fixSidebar && '80px') || '0')
-      }
-      return left
-    },
-    menuSelect () {
-    },
-    drawerClose () {
-      this.collapsed = false
+    logout() {
+      this.Logout({})
+        .then(() => {
+          setTimeout(() => {
+            window.location.reload()
+          }, 16)
+        })
+        .catch(err => {
+          this.$message.error({
+            title: '错误',
+            description: err.message
+          })
+        })
     }
   }
 }
 </script>
 
 <style lang="less">
-/*
- * The following styles are auto-applied to elements with
- * transition="page-transition" when their visibility is toggled
- * by Vue.js.
- *
- * You can easily play with the page transition by editing
- * these styles.
- */
-
-.page-transition-enter {
-  opacity: 0;
+.sider {
+  box-sizing: border-box;
+  text-align: center;
+  padding: 10px 0;
+  width: 60px !important;
+  min-width: inherit !important;
+  max-width: inherit !important;
+  flex: 0 0 60px !important;
+  border-right: 1px solid rgb(240, 242, 247);
 }
 
-.page-transition-leave-active {
-  opacity: 0;
-}
-
-.page-transition-enter .page-transition-container,
-.page-transition-leave-active .page-transition-container {
-  -webkit-transform: scale(1.1);
-  transform: scale(1.1);
+.icon {
+  width: 35px;
+  height: 35px;
+  background-color: black;
+  color: rgb(255, 255, 255);
+  font-size: 18px;
+  line-height: 35px;
+  text-align: center;
+  font-weight: 600;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 8px;
 }
 </style>

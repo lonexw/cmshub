@@ -1,37 +1,39 @@
-// eslint-disable-next-line
-import { UserLayout, BasicLayout, RouteView, BlankLayout, PageView } from '@/layouts'
-import { bxAnaalyse } from '@/core/icons'
+import { UserLayout, BasicLayout, BlankLayout } from '@/layouts'
+// import { bxAnaalyse } from '@/core/icons'
 
 export const asyncRouterMap = [
-
   {
     path: '/',
-    name: 'index',
-    component: BasicLayout,
+    name: 'Index',
     meta: { title: '首页' },
-    redirect: '/user/students',
+    redirect: '/project',
+    component: BlankLayout,
     children: [
-      // dashboard
       {
-        path: 'user',
-        name: 'User',
-        redirect: '/user/students',
-        component: RouteView,
-        meta: { title: '用户管理', keepAlive: true, icon: bxAnaalyse },
+        path: 'project',
+        name: 'Project',
+        component: () => import('@/views/project/Index'),
+        meta: { title: '项目管理' }
+      },
+      {
+        path: '.',
+        component: BasicLayout,
+        redirect: '/schema',
         children: [
           {
-            path: '/user/students',
-            name: 'Students',
-            component: () => import('@/views/user/Students'),
-            meta: { title: '学生管理', keepAlive: false }
+            path: '/schema',
+            name: 'Schema',
+            component: () => import('@/views/schema/Index'),
+            meta: { title: 'Schema 管理' }
           }
-
         ]
       }
     ]
   },
   {
-    path: '*', redirect: '/404', hidden: true
+    path: '*',
+    redirect: '/404',
+    hidden: true
   }
 ]
 
@@ -41,15 +43,15 @@ export const asyncRouterMap = [
  */
 export const constantRouterMap = [
   {
-    path: '/user',
+    path: '/auth',
     component: UserLayout,
-    redirect: '/user/login',
+    redirect: '/auth/login',
     hidden: true,
     children: [
       {
         path: 'login',
-        name: 'login',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
+        name: 'Login',
+        component: () => import(/* webpackChunkName: "user" */ '@/views/auth/Login')
       }
     ]
   },
@@ -57,5 +59,4 @@ export const constantRouterMap = [
     path: '/404',
     component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
   }
-
 ]
