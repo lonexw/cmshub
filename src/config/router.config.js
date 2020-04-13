@@ -24,7 +24,19 @@ export const asyncRouterMap = [
             path: '/schema',
             name: 'Schema',
             component: () => import('@/views/schema/Index'),
-            meta: { title: 'Schema 管理' }
+            meta: { title: '模型管理' }
+          },
+          {
+            path: '/content',
+            name: 'Content',
+            component: () => import('@/views/content/Index'),
+            meta: { title: '内容管理' }
+          },
+          {
+            path: '/asset',
+            name: 'Asset',
+            component: () => import('@/views/asset/Index'),
+            meta: { title: '资源管理' }
           }
         ]
       }

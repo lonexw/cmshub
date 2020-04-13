@@ -1,0 +1,9 @@
+query getAliyunOssSts {
+  getAliyunOssSts {
+    region
+    access_key_id
+    access_key_secret
+    sts_token
+    bucket
+  }
+}

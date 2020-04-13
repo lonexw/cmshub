@@ -15,7 +15,7 @@ body {
 	--black: #333333;
 	--darkGray: #666666;
 	--gray: #aaaaaa;
-	--ghostWhite: #f1f1f1;
+	--ghostWhite: #f6f6f6;
 	--white: #ffffff;
 	/* 浅色 */
 	--redLight: #fadbd9;
@@ -38,7 +38,7 @@ body {
 	--gradualPink: linear-gradient(45deg, #ec008c, #6739b6);
 	--gradualBlue: linear-gradient(45deg, #0081ff, #1cbbb4);
 	/* 阴影透明色 */
-	--ShadowSize: 6px 6px 8px;
+	--ShadowSize: 0px 2px 5px;
 	--redShadow: rgba(204, 69, 59, 0.2);
 	--orangeShadow: rgba(217, 109, 26, 0.2);
 	--yellowShadow: rgba(224, 170, 7, 0.2);
@@ -170,7 +170,9 @@ body {
   .margin-0 {
 	margin: 0;
   }
-  
+  .margin-xxs {
+    margin: 5px;
+    }  
   .margin-xs {
 	margin: 10px;
   }
@@ -214,7 +216,9 @@ body {
   .margin-top-xl {
 	margin-top: 50px;
   }
-  
+  .margin-right-xxs {
+    margin-right: 5px;
+  }
   .margin-right-xs {
 	margin-right: 10px;
   }
@@ -258,7 +262,9 @@ body {
   .margin-left-auto {
 	margin-left: auto;
   }
-  
+  .margin-left-xxs {
+    margin-left: 5px;
+  }
   .margin-left-xs {
 	margin-left: 10px;
   }
@@ -278,7 +284,10 @@ body {
   .margin-left-xl {
 	margin-left: 50px;
   }
-  
+  .margin-lr-xs {
+    margin-left: 5px;
+    margin-right: 5px;
+  }
   .margin-lr-xs {
 	margin-left: 10px;
 	margin-right: 10px;
@@ -466,7 +475,10 @@ body {
 	padding-left: 50px;
 	padding-right: 50px;
   }
-  
+  .padding-tb-xxs {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    }
   .padding-tb-xs {
 	padding-top: 10px;
 	padding-bottom: 10px;
@@ -951,7 +963,7 @@ body {
   .text-sm {
 	font-size: 12px;
   }
-  
+
   .text-ssm {
 	font-size: 13px;
   }
@@ -1269,7 +1281,7 @@ body {
   /* -- 阴影 -- */
   
   .shadow[class*='white'] {
-	--ShadowSize: 0 1px 6px;
+	--ShadowSize: 0 2px 4px;
   }
   
   .shadow-lg {
@@ -1352,5 +1364,14 @@ body {
     border-radius: 4px;
     font-size: 12px;
     color: var(--grey);
+  }
 
+  .text-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
+    line-height: 35px;
+    text-align: center;
+    font-weight: 600;
+    border-radius: 5px;
   }

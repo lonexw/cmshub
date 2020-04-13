@@ -14,7 +14,14 @@ body {
 .layout.ant-layout {
   height: auto;
   overflow-x: hidden;
-
+  .right-sider {
+    width: 240px !important;
+    min-width: 240px !important;
+    max-width: 240px !important;
+    text-align: left;
+    border-left: 1px solid #f0f2f7;
+    border-right: 0 !important;
+  }
   &.mobile,
   &.tablet {
     .ant-layout-content {
@@ -513,3 +520,4 @@ body {
     }
   }
 }
+

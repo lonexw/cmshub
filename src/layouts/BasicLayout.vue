@@ -1,27 +1,33 @@
 <template>
   <a-layout class="layout">
-    <a-layout-sider class="sider light">
+    <a-layout-sider class="basic-sider sider light">
       <div class="flex flex-direction align-center justify-between" style="height: 100%;">
         <div>
           <img src="~@/assets/logo.svg" width="45px" class="margin-bottom-sm pointer" @click="goProject" />
-          <div class="icon margin-bottom pointer" @click="goProject">小</div>
+          <div class="text-icon margin-bottom pointer" @click="goProject">小</div>
           <a-tooltip placement="right" class="margin-bottom-sm">
             <template slot="title">
-              <span>Schema 管理</span>
+              <span>模型管理</span>
             </template>
-            <div class="pointer text-xxl text-blue"><a-icon type="profile" /></div>
+            <div :class="(page === 'Schema' ? 'text-blue ' : '') + 'pointer text-xxl'" @click="goSchema">
+              <a-icon type="profile" />
+            </div>
           </a-tooltip>
           <a-tooltip placement="right" class="margin-bottom-sm">
             <template slot="title">
               <span>内容管理</span>
             </template>
-            <div class="pointer text-xxl"><a-icon type="edit" /></div>
+            <div :class="(page === 'Content' ? 'text-blue ' : '') + 'pointer text-xxl'" @click="goContent">
+              <a-icon type="edit" />
+            </div>
           </a-tooltip>
           <a-tooltip placement="right" class="margin-bottom-sm">
             <template slot="title">
               <span>资源管理</span>
             </template>
-            <div class="pointer text-xxl"><a-icon type="link" /></div>
+            <div :class="(page === 'Asset' ? 'text-blue ' : '') + 'pointer text-xxl'" @click="goAsset">
+              <a-icon type="link" />
+            </div>
           </a-tooltip>
         </div>
         <div>
@@ -49,14 +55,30 @@ export default {
   name: 'BasicLayout',
   components: {},
   data() {
-    return {}
+    return {
+      page: 'Schema'
+    }
   },
   computed: {},
   watch: {},
   created() {},
-  mounted() {},
+  mounted() {
+    this.page = this.$route.name
+  },
   methods: {
     ...mapActions(['Logout']),
+    goSchema() {
+      this.$router.push({ name: 'Schema' })
+      this.page = 'Schema'
+    },
+    goContent() {
+      this.$router.push({ name: 'Content' })
+      this.page = 'Content'
+    },
+    goAsset() {
+      this.$router.push({ name: 'Asset' })
+      this.page = 'Asset'
+    },
     goProject() {
       this.$router.push({ name: 'Project' })
     },
@@ -79,7 +101,7 @@ export default {
 </script>
 
 <style lang="less">
-.sider {
+.basic-sider {
   box-sizing: border-box;
   text-align: center;
   padding: 10px 0;
@@ -87,20 +109,15 @@ export default {
   min-width: inherit !important;
   max-width: inherit !important;
   flex: 0 0 60px !important;
-  border-right: 1px solid rgb(240, 242, 247);
-}
 
-.icon {
-  width: 35px;
-  height: 35px;
-  background-color: black;
-  color: rgb(255, 255, 255);
-  font-size: 18px;
-  line-height: 35px;
-  text-align: center;
-  font-weight: 600;
-  margin-left: auto;
-  margin-right: auto;
-  border-radius: 8px;
+  .text-icon {
+    background-color: black;
+    color: rgb(255, 255, 255);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+.sider {
+  border-right: 1px solid rgb(240, 242, 247);
 }
 </style>

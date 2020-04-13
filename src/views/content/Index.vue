@@ -1,46 +1,41 @@
 <template>
-  <base-page title="模型">
+  <base-page title="内容">
     <template v-slot:sider>
       <div class="flex justify-between align-center">
         <bg-tag :toggle="true" :toggleDirection="toggleDirection" @click.native="toggleModels">Models</bg-tag>
-        <bg-tag class="text-blue text-sm" @click.native="showCreate"><a-icon type="plus" /> 添加</bg-tag>
       </div>
       <div ref="models" :class="(show_models ? '' : 'hidden') + ' margin-top-xs models'">
         <bg-tag class="flex align-center margin-left-xs text-black" :active="true">
-          Asset
-          <span class="tag bg-gray margin-left-xs">system</span>
+          用户
         </bg-tag>
       </div>
     </template>
     <template v-slot:content>
-      <div class="text-center" style="margin-top: 200px;" v-if="init">
-        <h1 class="text-xxxl">开启项目</h1>
-        <h1 class="text-xxxl">创建第一个 Model</h1>
-        <a-button type="primary" size="large" @click="showCreate"><a-icon type="plus" />创建 Model</a-button>
-      </div>
-      <detail-model v-else :visible="show_create"></detail-model>
-      <update-model :visible="show_create" @cancel="cancelCreate"></update-model>
+      <contents v-show="!show_update" @update="update"></contents>
+      <update-content :data="content" model="Admin" v-show="show_update" @cancel="cancelUpdate"></update-content>
     </template>
   </base-page>
 </template>
 
 <script>
 import { BasePage, BgTag } from '@/components'
-import UpdateModel from './components/UpdateModel'
-import DetailModel from './components/DetailModel'
+import Contents from './components/Contents'
+import UpdateContent from './components/UpdateContent'
 
 export default {
   components: {
+    UpdateContent,
+    Contents,
     BasePage,
-    BgTag,
-    UpdateModel,
-    DetailModel
+    BgTag
   },
   data() {
     return {
-      init: false,
+      content: {
+        id: 1
+      },
+      show_update: true,
       show_models: true,
-      show_create: false,
       models_height: '0px'
     }
   },
@@ -58,11 +53,12 @@ export default {
       this.show_models = !this.show_models
       this.$refs.models.style.height = this.show_models ? this.models_height : '0px'
     },
-    showCreate() {
-      this.show_create = true
+    cancelUpdate() {
+      this.show_update = false
     },
-    cancelCreate() {
-      this.show_create = false
+    update(item) {
+      this.content = item || {}
+      this.show_update = true
     }
   }
 }

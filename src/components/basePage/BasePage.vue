@@ -1,8 +1,8 @@
 <template>
   <a-layout class="layout">
     <a-layout-sider class="base-page-sider sider light">
-      <div class="flex align-center justify-between margin-bottom">
-        <span class="text-xxxl text-black">{{ title }}</span>
+      <div class="flex align-center justify-between margin-bottom-sm">
+        <span class="text-xxl text-black">{{ title }}</span>
         <!-- <div class="round solid line-gray toggle pointer"><a-icon type="left" /></div> -->
       </div>
       <slot name="sider"></slot>

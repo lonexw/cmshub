@@ -2,14 +2,23 @@ import Vue from 'vue'
 import VueStorage from 'vue-ls'
 import {
   Layout,
+  Pagination,
+  Progress,
+  Upload,
+  Table,
+  Empty,
+  Divider,
+  Dropdown,
   ConfigProvider,
   Button,
   Form,
+  FormModel,
   Row,
   Col,
   Switch,
   Checkbox,
   Modal,
+  Menu,
   message,
   notification,
   Alert,
@@ -20,13 +29,23 @@ import {
 } from 'ant-design-vue'
 
 Vue.use(Layout)
+Vue.use(Progress)
+Vue.use(Upload)
+Vue.use(Pagination)
+Vue.use(Table)
+Vue.use(Empty)
+Vue.use(Divider)
+Vue.use(Dropdown)
 Vue.use(ConfigProvider)
 Vue.use(Icon)
 Vue.use(Alert)
+Vue.use(Modal)
+Vue.use(Menu)
 Vue.use(Input)
 Vue.use(Button)
 Vue.use(Switch)
 Vue.use(Form)
+Vue.use(FormModel)
 Vue.use(Row)
 Vue.use(Col)
 Vue.use(Checkbox)

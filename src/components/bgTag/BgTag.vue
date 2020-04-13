@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-tag pointer radius" onselectstart="return false;">
+  <div :class="(active ? 'active ' : '') + 'bg-tag pointer radius  flex align-center'" onselectstart="return false;">
     <slot></slot>
     <a-icon v-if="toggle && toggleDirection === 'down'" type="caret-down" class="text-sm tag-toggle" />
     <a-icon v-if="toggle && toggleDirection === 'right'" type="caret-right" class="text-sm tag-toggle" />
@@ -11,6 +11,10 @@ export default {
   name: 'BgTag',
   components: {},
   props: {
+    active: {
+      type: Boolean,
+      default: false
+    },
     toggle: {
       type: Boolean,
       default: false
@@ -36,6 +40,10 @@ export default {
     .tag-toggle {
       display: inline;
     }
+  }
+
+  &.active {
+    background-color: var(--ghostWhite);
   }
 }
 </style>
