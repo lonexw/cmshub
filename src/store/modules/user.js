@@ -38,7 +38,9 @@ const user = {
     Login({ commit }, userInfo) {
       // eslint-disable-next-line no-unused-vars
       return new Promise((resolve, reject) => {
-        Vue.ls.set(ACCESS_TOKEN, 1232, 7 * 24 * 60 * 60 * 1000)
+        let token = userInfo.userLogin.access_token
+        Vue.ls.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
+        commit('SET_TOKEN', token)
         resolve()
 
         // login(userInfo).then(response => {
@@ -98,20 +100,9 @@ const user = {
     // eslint-disable-next-line no-unused-vars
     Logout({ commit, state }) {
       return new Promise(resolve => {
+        commit('SET_TOKEN', '')
         Vue.ls.remove(ACCESS_TOKEN)
         resolve()
-        // logout(state.token)
-        //   .then(() => {
-        //     resolve()
-        //   })
-        //   .catch(() => {
-        //     resolve()
-        //   })
-        //   .finally(() => {
-        //     commit('SET_TOKEN', '')
-        //     commit('SET_ROLES', [])
-        //     Vue.ls.remove(ACCESS_TOKEN)
-        //   })
       })
     }
   }

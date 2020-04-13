@@ -51,8 +51,9 @@
 </template>
 
 <script>
-import { ACCESS_TOKEN } from '@/store/mutation-types'
-import Vue from 'vue'
+import { userLogin } from '@/graphql/login.graphql'
+import { formatGraphErr } from '@/utils/util'
+import { mapActions } from 'vuex'
 
 export default {
   components: {},
@@ -65,10 +66,42 @@ export default {
   },
   created() {},
   methods: {
+    ...mapActions(['Login']),
     handleSubmit(e) {
       e.preventDefault()
-      Vue.ls.set(ACCESS_TOKEN, 123, 7 * 24 * 60 * 60 * 1000)
-      this.$router.push({ path: '/project' })
+      let self = this
+      this.form.validateFields((err, values) => {
+        if (err) {
+          this.$message.warning('必填项未填写完整')
+          return
+        }
+        self.submit_loading = true
+        self.$apollo
+          .query({
+            query: userLogin,
+            variables: {
+              email: values.username,
+              password: values.password
+            }
+          })
+          .then(data => {
+            self
+              .Login(data.data)
+              .then(() => {
+                self.$router.push({ path: '/project' })
+              })
+              .catch(err => {
+                this.$message.warning(formatGraphErr(err.message))
+              })
+              .finally(() => {
+                self.submit_loading = false
+              })
+          })
+          .catch(err => {
+            this.$message.warning(formatGraphErr(err.message))
+            self.submit_loading = false
+          })
+      })
     }
   }
 }

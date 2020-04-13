@@ -24,6 +24,8 @@ import Logo from '@/components/tools/Logo'
 import ProjectList from './List'
 import ProjectCreate from './Create'
 import { mapActions } from 'vuex'
+// import { userLogout } from '@/graphql/login.graphql'
+// import { formatGraphErr } from '@/utils/util'
 
 export default {
   components: {
@@ -59,6 +61,28 @@ export default {
             description: err.message
           })
         })
+      // this.$apollo
+      //     .query({
+      //       query: userLogout,
+      //       variables: {}
+      //     })
+      //     .then(() => {
+      //       this.Logout({})
+      //         .then(() => {
+      //           setTimeout(() => {
+      //             window.location.reload()
+      //           }, 16)
+      //         })
+      //         .catch(err => {
+      //           this.$message.error({
+      //             title: '错误',
+      //             description: err.message
+      //           })
+      //         })
+      //     })
+      //     .catch(err => {
+      //       this.$message.warning(formatGraphErr(err.message))
+      //     })
     }
   }
 }

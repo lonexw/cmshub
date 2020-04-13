@@ -1,0 +1,11 @@
+query userLogin($email: String!, $password: String!) {
+  userLogin(email: $email,
+    password: $password) {
+      token_type,
+      access_token
+  }
+}
+
+query userLogout {
+  userLogout 
+}

@@ -15,7 +15,8 @@ const vueConfig = {
     // If you want to turn on the proxy, please remove the mockjs /src/main.jsL11
     proxy: {
       '/graphql': {
-        target: 'http://cmshub-server.yousails-project.com',
+        target: 'http://127.0.0.1:8000/',
+        // target: 'http://cmshub-server.yousails-project.com',
         ws: false,
         changeOrigin: true
       }
