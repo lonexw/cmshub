@@ -21,7 +21,7 @@
             <a-input
               size="large"
               v-decorator="[
-                'describe',
+                'description',
                 {
                   rules: [{ required: false, message: '请输入项目名称' }]
                 }
@@ -31,19 +31,23 @@
         </a-col>
       </a-row>
       <div class="flex justify-center margin-top">
-        <a-button type="link" class="margin-right" @click="cancel">取消</a-button>
-        <a-button type="primary" html-type="submit">创建</a-button>
+        <a-button type="link" class="margin-right" :loading="submit_loading" @click="cancel">取消</a-button>
+        <a-button type="primary" html-type="submit" :loading="submit_loading">创建</a-button>
       </div>
     </a-form>
   </div>
 </template>
 
 <script>
+import { userCreateProject } from '@/graphql/project.graphql'
+import { formatGraphErr } from '@/utils/util'
+
 export default {
   components: {},
   data() {
     return {
-      form: this.$form.createForm(this)
+      form: this.$form.createForm(this),
+      submit_loading: false
     }
   },
   created() {},
@@ -56,12 +60,27 @@ export default {
     },
     handleSubmit(e) {
       e.preventDefault()
-      // eslint-disable-next-line no-unused-vars
+      let self = this
       this.form.validateFields((err, values) => {
-        if (!err) {
+        if (err) {
           return
         }
-        this.goSchema()
+        self.$apollo
+          .mutate({
+            mutation: userCreateProject,
+            variables: {
+              id: '',
+              name: values.name,
+              description: values.description
+            },
+            fetchPolicy: 'no-cache'
+          })
+          .then(() => {
+            this.goSchema()
+          })
+          .catch(err => {
+            this.$message.warning(formatGraphErr(err.message))
+          })
       })
     }
   }

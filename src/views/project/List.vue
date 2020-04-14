@@ -43,7 +43,8 @@ export default {
       self.$apollo
         .query({
           query: userProjects,
-          variables: {}
+          variables: {},
+          fetchPolicy: 'no-cache'
         })
         .then(data => {
           self.list = data.data.userProjects
