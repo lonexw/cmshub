@@ -35,7 +35,7 @@
         @showSizeChange="showSizeChange"
       />
     </div>
-    <a-empty class="empty-content" />
+    <a-empty class="empty-content" v-if="data.length == 0"/>
   </div>
 </template>
 

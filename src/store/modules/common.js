@@ -10,7 +10,7 @@ const common = {
   mutations: {
     SET_CURRENT_PROJECT: (state, info) => {
       state.currentProject = info
-      state.projectId = info.id
+      state.projectId = info ? info.id : 0
       Vue.ls.set(CURRENT_PROJECT, info, 7 * 24 * 60 * 60 * 1000)
     }
   },

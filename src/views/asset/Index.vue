@@ -1,18 +1,18 @@
 <template>
   <div>
-    <assets v-show="!show_update" @update="update"></assets>
-    <update-content :data="content" model="资源" v-show="show_update" @cancel="cancelUpdate"></update-content>
+    <assets v-if="!show_update" @update="update"></assets>
+    <asset-create v-else @cancel="cancelUpdate" @ok="ok"></asset-create>
   </div>
 </template>
 
 <script>
 import Assets from './components/Assets'
-import UpdateContent from '../content/components/UpdateContent'
+import AssetCreate from './components/Create'
 
 export default {
   components: {
-    UpdateContent,
-    Assets
+    Assets,
+    AssetCreate
   },
   data() {
     return {
@@ -26,6 +26,9 @@ export default {
   mounted() {},
   methods: {
     cancelUpdate() {
+      this.show_update = false
+    },
+    ok() {
       this.show_update = false
     },
     update(item) {

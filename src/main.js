@@ -9,10 +9,12 @@ import './utils/filter'
 import './permission'
 import './components/global.less'
 import apolloProvider from './utils/apolloProvider'
+import { VueAxios } from './utils/request'
 
 Vue.config.productionTip = false
 Vue.use(VueApollo)
 Vue.prototype._ = _
+Vue.use(VueAxios)
 
 new Vue({
   router,

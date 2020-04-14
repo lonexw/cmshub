@@ -19,6 +19,12 @@ const vueConfig = {
         // target: 'http://cmshub-server.yousails-project.com',
         ws: false,
         changeOrigin: true
+      },
+      '/api': {
+        target: 'http://127.0.0.1:8000/',
+        // target: 'http://cmshub-server.yousails-project.com',
+        ws: false,
+        changeOrigin: true
       }
     }
   }
