@@ -2,10 +2,12 @@
   <div>
     <h1 class="text-lg margin-bottom">我的项目</h1>
     <div class="flex flex-wrap">
-      <div class="project" @click="goSchema">
-        <div class="icon">小</div>
-        <div class="margin-top text-bold text-black">小鱼儿官网</div>
-      </div>
+      <template v-for="(item, index) in list">
+        <div class="project" @click="goSchema(item)" :key="index">
+          <div class="icon">{{ item.name }}</div>
+          <div class="margin-top text-bold text-black">{{ item.name }}</div>
+        </div>
+      </template>
       <div class="project" @click="create">
         <a-icon type="plus-circle" class="add-icon" />
         <div class="margin-top text-bold text-black">创建新项目</div>
@@ -15,18 +17,40 @@
 </template>
 
 <script>
+import { userProjects } from '@/graphql/project.graphql'
+import { formatGraphErr } from '@/utils/util'
+
 export default {
   components: {},
   data() {
-    return {}
+    return {
+      list: []
+    }
   },
-  created() {},
+  created() {
+    this.getList()
+  },
   methods: {
     create() {
       this.$emit('create')
     },
-    goSchema() {
+    goSchema(project) {
+      console.log(project)
       this.$router.push({ name: 'Schema' })
+    },
+    getList() {
+      let self = this
+      self.$apollo
+        .query({
+          query: userProjects,
+          variables: {}
+        })
+        .then(data => {
+          self.list = data.data.userProjects
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
     }
   }
 }

@@ -1,0 +1,34 @@
+query userProjects {
+  userProjects {
+    id,
+    user_id,
+    name,
+    user {
+      id,
+      name,
+      email
+    }
+  }
+}
+
+mutation userCreateProject($id: ID, $name: String!, $description: String) {
+  userCreateProject(data: {
+    id: $id,
+    name: $name,
+    description: $description
+  }) {
+    description,
+    name,
+    id
+  }
+}
+
+mutation userUpdateProject($id: ID, $name: String!, $description: String) {
+  userUpdateProject (data: {
+    id: $id,
+    name: $name,
+    description: $description
+  }) {
+    id, name, description
+  }
+}
