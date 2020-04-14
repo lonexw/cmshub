@@ -1,7 +1,5 @@
 import Vue from 'vue'
-// import { login, getInfo, logout } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-// import { welcome } from '@/utils/util'
 
 const user = {
   state: {
@@ -54,45 +52,11 @@ const user = {
       })
     },
 
-    // 获取用户信息
-    // eslint-disable-next-line no-unused-vars
-    GetInfo({ commit }) {
-      // eslint-disable-next-line no-unused-vars
-      return new Promise((resolve, reject) => {
+    SetInfo({ commit }, userInfo) {
+      return new Promise((resolve) => {
+        commit('SET_NAME', userInfo.userMe.email)
+        commit('SET_INFO', userInfo.userMe)
         resolve()
-
-        // getInfo()
-        //   .then(response => {
-        //     const result = response.result
-
-        //     if (result.role && result.role.permissions.length > 0) {
-        //       const role = result.role
-        //       role.permissions = result.role.permissions
-        //       role.permissions.map(per => {
-        //         if (per.actionEntitySet != null && per.actionEntitySet.length > 0) {
-        //           const action = per.actionEntitySet.map(action => {
-        //             return action.action
-        //           })
-        //           per.actionList = action
-        //         }
-        //       })
-        //       role.permissionList = role.permissions.map(permission => {
-        //         return permission.permissionId
-        //       })
-        //       commit('SET_ROLES', result.role)
-        //       commit('SET_INFO', result)
-        //     } else {
-        //       reject(new Error('getInfo: roles must be a non-null array !'))
-        //     }
-
-        //     commit('SET_NAME', { name: result.name, welcome: welcome() })
-        //     commit('SET_AVATAR', result.avatar)
-
-        //     resolve(response)
-        //   })
-        //   .catch(error => {
-        //     reject(error)
-        //   })
       })
     },
 

@@ -25,7 +25,6 @@ import ProjectList from './List'
 import ProjectCreate from './Create'
 import { mapActions } from 'vuex'
 import { userLogout } from '@/graphql/login.graphql'
-// import { formatGraphErr } from '@/utils/util'
 
 export default {
   components: {
@@ -59,23 +58,12 @@ export default {
               query: userLogout,
               variables: {}
             })
-            .catch(() => {
-              // self.$message.warning(formatGraphErr(err.message))
-            })
             .finally(() => {
-              self
-                .Logout({})
-                .then(() => {
-                  setTimeout(() => {
-                    window.location.reload()
-                  }, 16)
-                })
-                .catch(err => {
-                  self.$message.error({
-                    title: '错误',
-                    description: err.message
-                  })
-                })
+              self.Logout({}).finally(() => {
+                setTimeout(() => {
+                  window.location.reload()
+                }, 16)
+              })
             })
         }
       })

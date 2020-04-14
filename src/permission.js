@@ -7,65 +7,56 @@ import '@/components/nprogress.less' // progress bar custom style
 // import notification from 'ant-design-vue/es/notification'
 import { setDocumentTitle, domTitle } from '@/utils/domUtil'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { userMe } from '@/graphql/user.graphql'
+import apolloProvider from '@/utils/apolloProvider'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['Login'] // no redirect whitelist
 const defaultRoutePath = '/'
-
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
   to.meta && typeof to.meta.title !== 'undefined' && setDocumentTitle(`${to.meta.title} - ${domTitle}`)
-
-  if (Vue.ls.get(ACCESS_TOKEN)) {
+  let token = Vue.ls.get(ACCESS_TOKEN)
+  if (token) {
     /* has token */
     if (to.name === 'Login') {
       next({ path: defaultRoutePath })
       NProgress.done()
     } else {
-      if (store.getters.addRouters.length === 0) {
-        store
-          .dispatch('GetInfo')
-          // eslint-disable-next-line no-unused-vars
-          .then(res => {
+      apolloProvider.defaultClient
+        .query({
+          query: userMe,
+          variables: {},
+          fetchPolicy: 'no-cache'
+        })
+        .then(() => {
+          if (store.getters.addRouters.length === 0) {
             // const permissions = res.permissions
             store.dispatch('GenerateRoutes', {}).then(() => {
               // 根据roles权限生成可访问的路由表
               // 动态添加可访问路由表
               // console.log('addRoutes', store.getters.addRouters)
-
               router.addRoutes(store.getters.addRouters)
               let redirect = decodeURIComponent(from.query.redirect || to.path)
-              // console.log('redirect', redirect, store.getters.addRouters[0].children[0].path, to)
-
               if (to.path === redirect) {
                 const tempTo = Object.assign({}, to)
-                // if (redirect === '/') {
-                //   tempTo.path = store.getters.addRouters[0].children[0].path
-                // }
-
-                // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
                 next({ ...tempTo, replace: true })
               } else {
-                // if (redirect === '/') {
-                //   redirect = store.getters.addRouters[0].children[0].path
-                // }
-
                 // 跳转到目的路由
                 next({ path: redirect })
               }
             })
+          } else {
+            store.commit('SET_TOKEN', token)
+            next()
+          }
+        })
+        .catch(() => {
+          store.dispatch('Logout').then(() => {
+            next({ path: '/auth/login', query: { redirect: to.fullPath } })
           })
-          // eslint-disable-next-line no-unused-vars
-          .catch(err => {
-            store.dispatch('Logout').then(() => {
-              next({ path: '/auth/login', query: { redirect: to.fullPath } })
-            })
-          })
-      } else {
-        store.commit('SET_TOKEN', Vue.ls.get(ACCESS_TOKEN))
-        next()
-      }
+        })
     }
   } else {
     if (whiteList.includes(to.name)) {

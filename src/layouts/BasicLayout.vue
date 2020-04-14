@@ -50,6 +50,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import { userLogout } from '@/graphql/login.graphql'
 
 export default {
   name: 'BasicLayout',
@@ -83,18 +84,25 @@ export default {
       this.$router.push({ name: 'Project' })
     },
     logout() {
-      this.Logout({})
-        .then(() => {
-          setTimeout(() => {
-            window.location.reload()
-          }, 16)
-        })
-        .catch(err => {
-          this.$message.error({
-            title: '错误',
-            description: err.message
-          })
-        })
+      let self = this
+      this.$confirm({
+        title: '确认退出吗？',
+        confirmLoading: true,
+        onOk() {
+          self.$apollo
+            .query({
+              query: userLogout,
+              variables: {}
+            })
+            .finally(() => {
+              self.Logout({}).finally(() => {
+                setTimeout(() => {
+                  window.location.reload()
+                }, 16)
+              })
+            })
+        }
+      })
     }
   }
 }
