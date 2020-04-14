@@ -41,6 +41,7 @@
 <script>
 import { userCreateProject } from '@/graphql/project.graphql'
 import { formatGraphErr } from '@/utils/util'
+import store from '@/store'
 
 export default {
   components: {},
@@ -75,7 +76,8 @@ export default {
             },
             fetchPolicy: 'no-cache'
           })
-          .then(() => {
+          .then(response => {
+            store.commit('SetCurrentProject', response.data.userCreateProject)
             this.goSchema()
           })
           .catch(err => {

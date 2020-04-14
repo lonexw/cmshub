@@ -53,7 +53,7 @@ const user = {
     },
 
     SetInfo({ commit }, userInfo) {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         commit('SET_NAME', userInfo.userMe.email)
         commit('SET_INFO', userInfo.userMe)
         resolve()

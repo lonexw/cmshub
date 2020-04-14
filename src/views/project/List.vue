@@ -19,6 +19,7 @@
 <script>
 import { userProjects } from '@/graphql/project.graphql'
 import { formatGraphErr } from '@/utils/util'
+import store from '@/store'
 
 export default {
   components: {},
@@ -35,8 +36,9 @@ export default {
       this.$emit('create')
     },
     goSchema(project) {
-      console.log(project)
-      this.$router.push({ name: 'Schema' })
+      store.dispatch('SetCurrentProject', project).then(() => {
+        this.$router.push({ name: 'Schema' })
+      })
     },
     getList() {
       let self = this

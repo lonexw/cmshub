@@ -1,13 +1,8 @@
 query userProjects {
   userProjects {
     id,
-    user_id,
     name,
-    user {
-      id,
-      name,
-      email
-    }
+    description
   }
 }
 

@@ -4,7 +4,7 @@
       <div class="flex flex-direction align-center justify-between" style="height: 100%;">
         <div>
           <img src="~@/assets/logo.svg" width="45px" class="margin-bottom-sm pointer" @click="goProject" />
-          <div class="text-icon margin-bottom pointer" @click="goProject">小</div>
+          <div class="text-icon margin-bottom pointer" @click="goProject">{{ projectName }}</div>
           <a-tooltip placement="right" class="margin-bottom-sm">
             <template slot="title">
               <span>模型管理</span>
@@ -51,6 +51,7 @@
 <script>
 import { mapActions } from 'vuex'
 import { userLogout } from '@/graphql/login.graphql'
+import { mapState } from 'vuex'
 
 export default {
   name: 'BasicLayout',
@@ -60,7 +61,11 @@ export default {
       page: 'Schema'
     }
   },
-  computed: {},
+  computed: {
+    ...mapState({
+      projectName: state => state.common.currentProject.name
+    })
+  },
   watch: {},
   created() {},
   mounted() {
