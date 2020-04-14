@@ -4,7 +4,7 @@
       <div class="flex flex-direction align-center justify-between" style="height: 100%;">
         <div>
           <img src="~@/assets/logo.svg" width="45px" class="margin-bottom-sm pointer" @click="goProject" />
-          <div class="text-icon margin-bottom pointer" @click="goProject">{{ projectName }}</div>
+          <div class="text-icon margin-bottom pointer" @click="goProject">{{ project ? project.name : '' }}</div>
           <a-tooltip placement="right" class="margin-bottom-sm">
             <template slot="title">
               <span>模型管理</span>
@@ -63,7 +63,7 @@ export default {
   },
   computed: {
     ...mapState({
-      projectName: state => state.common.currentProject.name
+      project: state => state.common.currentProject
     })
   },
   watch: {},
