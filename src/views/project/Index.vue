@@ -24,7 +24,7 @@ import Logo from '@/components/tools/Logo'
 import ProjectList from './List'
 import ProjectCreate from './Create'
 import { mapActions } from 'vuex'
-// import { userLogout } from '@/graphql/login.graphql'
+import { userLogout } from '@/graphql/login.graphql'
 // import { formatGraphErr } from '@/utils/util'
 
 export default {
@@ -49,40 +49,36 @@ export default {
       this.is_create = false
     },
     logout() {
-      this.Logout({})
-        .then(() => {
-          setTimeout(() => {
-            window.location.reload()
-          }, 16)
-        })
-        .catch(err => {
-          this.$message.error({
-            title: '错误',
-            description: err.message
-          })
-        })
-      // this.$apollo
-      //     .query({
-      //       query: userLogout,
-      //       variables: {}
-      //     })
-      //     .then(() => {
-      //       this.Logout({})
-      //         .then(() => {
-      //           setTimeout(() => {
-      //             window.location.reload()
-      //           }, 16)
-      //         })
-      //         .catch(err => {
-      //           this.$message.error({
-      //             title: '错误',
-      //             description: err.message
-      //           })
-      //         })
-      //     })
-      //     .catch(err => {
-      //       this.$message.warning(formatGraphErr(err.message))
-      //     })
+      let self = this
+      this.$confirm({
+        title: '确认退出吗？',
+        confirmLoading: true,
+        onOk() {
+          self.$apollo
+            .query({
+              query: userLogout,
+              variables: {}
+            })
+            .catch(() => {
+              // self.$message.warning(formatGraphErr(err.message))
+            })
+            .finally(() => {
+              self
+                .Logout({})
+                .then(() => {
+                  setTimeout(() => {
+                    window.location.reload()
+                  }, 16)
+                })
+                .catch(err => {
+                  self.$message.error({
+                    title: '错误',
+                    description: err.message
+                  })
+                })
+            })
+        }
+      })
     }
   }
 }

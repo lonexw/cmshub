@@ -63,6 +63,7 @@ router.beforeEach((to, from, next) => {
             })
           })
       } else {
+        store.commit('SET_TOKEN', Vue.ls.get(ACCESS_TOKEN))
         next()
       }
     }
