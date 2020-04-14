@@ -7,6 +7,7 @@ import { onError } from 'apollo-link-error'
 import Vue from 'vue'
 import store from '@/store'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
+import api from '@/config/api'
 
 // Error Handling
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -35,32 +36,6 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 const authLink = setContext(async (_, { headers }) => {
   // Use your async token function here:
   const token = Vue.ls.get(ACCESS_TOKEN)
-  // Return the headers to the context so httpLink can read them
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : ''
-    }
-  }
-})
-
-const link = new HttpLink({
-  uri: '/graphql'
-})
-
-const apolloClient = new ApolloClient({
-  // 你需要在这里使用绝对路径, link的顺序不能颠倒
-  link: HttpLink.from([authLink, errorLink, link]),
-  cache: new InMemoryCache()
-})
-
-const projectLink = new HttpLink({
-  uri: '/graphql?Project-Id=' + (store.state.common.currentProject ? store.state.common.currentProject.id : '')
-})
-
-const projectAuthLink = setContext(async (_, { headers }) => {
-  // Use your async token function here:
-  const token = Vue.ls.get(ACCESS_TOKEN)
   let project = store.state.common.currentProject
   // Return the headers to the context so httpLink can read them
   return {
@@ -72,17 +47,17 @@ const projectAuthLink = setContext(async (_, { headers }) => {
   }
 })
 
-const projectClient = new ApolloClient({
+const link = new HttpLink({
+  uri: api.baseUri
+})
+
+const apolloClient = new ApolloClient({
   // 你需要在这里使用绝对路径, link的顺序不能颠倒
-  link: HttpLink.from([projectAuthLink, errorLink, projectLink]),
+  link: HttpLink.from([authLink, errorLink, link]),
   cache: new InMemoryCache()
 })
 
 const apolloProvider = new VueApollo({
-  clients: {
-    default: apolloClient,
-    project: projectClient
-  },
   defaultClient: apolloClient
 })
 

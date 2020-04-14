@@ -15,6 +15,7 @@
     <a-table
       class="content-table"
       size="middle"
+      rowKey="id"
       :rowSelection="rowSelection"
       :columns="columns"
       :dataSource="data"
@@ -26,7 +27,7 @@
       <a-pagination
         showSizeChanger
         showQuickJumper
-        :total="85"
+        :total="total"
         :showTotal="total => `共 ${total} 条`"
         :pageSize="search.paginator.limit"
         :defaultCurrent="1"
@@ -40,6 +41,10 @@
 
 <script>
 import { BgTag } from '@/components'
+import { userAssets } from '@/graphql/asset.graphql'
+import { formatGraphErr } from '@/utils/util'
+import store from '@/store'
+import api from '@/config/api'
 
 export default {
   name: 'Contents',
@@ -50,22 +55,19 @@ export default {
   data() {
     const columns = [
       {
-        title: 'Name',
+        title: '文件名',
         dataIndex: 'name',
         scopedSlots: { customRender: 'name' }
       },
       {
-        title: 'Cash Assets',
-        className: 'column-money',
-        dataIndex: 'money'
+        title: '链接',
+        dataIndex: 'url'
       },
       {
-        title: 'Address',
-        dataIndex: 'address'
+        title: '大小',
+        dataIndex: 'file_size'
       }
     ]
-
-    const data = []
     const rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
@@ -81,7 +83,7 @@ export default {
     return {
       rowSelection,
       columns,
-      data,
+      data: [],
       select_num: 0,
       show_create: false,
       total: 30,
@@ -94,13 +96,34 @@ export default {
     }
   },
   computed: {},
-  mounted() {},
+  mounted() {
+    this.getList()
+  },
   methods: {
     add() {
       this.$emit('update')
     },
     showSizeChange(current, size) {
       this.search.paginator.limit = size
+    },
+    getList() {
+      let self = this
+      self.$apollo
+        .query({
+          query: userAssets,
+          variables: self.search,
+          fetchPolicy: 'no-cache',
+          context: {
+            uri: api.projectUri + store.state.common.currentProject.id
+          }
+        })
+        .then(data => {
+          self.data = data.data.userAssets.items
+          self.total = data.data.userAssets.cursor.total
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
     }
   }
 }
