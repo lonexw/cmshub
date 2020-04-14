@@ -6,7 +6,7 @@ import NProgress from 'nprogress' // progress bar
 import '@/components/nprogress.less' // progress bar custom style
 // import notification from 'ant-design-vue/es/notification'
 import { setDocumentTitle, domTitle } from '@/utils/domUtil'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { ACCESS_TOKEN, CURRENT_PROJECT } from '@/store/mutation-types'
 import { userMe } from '@/graphql/user.graphql'
 import apolloProvider from '@/utils/apolloProvider'
 
@@ -39,17 +39,13 @@ router.beforeEach((to, from, next) => {
               // console.log('addRoutes', store.getters.addRouters)
               router.addRoutes(store.getters.addRouters)
               let redirect = decodeURIComponent(from.query.redirect || to.path)
-              if (to.path === redirect) {
-                const tempTo = Object.assign({}, to)
-                next({ ...tempTo, replace: true })
-              } else {
-                // 跳转到目的路由
-                next({ path: redirect })
-              }
+              toSchema(redirect, store, to, next, false)
             })
           } else {
             store.commit('SET_TOKEN', token)
-            next()
+            let redirect = decodeURIComponent(from.query.redirect || to.path)
+            toSchema(redirect, store, to, next, true)
+            // next()
           }
         })
         .catch(() => {
@@ -64,7 +60,6 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
       next({ path: '/auth/login', query: { redirect: to.fullPath } })
-
       NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
     }
   }
@@ -73,3 +68,29 @@ router.beforeEach((to, from, next) => {
 router.afterEach(() => {
   NProgress.done() // finish progress bar
 })
+
+function toSchema(redirect, store, to, next, isNext) {
+  let currentProject = Vue.ls.get(CURRENT_PROJECT)
+  let isToSchema = false
+  if (redirect == '/asset' || redirect == '/content') {
+    if (!(currentProject && currentProject.id > 0)) {
+      isToSchema = true
+      next({ path: '/project' })
+      return
+    }
+  }
+  store.commit('SET_CURRENT_PROJECT', currentProject)
+  if (isNext) {
+    next()
+    return
+  }
+  if (!isToSchema) {
+    if (to.path === redirect) {
+      const tempTo = Object.assign({}, to)
+      next({ ...tempTo, replace: true })
+    } else {
+      // 跳转到目的路由
+      next({ path: redirect })
+    }
+  }
+}

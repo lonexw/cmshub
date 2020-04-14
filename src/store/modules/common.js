@@ -1,3 +1,6 @@
+import Vue from 'vue'
+import { CURRENT_PROJECT } from '@/store/mutation-types'
+
 const common = {
   state: {
     currentProject: {},
@@ -8,6 +11,7 @@ const common = {
     SET_CURRENT_PROJECT: (state, info) => {
       state.currentProject = info
       state.projectId = info.id
+      Vue.ls.set(CURRENT_PROJECT, info, 7 * 24 * 60 * 60 * 1000)
     }
   },
 

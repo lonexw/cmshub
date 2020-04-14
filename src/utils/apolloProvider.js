@@ -54,7 +54,35 @@ const apolloClient = new ApolloClient({
   cache: new InMemoryCache()
 })
 
+const projectLink = new HttpLink({
+  uri: '/graphql?Project-Id=' + (store.state.common.currentProject ? store.state.common.currentProject.id : '')
+})
+
+const projectAuthLink = setContext(async (_, { headers }) => {
+  // Use your async token function here:
+  const token = Vue.ls.get(ACCESS_TOKEN)
+  let project = store.state.common.currentProject
+  // Return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : '',
+      'Project-Id': project ? project.id : ''
+    }
+  }
+})
+
+const projectClient = new ApolloClient({
+  // 你需要在这里使用绝对路径, link的顺序不能颠倒
+  link: HttpLink.from([projectAuthLink, errorLink, projectLink]),
+  cache: new InMemoryCache()
+})
+
 const apolloProvider = new VueApollo({
+  clients: {
+    default: apolloClient,
+    project: projectClient
+  },
   defaultClient: apolloClient
 })
 
