@@ -1,26 +1,40 @@
 <template>
   <div>
-    <h1 class="text-lg margin-bottom">上传附件</h1>
-    <a-form :form="form">
-      <a-upload :fileList="fileList" :multiple="false" :remove="handleRemove" :beforeUpload="beforeUpload">
-        <a-button> <a-icon type="upload" /> 选择要上传的文件 </a-button>
-      </a-upload>
+    <a-layout style="background-color: white; margin-right: 240px">
+      <a-layout-header class="header light" style="height: 50px; line-height: 50px;">
+        <div class="flex align-center padding-lr-sm text-bold pointer text-black" @click="cancel">
+          <a-icon class="margin-right-xs" type="left" /> 新建附件
+        </div>
+      </a-layout-header>
+      <a-layout-content>
+        <div class="content-body padding-lr-sm">
+          <a-form-model layout="vertical" :model="form" ref="form">
+            <a-form-model-item label="上传" prop="url">
+              <area-upload :data="{ id: 1 }" @change="handleChange"></area-upload>
+            </a-form-model-item>
+          </a-form-model>
+        </div>
+      </a-layout-content>
       <div class="flex justify-center margin-top">
         <a-button type="link" class="margin-right" :loading="submit_loading" @click="cancel">取消</a-button>
         <a-button type="primary" @click="handleUpload" :loading="submit_loading">创建</a-button>
       </div>
-    </a-form>
+    </a-layout>
   </div>
 </template>
 
 <script>
-import { userCreateProject } from '@/graphql/project.graphql'
+import { userCreateBatchAsset } from '@/graphql/asset.graphql'
 import { formatGraphErr } from '@/utils/util'
 import store from '@/store'
-import { uploadImage } from '@/graphql/index'
+import api from '@/config/api'
+// import { uploadImage } from '@/graphql/index'
+import { AreaUpload } from '@/components'
 
 export default {
-  components: {},
+  components: {
+    AreaUpload
+  },
   data() {
     return {
       fileList: [],
@@ -36,59 +50,43 @@ export default {
     goSchema() {
       this.$router.push({ name: 'Schema' })
     },
-    handleRemove(file) {
-      const index = this.fileList.indexOf(file)
-      const newFileList = this.fileList.slice()
-      newFileList.splice(index, 1)
-      this.fileList = newFileList
+    handleChange(data) {
+      this.fileList = [data]
     },
-    beforeUpload(file) {
-      this.fileList = [...this.fileList, file]
-      return false
-    },
-    handleUpload() {
-      const { fileList } = this
-      const formData = new FormData()
-      fileList.forEach(file => {
-        formData.append('file', file)
-      })
-      this.submit_loading = true
-      uploadImage(formData).then(res => {
-        this.submit_loading = false
-        if (res.code == 200) {
-          this.fileList = []
-          this.$message.success('上传成功')
-          this.$emit('ok')
-        } else {
-          this.$message.error(res.message)
-        }
-      })
-    },
-    handleSubmit(e) {
+    handleUpload(e) {
       e.preventDefault()
       let self = this
-      this.form.validateFields((err, values) => {
-        if (err) {
-          return
-        }
-        self.$apollo
-          .mutate({
-            mutation: userCreateProject,
-            variables: {
-              id: '',
-              name: values.name,
-              description: values.description
-            },
-            fetchPolicy: 'no-cache'
-          })
-          .then(response => {
-            store.commit('SetCurrentProject', response.data.userCreateProject)
-            this.goSchema()
-          })
-          .catch(err => {
-            this.$message.warning(formatGraphErr(err.message))
-          })
+      if (this.fileList.length == 0) {
+        this.$message.warning('请上传文件')
+        return
+      }
+      let data = []
+      this.fileList.forEach(element => {
+        data.push({
+          name: element.name,
+          url: element.url,
+          type: element.mime,
+          file_size: element.size,
+          is_system: 'false'
+        })
       })
+      self.$apollo
+        .mutate({
+          mutation: userCreateBatchAsset,
+          variables: {
+            data: data
+          },
+          fetchPolicy: 'no-cache',
+          context: {
+            uri: api.projectUri + store.state.common.currentProject.id
+          }
+        })
+        .then(() => {
+          this.$emit('ok')
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
     }
   }
 }
