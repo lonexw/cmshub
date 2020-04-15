@@ -3,6 +3,6 @@ import BasePage from '@/components/basePage'
 import BgTag from '@/components/bgTag'
 import Preview from '@/components/preview'
 import BModal from '@/components/bModal'
-import { AreaUpload } from '@/components/upload'
+import { AreaUpload, BatchUpload } from '@/components/upload'
 
-export { ExceptionPage, BasePage, BgTag, AreaUpload, Preview, BModal }
+export { ExceptionPage, BasePage, BgTag, AreaUpload, BatchUpload, Preview, BModal }

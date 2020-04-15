@@ -2,7 +2,11 @@
   <div class="relative">
     <header class="padding-lr-sm padding-tb-xs flex align-center justify-between solid-bottom line-grey">
       <bg-tag :active="true">Asset</bg-tag>
-      <a-button type="primary" @click="add"> <a-icon type="plus" />新增 </a-button>
+      <div>
+        <a-button type="primary" @click="add"> <a-icon type="plus" />新增 </a-button>
+        <span></span>
+        <a-button type="primary" @click="batchAdd"> <a-icon type="plus" />上传 </a-button>
+      </div>
     </header>
     <div class="flex align-center padding-lr-sm solid-bottom line-grey" style="height: 36px;">
       <span class="margin-right-sm">{{ select_num }} 选中</span>
@@ -35,7 +39,7 @@
         @showSizeChange="showSizeChange"
       />
     </div>
-    <a-empty class="empty-content" v-if="data.length == 0"/>
+    <a-empty class="empty-content" v-if="data.length == 0" />
   </div>
 </template>
 
@@ -102,6 +106,9 @@ export default {
   methods: {
     add() {
       this.$emit('update')
+    },
+    batchAdd() {
+      this.$emit('batchAdd')
     },
     showSizeChange(current, size) {
       this.search.paginator.limit = size
