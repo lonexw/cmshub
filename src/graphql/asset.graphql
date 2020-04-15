@@ -15,6 +15,6 @@ query userAssets($paginator: PaginatorInput
   }
 }
 
-mutation userCreateBatchAsset($data: [AssetInput]!) {
+mutation userCreateBatchAsset($data: [AssetInput!]!) {
   userCreateBatchAsset(data: $data)
 }

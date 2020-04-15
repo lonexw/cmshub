@@ -77,7 +77,9 @@ export default {
             fetchPolicy: 'no-cache'
           })
           .then(response => {
-            store.commit('SetCurrentProject', response.data.userCreateProject)
+            store.dispatch('SetCurrentProject', response.data.userCreateProject).then(() => {
+              this.$router.push({ name: 'Schema' })
+            })
             this.goSchema()
           })
           .catch(err => {
