@@ -7,7 +7,9 @@ query userAssets($paginator: PaginatorInput
       name,
       url,
       file_size,
-      type
+      type,
+      created_at,
+      updated_at
     },
     cursor {
       total

@@ -26,6 +26,10 @@
       :pagination="false"
       :scroll="{ x: 1200, y: 'calc(100vh - 210px)', scrollToFirstRowOnChange: true }"
     >
+      <template slot="url" slot-scope="url, record">
+        <preview-image :src="url" height="30px" v-if="record.type.indexOf('image') > -1"></preview-image>
+        <span v-else>{{ url }}</span>
+      </template>
     </a-table>
     <div class="flex justify-center margin-top-sm">
       <a-pagination
@@ -49,12 +53,14 @@ import { userAssets } from '@/graphql/asset.graphql'
 import { formatGraphErr } from '@/utils/util'
 import store from '@/store'
 import api from '@/config/api'
+import PreviewImage from '@/components/PreviewImage'
 
 export default {
   name: 'Contents',
   props: {},
   components: {
-    BgTag
+    BgTag,
+    PreviewImage
   },
   data() {
     const columns = [
@@ -64,12 +70,17 @@ export default {
         scopedSlots: { customRender: 'name' }
       },
       {
-        title: '链接',
-        dataIndex: 'url'
+        title: '预览',
+        dataIndex: 'url',
+        scopedSlots: { customRender: 'url' }
       },
       {
         title: '大小',
         dataIndex: 'file_size'
+      },
+      {
+        title: '上传时间',
+        dataIndex: 'created_at'
       }
     ]
     const rowSelection = {
