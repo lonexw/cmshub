@@ -4,9 +4,14 @@
       <div class="flex justify-between align-center">
         <bg-tag :toggle="true" :toggleDirection="toggleDirection" @click.native="toggleModels">Models</bg-tag>
       </div>
-      <div ref="models" :class="(show_models ? '' : 'hidden') + ' margin-top-xs models'">
-        <bg-tag class="flex align-center margin-left-xs text-black" :active="true">
-          用户
+      <div ref="models" :class="(show_models ? '' : 'hidden') + ' margin-top-xs models'" v-if="customs.length > 0">
+        <bg-tag
+          class="flex align-center margin-left-xs text-black"
+          :active="item.active"
+          v-for="(item, index) in customs"
+          :key="index"
+        >
+          {{ item.zh_name }}
         </bg-tag>
       </div>
     </template>
@@ -21,6 +26,8 @@
 import { BasePage, BgTag } from '@/components'
 import Contents from './components/Contents'
 import UpdateContent from './components/UpdateContent'
+import { userCustoms } from '@/graphql/custom.graphql'
+import { formatGraphErr } from '@/utils/util'
 
 export default {
   components: {
@@ -34,6 +41,7 @@ export default {
       content: {
         id: 1
       },
+      customs: [],
       show_update: true,
       show_models: true,
       models_height: '0px'
@@ -45,10 +53,33 @@ export default {
     }
   },
   mounted() {
-    this.models_height = this.$refs.models.offsetHeight + 'px'
-    this.$refs.models.style.height = this.models_height
+    // this.models_height = this.$refs.models.offsetHeight + 'px'
+    // this.$refs.models.style.height = this.models_height
+    this.getCustomList()
   },
   methods: {
+    getCustomList() {
+      let self = this
+      self.$apollo
+        .query({
+          query: userCustoms,
+          variables: {},
+          fetchPolicy: 'no-cache'
+        })
+        .then(data => {
+          let customs = data.data.userCustoms.items
+          let items = []
+          customs.forEach(element => {
+            items.push(Object.assign(element, {
+              active: false
+            }))
+          })
+          self.customs = items
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
+    },
     toggleModels() {
       this.show_models = !this.show_models
       this.$refs.models.style.height = this.show_models ? this.models_height : '0px'

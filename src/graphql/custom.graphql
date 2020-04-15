@@ -1,0 +1,12 @@
+query userCustoms {
+  userCustoms {
+    items {
+      id,
+      name,
+      zh_name
+    },
+    cursor {
+      total
+    }
+  }
+}
