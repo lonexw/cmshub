@@ -40,10 +40,14 @@
 
 <script>
 import { BgTag } from '@/components'
+import { userFields } from '@/graphql/field.graphql'
+import { formatGraphErr } from '@/utils/util'
 
 export default {
   name: 'Contents',
-  props: {},
+  props: {
+    custom: {}
+  },
   components: {
     BgTag
   },
@@ -82,6 +86,7 @@ export default {
       rowSelection,
       columns,
       data,
+      fields: [],
       select_num: 0,
       show_create: false,
       total: 30,
@@ -93,15 +98,45 @@ export default {
       }
     }
   },
+  created() {
+    console.log(2)
+  },
   computed: {},
-  mounted() {},
+  mounted() {
+    this.getFieldList()
+  },
   methods: {
     add() {
       this.$emit('update')
     },
     showSizeChange(current, size) {
       this.search.paginator.limit = size
-    }
+    },
+    getFieldList() {
+      console.log(1)
+      let self = this
+      self.$apollo
+        .query({
+          query: userFields,
+          variables: {
+            more: {
+              custom_id: self.custom.id
+            }
+          },
+          fetchPolicy: 'no-cache'
+        })
+        .then(data => {
+          let customs = data.data.userFields.items
+          let items = []
+          customs.forEach(element => {
+            items.push(element)
+          })
+          self.fields = items
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
+    },
   }
 }
 </script>

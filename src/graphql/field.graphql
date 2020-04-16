@@ -1,0 +1,14 @@
+query userFields($paginator: PaginatorInput,
+  $more: FieldPaginatorInput) {
+  userFields(paginator: $paginator, more: $more) {
+    items {
+      id,
+      name,
+      zh_name,
+      type
+    },
+    cursor {
+      total
+    }
+  }
+}

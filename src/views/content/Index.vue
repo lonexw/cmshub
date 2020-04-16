@@ -1,48 +1,42 @@
 <template>
   <base-page title="内容">
     <template v-slot:sider>
-      <div class="flex justify-between align-center">
-        <bg-tag :toggle="true" :toggleDirection="toggleDirection" @click.native="toggleModels">Models</bg-tag>
-      </div>
-      <div ref="models" :class="(show_models ? '' : 'hidden') + ' margin-top-xs models'" v-if="customs.length > 0">
-        <bg-tag
-          class="flex align-center margin-left-xs text-black"
-          :active="item.active"
-          v-for="(item, index) in customs"
-          :key="index"
-        >
+      <a-menu>
+        <a-menu-item v-for="(item, index) in customs" :key="index" @click="menuClick">
           {{ item.zh_name }}
-        </bg-tag>
-      </div>
+        </a-menu-item>
+      </a-menu>
     </template>
-    <template v-slot:content>
-      <contents v-show="!show_update" @update="update"></contents>
-      <update-content :data="content" model="Admin" v-show="show_update" @cancel="cancelUpdate"></update-content>
+    <template v-slot:content v-if="show_list">
+      <contents v-if="show_list" @update="update" :custom="selectCustom"></contents>
+      <!-- <update-content :data="content" model="Admin" v-show="show_update" @cancel="cancelUpdate"></update-content> -->
     </template>
   </base-page>
 </template>
 
 <script>
-import { BasePage, BgTag } from '@/components'
+import { BasePage } from '@/components'
 import Contents from './components/Contents'
-import UpdateContent from './components/UpdateContent'
+// import UpdateContent from './components/UpdateContent'
 import { userCustoms } from '@/graphql/custom.graphql'
 import { formatGraphErr } from '@/utils/util'
 
 export default {
   components: {
-    UpdateContent,
+    // UpdateContent,
     Contents,
-    BasePage,
-    BgTag
+    BasePage
   },
   data() {
     return {
       content: {
         id: 1
       },
+      show_list: false,
+      selectedTags: [],
       customs: [],
-      show_update: true,
+      selectCustom: null,
+      show_update: false,
       show_models: true,
       models_height: '0px'
     }
@@ -53,12 +47,11 @@ export default {
     }
   },
   mounted() {
-    // this.models_height = this.$refs.models.offsetHeight + 'px'
-    // this.$refs.models.style.height = this.models_height
     this.getCustomList()
   },
   methods: {
     getCustomList() {
+      console.log(1)
       let self = this
       self.$apollo
         .query({
@@ -80,14 +73,21 @@ export default {
           this.$message.warning(formatGraphErr(err.message))
         })
     },
-    toggleModels() {
-      this.show_models = !this.show_models
-      this.$refs.models.style.height = this.show_models ? this.models_height : '0px'
+    menuClick(item) {
+      this.selectCustom = null
+      this.show_list = false
+      let self = this
+      setTimeout(function () {
+        self.selectCustom = self.customs[item.key]
+        self.show_list = self
+      }, 100)
+      
     },
     cancelUpdate() {
       this.show_update = false
     },
     update(item) {
+      this.show_list = false
       this.content = item || {}
       this.show_update = true
     }
