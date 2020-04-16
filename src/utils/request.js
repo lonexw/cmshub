@@ -11,7 +11,7 @@ const service = axios.create({
   timeout: 120000 // 请求超时时间
 })
 
-const err = (error) => {
+const err = error => {
   console.log(error)
   if (error.response) {
     const token = Vue.ls.get(ACCESS_TOKEN)
@@ -49,7 +49,7 @@ service.interceptors.request.use(config => {
 }, err)
 
 // response interceptor
-service.interceptors.response.use((response) => {
+service.interceptors.response.use(response => {
   if (response.data.errors) {
     if (response.data.errors[0].extensions && [400, 401].indexOf(response.data.errors[0].extensions.error_code) > -1) {
       if (response.data.errors[0].extensions.error_code === 401) {
@@ -63,16 +63,21 @@ service.interceptors.response.use((response) => {
         }
       }
 
-      return Promise.reject(new Error(JSON.stringify({ code: response.data.errors[0].extensions.error_code, message: response.data.errors[0].message })))
+      return Promise.reject(
+        new Error(
+          JSON.stringify({
+            code: response.data.errors[0].extensions.error_code,
+            message: response.data.errors[0].message
+          })
+        )
+      )
     } else {
       return Promise.reject(new Error(JSON.stringify({ code: 30400, message: '网络错误，请重试!' })))
     }
   }
   // console.log('response', response.headers.authorization)
 
-  if (
-    response.headers.authorization
-  ) {
+  if (response.headers.authorization) {
     Vue.ls.set(ACCESS_TOKEN, response.headers.authorization, 1 * 24 * 60 * 60 * 1000)
     store.commit('SET_TOKEN', response.headers.authorization)
   }
@@ -82,12 +87,9 @@ service.interceptors.response.use((response) => {
 
 const installer = {
   vm: {},
-  install (Vue) {
+  install(Vue) {
     Vue.use(VueAxios, service)
   }
 }
 
-export {
-  installer as VueAxios,
-  service as axios
-}
+export { installer as VueAxios, service as axios }

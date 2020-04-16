@@ -6,14 +6,16 @@
     @cancel="cancel"
     :closable="false"
     :width="width"
-    class="relative">
+    class="relative"
+  >
     <a-button
       type="primary"
       shape="circle"
       icon="close"
       size="small"
       style="position: absolute; right: 10px; top: 10px;"
-      @click="cancel" />
+      @click="cancel"
+    />
     <slot></slot>
   </a-modal>
 </template>
@@ -39,25 +41,18 @@ export default {
       default: undefined
     }
   },
-  data () {
-    return {
-    }
+  data() {
+    return {}
   },
-  watch: {
-  },
-  computed: {
-
-  },
-  mounted () {
-  },
+  watch: {},
+  computed: {},
+  mounted() {},
   methods: {
-    cancel () {
+    cancel() {
       this.$emit('cancel')
     }
   }
 }
 </script>
 
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>
