@@ -9,7 +9,12 @@
       <a-layout-content>
         <div class="content-body padding-lr-sm">
           <a-form-model layout="vertical" :model="form" ref="createForm" :rules="rules">
-            <a-form-model-item label="上传" prop="url">
+            <template v-for="(item, index) in fields">
+              <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
+                <a-input v-model="form[item.name]" :placeholder="'请输入' + item.zh_name" />
+              </a-form-model-item>
+            </template>
+            <!-- <a-form-model-item label="上传" prop="url">
               <area-upload :data="{ id: 1 }"></area-upload>
             </a-form-model-item>
             <a-form-model-item label="API ID" prop="name">
@@ -26,7 +31,7 @@
             </a-form-model-item>
             <a-form-model-item label="描述" prop="description">
               <a-input v-model="form.description" type="textarea" placeholder="请输入描述" />
-            </a-form-model-item>
+            </a-form-model-item> -->
           </a-form-model>
         </div>
       </a-layout-content>
@@ -36,8 +41,8 @@
       :style="{ overflow: 'auto', height: '100vh', position: 'fixed', right: 0, backgroundColor: 'rgb(250, 250, 252)' }"
     >
       <div>
-        <a-button type="primary" class="margin-right-xs">保存</a-button>
-        <a-button type="danger">保存并发布</a-button>
+        <a-button type="primary" class="margin-right-xs" @click="submit">保存</a-button>
+        <a-button type="danger" @click="submit">保存并发布</a-button>
       </div>
       <div class="text-df margin-tb">
         <div class="margin-bottom-xs">信息</div>
@@ -69,7 +74,12 @@
 </template>
 
 <script>
-import { AreaUpload } from '@/components'
+// import { AreaUpload } from '@/components'
+import { userFields } from '@/graphql/field.graphql'
+import { formatGraphErr } from '@/utils/util'
+import store from '@/store'
+import api from '@/config/api'
+import gql from 'graphql-tag'
 
 export default {
   name: 'UpdateContent',
@@ -80,39 +90,97 @@ export default {
         return {}
       }
     },
+    custom: {},
     model: {
       type: String,
       required: true
     }
   },
-  components: {
-    AreaUpload
-  },
+  // components: {
+  //   AreaUpload
+  // },
   data() {
     return {
       form: {},
-      rules: {
-        url: [{ required: true, message: '请输入展示名称', trigger: 'blur' }],
-        name: [{ required: true, message: '请输入 API ID', trigger: 'blur' }],
-        plural_name: [{ required: true, message: '请输入 API ID 的复数形式', trigger: 'blur' }]
-      }
+      fields: [],
+      fieldNames: [],
+      rules: {}
     }
   },
   computed: {},
-  mounted() {},
+  mounted() {
+    this.getFieldList()
+  },
   methods: {
     cancel() {
       this.$emit('cancel')
     },
     submit() {
+      let self = this
       this.$refs.createForm.validate(valid => {
         if (valid) {
-          // alert('submit!')
+          let data = {}
+          self.fields.forEach(item => {
+            data[item.name] = self.form[item.name]
+          })
+          let apiName = 'userCreate' + self.custom.name
+          self.$apollo
+            .mutate({
+              mutation: gql`mutation ${apiName} ($data: ${self.custom.name}Input!) { 
+                ${apiName} (data: $data) {
+                  ${self.fieldNames.join(',')}
+                }
+              }`,
+              variables: {
+                data: data
+              },
+              fetchPolicy: 'no-cache',
+              context: {
+                uri: api.projectUri + store.state.common.currentProject.id
+              }
+            })
+            .then(() => {
+              this.$emit('cancel')
+            })
+            .catch(err => {
+              this.$message.warning(formatGraphErr(err.message))
+            })
         } else {
-          // console.log('error submit!!')
           return false
         }
       })
+    },
+    getFieldList() {
+      let self = this
+      self.$apollo
+        .query({
+          query: userFields,
+          variables: {
+            more: {
+              custom_id: self.custom.id
+            }
+          },
+          fetchPolicy: 'no-cache'
+        })
+        .then(data => {
+          let customs = data.data.userFields.items
+          let items = []
+          let itemNames = []
+          let rules = {}
+          customs.forEach(element => {
+            items.push(element)
+            itemNames.push(element.name)
+            if (element.is_required) {
+              rules[element.name] = [{ required: true, message: '请输入' + element.zh_name, trigger: 'blur' }]
+            }
+          })
+          self.rules = rules
+          self.fields = items
+          self.fieldNames = itemNames
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
     }
   }
 }

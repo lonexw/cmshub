@@ -15,6 +15,7 @@
     <a-table
       class="content-table"
       size="middle"
+      v-if="data.length > 0"
       rowKey="id"
       :rowSelection="rowSelection"
       :columns="columns"

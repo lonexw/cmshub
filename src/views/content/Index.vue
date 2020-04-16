@@ -7,9 +7,15 @@
         </a-menu-item>
       </a-menu>
     </template>
-    <template v-slot:content v-if="show_list">
+    <template v-slot:content>
       <contents v-if="show_list" @update="update" :custom="selectCustom"></contents>
-      <!-- <update-content :data="content" model="Admin" v-show="show_update" @cancel="cancelUpdate"></update-content> -->
+      <update-content
+        :data="content"
+        :custom="selectCustom"
+        model="Admin"
+        v-if="show_update"
+        @cancel="cancelUpdate"
+      ></update-content>
     </template>
   </base-page>
 </template>
@@ -17,13 +23,13 @@
 <script>
 import { BasePage } from '@/components'
 import Contents from './components/Contents'
-// import UpdateContent from './components/UpdateContent'
+import UpdateContent from './components/UpdateContent'
 import { userCustoms } from '@/graphql/custom.graphql'
 import { formatGraphErr } from '@/utils/util'
 
 export default {
   components: {
-    // UpdateContent,
+    UpdateContent,
     Contents,
     BasePage
   },
@@ -51,7 +57,6 @@ export default {
   },
   methods: {
     getCustomList() {
-      console.log(1)
       let self = this
       self.$apollo
         .query({
@@ -81,16 +86,20 @@ export default {
       let self = this
       setTimeout(function() {
         self.selectCustom = self.customs[item.key]
-        self.show_list = self
+        self.show_list = true
       }, 100)
     },
     cancelUpdate() {
       this.show_update = false
+      this.show_list = true
     },
     update(item) {
       this.show_list = false
       this.content = item || {}
-      this.show_update = true
+      let self = this
+      setTimeout(function() {
+        self.show_update = true
+      }, 100)
     }
   }
 }
