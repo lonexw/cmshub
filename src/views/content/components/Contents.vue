@@ -1,7 +1,7 @@
 <template>
   <div class="relative">
     <header class="padding-lr-sm padding-tb-xs flex align-center justify-between solid-bottom line-grey">
-      <bg-tag :active="true">Admin</bg-tag>
+      <bg-tag :active="true">{{ custom ? custom.name : '' }}</bg-tag>
       <a-button type="primary" @click="add"> <a-icon type="plus" />新增 </a-button>
     </header>
     <div class="flex align-center padding-lr-sm solid-bottom line-grey" style="height: 36px;">
@@ -35,7 +35,7 @@
         @showSizeChange="showSizeChange"
       />
     </div>
-    <a-empty class="empty-content" />
+    <a-empty class="empty-content" v-if="data.length == 0" />
   </div>
 </template>
 
