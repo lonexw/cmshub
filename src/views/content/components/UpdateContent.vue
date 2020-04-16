@@ -10,9 +10,16 @@
         <div class="content-body padding-lr-sm">
           <a-form-model layout="vertical" :model="form" ref="createForm" :rules="rules">
             <template v-for="(item, index) in fields">
-              <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
-                <a-input v-model="form[item.name]" :placeholder="'请输入' + item.zh_name" />
-              </a-form-model-item>
+              <template v-if="item.type == 'SINGLE_TEXT'">
+                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
+                  <a-input v-model="form[item.name]" :placeholder="'请输入' + item.zh_name" />
+                </a-form-model-item>
+              </template>
+              <template v-else-if="item.type == 'MULTI_TEXT'">
+                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
+                  <a-input v-model="form[item.name]" type="textarea" :placeholder="'请输入' + item.zh_name" />
+                </a-form-model-item>
+              </template>
             </template>
             <!-- <a-form-model-item label="上传" prop="url">
               <area-upload :data="{ id: 1 }"></area-upload>

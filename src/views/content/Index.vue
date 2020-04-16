@@ -83,6 +83,7 @@ export default {
     menuClick(item) {
       this.selectCustom = null
       this.show_list = false
+      this.show_update = false
       let self = this
       setTimeout(function() {
         self.selectCustom = self.customs[item.key]
