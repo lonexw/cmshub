@@ -15,6 +15,7 @@
     <a-table
       class="content-table"
       size="middle"
+      rowKey="id"
       :rowSelection="rowSelection"
       :columns="columns"
       :dataSource="data"
@@ -26,7 +27,7 @@
       <a-pagination
         showSizeChanger
         showQuickJumper
-        :total="85"
+        :total="total"
         :showTotal="total => `共 ${total} 条`"
         :pageSize="search.paginator.limit"
         :defaultCurrent="1"
@@ -42,6 +43,9 @@
 import { BgTag } from '@/components'
 import { userFields } from '@/graphql/field.graphql'
 import { formatGraphErr } from '@/utils/util'
+import store from '@/store'
+import api from '@/config/api'
+import gql from 'graphql-tag'
 
 export default {
   name: 'Contents',
@@ -52,24 +56,6 @@ export default {
     BgTag
   },
   data() {
-    const columns = [
-      {
-        title: 'Name',
-        dataIndex: 'name',
-        scopedSlots: { customRender: 'name' }
-      },
-      {
-        title: 'Cash Assets',
-        className: 'column-money',
-        dataIndex: 'money'
-      },
-      {
-        title: 'Address',
-        dataIndex: 'address'
-      }
-    ]
-
-    const data = []
     const rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
@@ -84,9 +70,10 @@ export default {
     }
     return {
       rowSelection,
-      columns,
-      data,
+      columns: [],
+      data: [],
       fields: [],
+      fieldNames: [],
       select_num: 0,
       show_create: false,
       total: 30,
@@ -98,9 +85,7 @@ export default {
       }
     }
   },
-  created() {
-    console.log(2)
-  },
+  created() {},
   computed: {},
   mounted() {
     this.getFieldList()
@@ -113,7 +98,6 @@ export default {
       this.search.paginator.limit = size
     },
     getFieldList() {
-      console.log(1)
       let self = this
       self.$apollo
         .query({
@@ -128,15 +112,55 @@ export default {
         .then(data => {
           let customs = data.data.userFields.items
           let items = []
+          let itemNames = []
+          let columns = []
           customs.forEach(element => {
-            items.push(element)
+            if (element.name != '__typename') {
+              items.push(element)
+              columns.push({
+                title: element.zh_name,
+                dataIndex: element.name
+              })
+              itemNames.push(element.name)
+            }
           })
           self.fields = items
+          self.columns = columns
+          self.fieldNames = itemNames
+          this.getContentList()
         })
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
         })
     },
+    getContentList() {
+      this.data = []
+      let self = this
+      let apiName = 'user' + self.custom.plural_name
+      self.$apollo
+        .query({
+          query: gql`query ${apiName} ($paginator: PaginatorInput, $more: ${self.custom.name}PaginatorInput) { 
+            ${apiName} (paginator: $paginator, more: $more) { 
+            items { 
+              ${self.fieldNames.join(',')}
+            },
+            cursor { total } 
+            }
+          }`,
+          variables: self.search,
+          fetchPolicy: 'no-cache',
+          context: {
+            uri: api.projectUri + store.state.common.currentProject.id
+          }
+        })
+        .then(data => {
+          self.data = data.data[apiName].items
+          self.total = data.data[apiName].cursor.total
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
+    }
   }
 }
 </script>

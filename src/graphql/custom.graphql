@@ -3,7 +3,8 @@ query userCustoms {
     items {
       id,
       name,
-      zh_name
+      zh_name,
+      plural_name
     },
     cursor {
       total

@@ -63,9 +63,11 @@ export default {
           let customs = data.data.userCustoms.items
           let items = []
           customs.forEach(element => {
-            items.push(Object.assign(element, {
-              active: false
-            }))
+            items.push(
+              Object.assign(element, {
+                active: false
+              })
+            )
           })
           self.customs = items
         })
@@ -77,11 +79,10 @@ export default {
       this.selectCustom = null
       this.show_list = false
       let self = this
-      setTimeout(function () {
+      setTimeout(function() {
         self.selectCustom = self.customs[item.key]
         self.show_list = self
       }, 100)
-      
     },
     cancelUpdate() {
       this.show_update = false
