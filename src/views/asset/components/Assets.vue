@@ -20,6 +20,7 @@
       class="content-table"
       size="middle"
       rowKey="id"
+      v-if="data.length > 0"
       :rowSelection="rowSelection"
       :columns="columns"
       :dataSource="data"

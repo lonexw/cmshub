@@ -99,6 +99,7 @@ export default {
       this.search.paginator.limit = size
     },
     getFieldList() {
+      this.data = []
       let self = this
       self.$apollo
         .query({
@@ -143,6 +144,7 @@ export default {
           query: gql`query ${apiName} ($paginator: PaginatorInput, $more: ${self.custom.name}PaginatorInput) { 
             ${apiName} (paginator: $paginator, more: $more) { 
             items { 
+              id,
               ${self.fieldNames.join(',')}
             },
             cursor { total } 

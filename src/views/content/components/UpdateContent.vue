@@ -20,6 +20,11 @@
                   <a-input v-model="form[item.name]" type="textarea" :placeholder="'请输入' + item.zh_name" />
                 </a-form-model-item>
               </template>
+              <template v-else-if="item.type == 'RICH_TEXT'">
+                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
+                  <WangEditor v-model="form[item.name]" @change="richValueChange" :name="item.name"></WangEditor>
+                </a-form-model-item>
+              </template>
             </template>
             <!-- <a-form-model-item label="上传" prop="url">
               <area-upload :data="{ id: 1 }"></area-upload>
@@ -81,7 +86,8 @@
 </template>
 
 <script>
-// import { AreaUpload } from '@/components'
+/* eslint-disable */
+import { AreaUpload, WangEditor } from '@/components'
 import { userFields } from '@/graphql/field.graphql'
 import { formatGraphErr } from '@/utils/util'
 import store from '@/store'
@@ -103,9 +109,9 @@ export default {
       required: true
     }
   },
-  // components: {
-  //   AreaUpload
-  // },
+  components: {
+    AreaUpload, WangEditor
+  },
   data() {
     return {
       form: {},
@@ -127,9 +133,11 @@ export default {
       this.$refs.createForm.validate(valid => {
         if (valid) {
           let data = {}
+          console.log(self.form)
           self.fields.forEach(item => {
             data[item.name] = self.form[item.name]
           })
+          console.log(data)
           let apiName = 'userCreate' + self.custom.name
           self.$apollo
             .mutate({
@@ -188,6 +196,11 @@ export default {
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
         })
+    },
+    richValueChange(values) {
+      let value = values[0]
+      let name = values[1]
+      this.form[name] = value
     }
   }
 }
