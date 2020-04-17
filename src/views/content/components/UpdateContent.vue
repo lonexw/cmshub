@@ -25,25 +25,15 @@
                   <WangEditor v-model="form[item.name]" @change="richValueChange" :name="item.name"></WangEditor>
                 </a-form-model-item>
               </template>
+              <template v-else-if="item.type == 'ASSET'">
+                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
+                  <div v-for="(itemAsset, index) in form[item.name]" :key="index">
+                    <tag closable @close="removeAsset(itemAsset, item.name)">{{ itemAsset.name }}</tag>
+                  </div>
+                  <a-button @click="showAssetDialog(item)">选择</a-button>
+                </a-form-model-item>
+              </template>
             </template>
-            <!-- <a-form-model-item label="上传" prop="url">
-              <area-upload :data="{ id: 1 }"></area-upload>
-            </a-form-model-item>
-            <a-form-model-item label="API ID" prop="name">
-              <div class="text-sm text-gray margin-bottom-xs">
-                用于通过 API 访问此模型的 ID（字母、数字、下划线，字母开头）
-              </div>
-              <a-input v-model="form.name" placeholder="请输入 API ID" />
-            </a-form-model-item>
-            <a-form-model-item label="API ID 复数形式" prop="plural_name">
-              <div class="text-sm text-gray margin-bottom-xs">
-                API ID 复数形式（字母、数字、下划线，字母开头）
-              </div>
-              <a-input v-model="form.name" placeholder="API ID 复数形式" />
-            </a-form-model-item>
-            <a-form-model-item label="描述" prop="description">
-              <a-input v-model="form.description" type="textarea" placeholder="请输入描述" />
-            </a-form-model-item> -->
           </a-form-model>
         </div>
       </a-layout-content>
@@ -82,6 +72,23 @@
         </div>
       </div>
     </a-layout-sider>
+    <a-modal
+      :maskClosable="false"
+      :width="assetModal.width"
+      :title="assetModal.title"
+      :visible="assetModal.visible"
+      @cancel="closeAssetDialog"
+      :footer="null"
+    >
+      <asset-picker
+        @selectChange="assetSelectChange"
+        :form-name="assetModal.item.name"
+        :is-mutiple="assetModal.item.is_mutiple"
+      ></asset-picker>
+      <div style="text-align: right;">
+        <a-button @click="closeAssetDialog" class="margin-right-sm">关闭</a-button>
+      </div>
+    </a-modal>
   </a-layout>
 </template>
 
@@ -93,6 +100,8 @@ import { formatGraphErr } from '@/utils/util'
 import store from '@/store'
 import api from '@/config/api'
 import gql from 'graphql-tag'
+import AssetPicker from '@/views/asset/components/AssetPicker'
+import { Tag } from 'ant-design-vue'
 
 export default {
   name: 'UpdateContent',
@@ -110,14 +119,24 @@ export default {
     }
   },
   components: {
-    AreaUpload, WangEditor
+    AreaUpload, WangEditor, AssetPicker, Tag
   },
   data() {
     return {
       form: {},
       fields: [],
       fieldNames: [],
-      rules: {}
+      rules: {},
+      loading: true,
+      loadingMore: false,
+      showLoadingMore: true,
+      assetData: [],
+      assetModal: {
+        title: '选择关联附件',
+        visible: false,
+        width: '80%',
+        item: {}
+      },
     }
   },
   computed: {},
@@ -135,9 +154,20 @@ export default {
           let data = {}
           console.log(self.form)
           self.fields.forEach(item => {
-            data[item.name] = self.form[item.name]
+            if (item.type == 'ASSET') {
+              let assetItems = []
+              if (item.is_mutiple) {
+                self.form[item.name].forEach(assetItem => {
+                  assetItems.push(assetItem.id)
+                })
+                data[item.name] = assetItems
+              } else {
+                data[item.name] = self.form[item.name].length > 0 ? self.form[item.name][0].id : ''
+              }
+            } else {
+              data[item.name] = self.form[item.name]
+            }
           })
-          console.log(data)
           let apiName = 'userCreate' + self.custom.name
           self.$apollo
             .mutate({
@@ -201,6 +231,39 @@ export default {
       let value = values[0]
       let name = values[1]
       this.form[name] = value
+    },
+    showAssetDialog(item) {
+      this.assetModal.item = item
+      this.assetModal.visible = true
+    },
+    closeAssetDialog() {
+      this.assetModal.visible = false
+    },
+    assetSelectChange(value, name, is_mutiple) {
+      if (is_mutiple) {
+        let data = []
+        let isExist = false
+        this.form[name].forEach(item => {
+          if (item.id == value.id) {
+            isExist = true
+          }
+        })
+        if (!isExist) {
+          this.form[name].push(value)
+        }
+      } else {
+        this.form[name] = [value]
+        this.closeAssetDialog()
+      }
+    },
+    removeAsset(item, name) {
+      let data = []
+      this.form[name].forEach(formItem => {
+        if (formItem.id != item.id) {
+          data.push(formItem)
+        }
+      })
+      this.form[name] = data
     }
   }
 }

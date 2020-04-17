@@ -47,6 +47,8 @@ import { formatGraphErr } from '@/utils/util'
 import store from '@/store'
 import api from '@/config/api'
 import gql from 'graphql-tag'
+/* eslint-disable */
+import PreviewImage from '@/components/PreviewImage'
 
 export default {
   name: 'Contents',
@@ -54,7 +56,7 @@ export default {
     custom: {}
   },
   components: {
-    BgTag
+    BgTag, PreviewImage
   },
   data() {
     const rowSelection = {
@@ -119,10 +121,39 @@ export default {
           customs.forEach(element => {
             if (element.name != '__typename') {
               items.push(element)
-              columns.push({
-                title: element.zh_name,
-                dataIndex: element.name
-              })
+              if (element.type == 'ASSET') {
+                columns.push({
+                  title: element.zh_name,
+                  dataIndex: element.name,
+                  customRender: (text, record) => {
+                    if (element.is_mutiple) {
+                      let assets = null
+                      record[element.name + 'Asset'].forEach(assetItem => {
+                        if (assetItem) {
+                          assets += <img src={assetItem.url} />
+                        }
+                      })
+                      return assets
+                    } else {
+                      let data = record[element.name + 'Asset']
+                      if (data) {
+                        let url = record[element.name + 'Asset'].url
+                        if (record[element.name + 'Asset'].type.indexOf('image') > -1) {
+                          // return <img src={url} />
+                          return <preview-image src={url} height="30px"></preview-image>
+                        }
+                        return url
+                      }
+                      return ''
+                    }
+                  }
+                })
+              } else {
+                columns.push({
+                  title: element.zh_name,
+                  dataIndex: element.name
+                })
+              }
               itemNames.push(element.name)
             }
           })
@@ -139,13 +170,27 @@ export default {
       this.data = []
       let self = this
       let apiName = 'user' + self.custom.plural_name
+      let fieldFormat = 'id'
+      self.fields.forEach(item => {
+        fieldFormat += `,${item.name}`
+        if (item.type == 'ASSET') {
+          fieldFormat += `,${item.name}Asset {
+            created_at,
+            updated_at,
+            id,
+            name,
+            url,
+            type
+          }`
+        }
+      })
+
       self.$apollo
         .query({
           query: gql`query ${apiName} ($paginator: PaginatorInput, $more: ${self.custom.name}PaginatorInput) { 
             ${apiName} (paginator: $paginator, more: $more) { 
             items { 
-              id,
-              ${self.fieldNames.join(',')}
+              ${fieldFormat}
             },
             cursor { total } 
             }
