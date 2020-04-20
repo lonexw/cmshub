@@ -183,7 +183,7 @@ export default {
           let data = {}
           console.log(self.form)
           self.fields.forEach(item => {
-            if (item.type == 'ASSET') {
+            if (item.type == 'ASSET' || item.type == 'REFERENCE') {
               let assetItems = []
               if (item.is_mutiple) {
                 self.form[item.name].forEach(assetItem => {
