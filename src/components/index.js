@@ -6,5 +6,17 @@ import BModal from '@/components/bModal'
 import { AreaUpload, BatchUpload } from '@/components/upload'
 import PreviewImage from '@/components/PreviewImage'
 import WangEditor from '@/components/Editor/WangEditor'
+import ReferencePicker from '@/components/ReferencePicker'
 
-export { ExceptionPage, BasePage, BgTag, AreaUpload, BatchUpload, Preview, PreviewImage, BModal, WangEditor }
+export {
+  ExceptionPage,
+  BasePage,
+  BgTag,
+  AreaUpload,
+  BatchUpload,
+  Preview,
+  PreviewImage,
+  BModal,
+  WangEditor,
+  ReferencePicker
+}

@@ -6,7 +6,8 @@ query userFields($paginator: PaginatorInput,
       name,
       zh_name,
       type,
-      is_required
+      is_required,
+      reference_custom_id
     },
     cursor {
       total

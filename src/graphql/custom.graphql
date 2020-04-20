@@ -11,3 +11,12 @@ query userCustoms {
     }
   }
 }
+
+query userCustom ($id: Int!) {
+  userCustom (id: $id) {
+    id,
+    name,
+    zh_name,
+    plural_name
+  }
+}

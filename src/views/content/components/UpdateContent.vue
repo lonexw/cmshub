@@ -33,6 +33,14 @@
                   <a-button @click="showAssetDialog(item)">选择</a-button>
                 </a-form-model-item>
               </template>
+              <template v-else-if="item.type == 'REFERENCE'">
+                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
+                  <div v-for="(itemReference, index) in form[item.name]" :key="index">
+                    <tag closable @close="removeAsset(itemReference, item.name)">{{ itemReference.name }}</tag>
+                  </div>
+                  <a-button @click="showReferenceDialog(item)">选择</a-button>
+                </a-form-model-item>
+              </template>
             </template>
           </a-form-model>
         </div>
@@ -89,6 +97,24 @@
         <a-button @click="closeAssetDialog" class="margin-right-sm">关闭</a-button>
       </div>
     </a-modal>
+    <a-modal
+      :maskClosable="false"
+      :width="referenceModal.width"
+      :title="referenceModal.title"
+      :visible="referenceModal.visible"
+      @cancel="closeReferenceDialog"
+      :footer="null"
+    >
+      <reference-picker
+        @selectChange="referenceSelectChange"
+        :form-name="referenceModal.item.name"
+        :is-mutiple="referenceModal.item.is_mutiple"
+        :custom-id="referenceModal.item.reference_custom_id"
+      ></reference-picker>
+      <div style="text-align: right;">
+        <a-button @click="closeReferenceDialog" class="margin-right-sm">关闭</a-button>
+      </div>
+    </a-modal>
   </a-layout>
 </template>
 
@@ -101,6 +127,7 @@ import store from '@/store'
 import api from '@/config/api'
 import gql from 'graphql-tag'
 import AssetPicker from '@/views/asset/components/AssetPicker'
+import { ReferencePicker } from '@/components'
 import { Tag } from 'ant-design-vue'
 
 export default {
@@ -119,7 +146,7 @@ export default {
     }
   },
   components: {
-    AreaUpload, WangEditor, AssetPicker, Tag
+    AreaUpload, WangEditor, AssetPicker, Tag, ReferencePicker
   },
   data() {
     return {
@@ -127,16 +154,18 @@ export default {
       fields: [],
       fieldNames: [],
       rules: {},
-      loading: true,
-      loadingMore: false,
-      showLoadingMore: true,
-      assetData: [],
       assetModal: {
         title: '选择关联附件',
         visible: false,
         width: '80%',
         item: {}
       },
+      referenceModal: {
+        title: '选择关联表',
+        visible: false,
+        width: '80%',
+        item: {}
+      }
     }
   },
   computed: {},
@@ -264,6 +293,31 @@ export default {
         }
       })
       this.form[name] = data
+    },
+    showReferenceDialog(item) {
+      this.referenceModal.item = item
+      this.referenceModal.visible = true
+    },
+    closeReferenceDialog() {
+      this.referenceModal.visible = false
+    },
+    referenceSelectChange(value, name, is_mutiple) {
+      console.log(value, name, is_mutiple)
+      if (is_mutiple) {
+        let data = []
+        let isExist = false
+        this.form[name].forEach(item => {
+          if (item.id == value.id) {
+            isExist = true
+          }
+        })
+        if (!isExist) {
+          this.form[name].push(value)
+        }
+      } else {
+        this.form[name] = [value]
+        this.closeReferenceDialog()
+      }
     }
   }
 }
