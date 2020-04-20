@@ -1,23 +1,10 @@
 <template>
   <div class="relative">
-    <header class="padding-lr-sm padding-tb-xs flex align-center justify-between solid-bottom line-grey">
-      <bg-tag :active="true">{{ custom ? custom.name : '' }}</bg-tag>
-      <a-button type="primary" @click="add"> <a-icon type="plus" />新增 </a-button>
-    </header>
-    <div class="flex align-center padding-lr-sm solid-bottom line-grey" style="height: 36px;">
-      <span class="margin-right-sm">{{ select_num }} 选中</span>
-      <div class="flex" v-show="select_num > 0">
-        <bg-tag class="text-red"> <a-icon type="delete" class="margin-right-xxs" /> 删除 </bg-tag>
-        <bg-tag class="text-green"> <a-icon type="up-square" class="margin-right-xxs" /> 发布 </bg-tag>
-        <bg-tag class="text-yellow"> <a-icon type="close-square" class="margin-right-xxs" /> 不发布 </bg-tag>
-      </div>
-    </div>
     <a-table
       class="content-table"
       size="middle"
       v-if="data.length > 0"
       rowKey="id"
-      :rowSelection="rowSelection"
       :columns="columns"
       :dataSource="data"
       :pagination="false"
@@ -37,29 +24,13 @@
       />
     </div>
     <a-empty class="empty-content" v-if="data.length == 0" />
-    <a-modal
-      :maskClosable="false"
-      :width="referenceModal.width"
-      :title="referenceModal.title"
-      :visible="referenceModal.visible"
-      @cancel="closeReferenceDialog"
-      :footer="null"
-    >
-      <ContentShow
-        :custom-id="referenceModal.field.reference_custom_id"
-        :ids="referenceModal.ids"
-        v-if="referenceModal.visible"
-      ></ContentShow>
-      <div style="text-align: right;">
-        <a-button @click="closeReferenceDialog" class="margin-right-sm">关闭</a-button>
-      </div>
-    </a-modal>
   </div>
 </template>
 
 <script>
-import { BgTag, ContentShow } from '@/components'
+import { BgTag } from '@/components'
 import { userFields } from '@/graphql/field.graphql'
+import { userCustom } from '@/graphql/custom.graphql'
 import { formatGraphErr } from '@/utils/util'
 import store from '@/store'
 import api from '@/config/api'
@@ -68,30 +39,22 @@ import gql from 'graphql-tag'
 import PreviewImage from '@/components/PreviewImage'
 
 export default {
-  name: 'Contents',
+  name: 'ContentShow',
   props: {
-    custom: {}
+    customId: {},
+    ids: {
+      type: Array,
+      default: []
+    }
   },
   components: {
-    BgTag, PreviewImage, ContentShow
+    BgTag, PreviewImage
   },
   data() {
-    const rowSelection = {
-      onChange: (selectedRowKeys, selectedRows) => {
-        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
-        this.select_num = selectedRows.length
-      },
-      onSelect: (record, selected, selectedRows) => {
-        console.log(record, selected, selectedRows)
-      },
-      onSelectAll: (selected, selectedRows, changeRows) => {
-        console.log(selected, selectedRows, changeRows)
-      }
-    }
     return {
-      rowSelection,
       columns: [],
       data: [],
+      custom: {},
       fields: [],
       fieldNames: [],
       select_num: 0,
@@ -102,24 +65,16 @@ export default {
           page: 1,
           limit: 30
         }
-      },
-      referenceModal: {
-        title: '关联信息',
-        visible: false,
-        width: '80%',
-        item: {},
-        field: {},
-        data: [],
-        fields: [],
-        fieldNames: [],
-        ids: []
       }
     }
   },
   created() {},
   computed: {},
   mounted() {
-    this.getFieldList()
+    this.search.more = {
+      ids: this.ids
+    }
+    this.getCustom()
   },
   methods: {
     add() {
@@ -127,6 +82,25 @@ export default {
     },
     showSizeChange(current, size) {
       this.search.paginator.limit = size
+    },
+    getCustom() {
+      let self = this
+      self.$apollo
+        .query({
+          query: userCustom,
+          variables: {
+            id: self.customId
+          },
+          fetchPolicy: 'no-cache'
+        })
+        .then(data => {
+          let custom = data.data.userCustom
+          self.custom = custom
+          this.getFieldList()
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
     },
     getFieldList() {
       this.data = []
@@ -136,7 +110,7 @@ export default {
           query: userFields,
           variables: {
             more: {
-              custom_id: self.custom.id
+              custom_id: self.customId
             }
           },
           fetchPolicy: 'no-cache'
@@ -184,11 +158,6 @@ export default {
                     let child = self.$createElement("a", {
                       domProps: {
                         innerHTML: text
-                      },
-                      on: {
-                        click: function () {
-                          self.showReferenceDialog(record, element, text)
-                        }
                       }
                     })
                     return child
@@ -230,7 +199,6 @@ export default {
           }`
         }
       })
-
       self.$apollo
         .query({
           query: gql`query ${apiName} ($paginator: PaginatorInput, $more: ${self.custom.name}PaginatorInput) { 
@@ -254,19 +222,6 @@ export default {
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
         })
-    },
-    showReferenceDialog(item, field, text) {
-      this.referenceModal.item = item
-      this.referenceModal.field = field
-      if (typeof text === 'string') {
-        this.referenceModal.ids = [text]
-      } else {
-        this.referenceModal.ids = text
-      }
-      this.referenceModal.visible = true
-    },
-    closeReferenceDialog() {
-      this.referenceModal.visible = false
     }
   }
 }

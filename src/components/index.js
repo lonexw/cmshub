@@ -7,6 +7,7 @@ import { AreaUpload, BatchUpload } from '@/components/upload'
 import PreviewImage from '@/components/PreviewImage'
 import WangEditor from '@/components/Editor/WangEditor'
 import ReferencePicker from '@/components/ReferencePicker'
+import ContentShow from '@/components/ContentShow'
 
 export {
   ExceptionPage,
@@ -18,5 +19,6 @@ export {
   PreviewImage,
   BModal,
   WangEditor,
-  ReferencePicker
+  ReferencePicker,
+  ContentShow
 }
