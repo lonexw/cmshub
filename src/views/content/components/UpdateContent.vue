@@ -91,7 +91,7 @@
       <asset-picker
         @selectChange="assetSelectChange"
         :form-name="assetModal.item.name"
-        :is-mutiple="assetModal.item.is_mutiple"
+        :is-multiple="assetModal.item.is_multiple"
       ></asset-picker>
       <div style="text-align: right;">
         <a-button @click="closeAssetDialog" class="margin-right-sm">关闭</a-button>
@@ -108,7 +108,7 @@
       <reference-picker
         @selectChange="referenceSelectChange"
         :form-name="referenceModal.item.name"
-        :is-mutiple="referenceModal.item.is_mutiple"
+        :is-multiple="referenceModal.item.is_multiple"
         :custom-id="referenceModal.item.reference_custom_id"
       ></reference-picker>
       <div style="text-align: right;">
@@ -181,11 +181,10 @@ export default {
       this.$refs.createForm.validate(valid => {
         if (valid) {
           let data = {}
-          console.log(self.form)
           self.fields.forEach(item => {
             if (item.type == 'ASSET' || item.type == 'REFERENCE') {
               let assetItems = []
-              if (item.is_mutiple) {
+              if (item.is_multiple) {
                 self.form[item.name].forEach(assetItem => {
                   assetItems.push(assetItem.id)
                 })
@@ -268,22 +267,8 @@ export default {
     closeAssetDialog() {
       this.assetModal.visible = false
     },
-    assetSelectChange(value, name, is_mutiple) {
-      if (is_mutiple) {
-        let data = []
-        let isExist = false
-        this.form[name].forEach(item => {
-          if (item.id == value.id) {
-            isExist = true
-          }
-        })
-        if (!isExist) {
-          this.form[name].push(value)
-        }
-      } else {
-        this.form[name] = [value]
-        this.closeAssetDialog()
-      }
+    assetSelectChange(value, name, is_multiple) {
+      this.selectChange('asset', value, name, is_multiple)
     },
     removeAsset(item, name) {
       let data = []
@@ -301,23 +286,35 @@ export default {
     closeReferenceDialog() {
       this.referenceModal.visible = false
     },
-    referenceSelectChange(value, name, is_mutiple) {
-      console.log(value, name, is_mutiple)
-      if (is_mutiple) {
+    selectChange(type, value, name, is_multiple) {
+      if (is_multiple) {
         let data = []
         let isExist = false
-        this.form[name].forEach(item => {
-          if (item.id == value.id) {
-            isExist = true
-          }
-        })
+        if (this.form[name] && this.form[name].length > 0) {
+          this.form[name].forEach(item => {
+            if (item.id == value.id) {
+              isExist = true
+            }
+          })
+        }
         if (!isExist) {
-          this.form[name].push(value)
+          if (this.form[name] && this.form[name].length > 0) {
+            this.form[name].push(value)
+          } else {
+            this.form[name] = [value]
+          }
         }
       } else {
         this.form[name] = [value]
-        this.closeReferenceDialog()
+        if (type == 'asset') {
+          this.closeAssetDialog()
+        } else {
+          this.closeReferenceDialog()
+        }
       }
+    },
+    referenceSelectChange(value, name, is_multiple) {
+      this.selectChange('reference', value, name, is_multiple)
     }
   }
 }

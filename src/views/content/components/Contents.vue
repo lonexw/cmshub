@@ -126,7 +126,7 @@ export default {
                   title: element.zh_name,
                   dataIndex: element.name,
                   customRender: (text, record) => {
-                    if (element.is_mutiple) {
+                    if (element.is_multiple) {
                       let assets = null
                       record[element.name + 'Asset'].forEach(assetItem => {
                         if (assetItem) {

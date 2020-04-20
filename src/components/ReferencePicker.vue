@@ -55,7 +55,7 @@ export default {
       type: String,
       default: ''
     },
-    isMutiple: {
+    isMultiple: {
       type: Boolean,
       default: false
     },
@@ -95,7 +95,7 @@ export default {
       this.search.paginator.limit = size
     },
     selectItem(record) {
-      this.$emit('selectChange', record, this.formName, this.isMutiple)
+      this.$emit('selectChange', record, this.formName, this.isMultiple)
     },
     getCustom() {
       let self = this
@@ -144,7 +144,7 @@ export default {
                   title: element.zh_name,
                   dataIndex: element.name,
                   customRender: (text, record) => {
-                    if (element.is_mutiple) {
+                    if (element.is_multiple) {
                       let assets = null
                       record[element.name + 'Asset'].forEach(assetItem => {
                         if (assetItem) {

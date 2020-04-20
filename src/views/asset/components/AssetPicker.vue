@@ -52,7 +52,7 @@ export default {
       type: String,
       default: ''
     },
-    isMutiple: {
+    isMultiple: {
       type: Boolean,
       default: false
     }
@@ -94,7 +94,7 @@ export default {
       },
       onSelect: (record, selected, selectedRows) => {
         console.log(record, selected, selectedRows)
-        this.$emit('selectChange', record, this.formName, this.isMutiple)
+        this.$emit('selectChange', record, this.formName, this.isMultiple)
       },
       onSelectAll: (selected, selectedRows, changeRows) => {
         console.log(selected, selectedRows, changeRows)
@@ -143,7 +143,7 @@ export default {
         })
     },
     selectItem(record) {
-      this.$emit('selectChange', record, this.formName, this.isMutiple)
+      this.$emit('selectChange', record, this.formName, this.isMultiple)
     }
   }
 }
