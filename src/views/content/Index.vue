@@ -61,7 +61,11 @@ export default {
       self.$apollo
         .query({
           query: userCustoms,
-          variables: {},
+          variables: {
+            paginator: {
+              limit: 50
+            }
+          },
           fetchPolicy: 'no-cache'
         })
         .then(data => {
@@ -109,5 +113,9 @@ export default {
 .models {
   transition: all 0.2s ease-in-out;
   overflow: hidden;
+}
+.ant-menu {
+  height: calc(~"100vh - 100px");
+  overflow-y: auto;
 }
 </style>

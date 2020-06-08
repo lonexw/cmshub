@@ -1,5 +1,5 @@
-query userCustoms {
-  userCustoms {
+query userCustoms ($paginator: PaginatorInput, $more: CustomPaginatorInput) {
+  userCustoms (paginator: $paginator, more: $more) {
     items {
       id,
       name,
