@@ -35,8 +35,8 @@
               </template>
               <template v-else-if="item.type == 'REFERENCE'">
                 <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
-                  <div v-for="(itemReference, index) in form[item.name]" :key="index">
-                    <tag closable @close="removeAsset(itemReference, item.name)">{{ itemReference.name }}</tag>
+                  <div v-for="(itemReference, index) in form[item.name + 'Reference']" :key="index">
+                    <tag closable @close="removeReference(itemReference, item.name)">{{ itemReference.title }}</tag>
                   </div>
                   <a-button @click="showReferenceDialog(item)">选择</a-button>
                 </a-form-model-item>
@@ -190,9 +190,11 @@ export default {
             if (item.type == 'ASSET' || item.type == 'REFERENCE') {
               let assetItems = []
               if (item.is_multiple) {
-                self.form[item.name + self.typeTexts[item.type]].forEach(assetItem => {
-                  assetItems.push(assetItem.id)
-                })
+                if (self.form[item.name + self.typeTexts[item.type]]) {
+                  self.form[item.name + self.typeTexts[item.type]].forEach(assetItem => {
+                    assetItems.push(assetItem.id)
+                  })
+                }
                 data[item.name] = assetItems
               } else {
                 data[item.name] = self.form[item.name  + self.typeTexts[item.type]].length > 0 ? self.form[item.name + self.typeTexts[item.type]][0].id : ''
@@ -276,13 +278,6 @@ export default {
                 self.form[element.name + type] = assetItems
               }
             }
-            //  else {
-            //   self.form[element.name] = ''
-            //   if (element.type == 'ASSET' || element.type == 'REFERENCE') {
-            //     const type = self.typeTexts[element.type]
-            //     self.form[element.name + type] = []
-            //   }
-            // }
           })
           if (updateData && updateData.id) {
             self.form['id'] = updateData.id
@@ -315,12 +310,35 @@ export default {
     },
     removeAsset(item, name) {
       let data = []
+      let dataIds = []
       this.form[name + 'Asset'].forEach(formItem => {
         if (formItem.id != item.id) {
           data.push(formItem)
+          if (item.is_multiple) {
+            dataIds.push(formItem.id)
+          } else {
+            dataIds = formItem.id
+          }
         }
       })
       this.form[name + 'Asset'] = data
+      this.form[name] = dataIds
+    },
+    removeReference(item, name) {
+      let data = []
+      let dataIds = []
+      this.form[name + 'Reference'].forEach(formItem => {
+        if (formItem.id != item.id) {
+          data.push(formItem)
+          if (item.is_multiple) {
+            dataIds.push(formItem.id)
+          } else {
+            dataIds = formItem.id
+          }
+        }
+      })
+      this.form[name + 'Reference'] = data
+      this.form[name] = dataIds
     },
     showReferenceDialog(item) {
       this.referenceModal.item = item
@@ -352,9 +370,19 @@ export default {
           } else {
             this.form[name + typeName] = [value]
           }
+          if (is_multiple) {
+            this.form[name].push(value.id)
+          } else {
+            this.form[name] = value.id
+          }
         }
       } else {
         this.form[name + typeName] = [value]
+        if (is_multiple) {
+          this.form[name].push(value.id)
+        } else {
+          this.form[name] = value.id
+        }
         if (type == 'asset') {
           this.closeAssetDialog()
         } else {
