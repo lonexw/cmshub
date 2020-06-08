@@ -115,7 +115,7 @@ export default {
   overflow: hidden;
 }
 .ant-menu {
-  height: calc(~"100vh - 100px");
+  height: calc(~'100vh - 100px');
   overflow-y: auto;
 }
 </style>

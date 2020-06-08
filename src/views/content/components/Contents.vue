@@ -279,7 +279,7 @@ export default {
 <style lang="less">
 .content-table {
   .ant-table-body {
-    min-height: calc(~'100vh - 210px');
+    min-height: calc(~"100vh - 210px");
   }
   .ant-table-placeholder {
     display: none;

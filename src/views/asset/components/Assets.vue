@@ -32,6 +32,7 @@
         <span v-else>{{ url }}</span>
       </template>
     </a-table>
+    <a-empty class="empty-content" v-if="data.length == 0" />
     <div class="flex justify-center margin-top-sm">
       <a-pagination
         showSizeChanger
@@ -44,7 +45,6 @@
         @showSizeChange="showSizeChange"
       />
     </div>
-    <a-empty class="empty-content" v-if="data.length == 0" />
   </div>
 </template>
 
@@ -158,11 +158,11 @@ export default {
 }
 </style>
 <style lang="less" scoped>
-.empty-content {
-  position: absolute;
-  top: 400px;
-  left: 0;
-  right: 0;
-  margin: auto;
-}
+// .empty-content {
+//   position: absolute;
+//   top: 400px;
+//   left: 0;
+//   right: 0;
+//   margin: auto;
+// }
 </style>
