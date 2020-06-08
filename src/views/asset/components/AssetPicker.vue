@@ -10,6 +10,7 @@
       v-if="data.length > 0"
       :columns="columns"
       :dataSource="data"
+      :loading="loading"
       :pagination="false"
       :scroll="{ x: 1200, y: 'calc(100vh - 10px)', scrollToFirstRowOnChange: true }"
     >
@@ -21,6 +22,7 @@
         <a @click="selectItem(record)">选择</a>
       </template>
     </a-table>
+    <a-empty class="empty-content" v-if="data.length == 0 && !loading" />
     <div class="flex justify-center margin-top-sm">
       <a-pagination
         showSizeChanger
@@ -33,7 +35,6 @@
         @showSizeChange="showSizeChange"
       />
     </div>
-    <a-empty class="empty-content" v-if="data.length == 0" />
   </div>
 </template>
 
@@ -112,7 +113,8 @@ export default {
           page: 1,
           limit: 10
         }
-      }
+      },
+      loading: false
     }
   },
   computed: {},
@@ -125,6 +127,7 @@ export default {
     },
     getList() {
       let self = this
+      self.loading = true
       self.$apollo
         .query({
           query: userAssets,
@@ -137,9 +140,11 @@ export default {
         .then(data => {
           self.data = data.data.userAssets.items
           self.total = data.data.userAssets.cursor.total
+          self.loading = false
         })
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
+          self.loading = false
         })
     },
     selectItem(record) {
@@ -159,11 +164,11 @@ export default {
 }
 </style>
 <style lang="less" scoped>
-.empty-content {
-  position: absolute;
-  top: 400px;
-  left: 0;
-  right: 0;
-  margin: auto;
-}
+// .empty-content {
+//   position: absolute;
+//   top: 400px;
+//   left: 0;
+//   right: 0;
+//   margin: auto;
+// }
 </style>

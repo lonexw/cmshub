@@ -20,10 +20,12 @@
       :rowSelection="rowSelection"
       :columns="columns"
       :dataSource="data"
+      :loading="loading"
       :pagination="false"
       :scroll="{ x: 1200, y: 'calc(100vh - 210px)', scrollToFirstRowOnChange: true }"
     >
     </a-table>
+    <a-empty class="empty-content" v-if="data.length == 0 && !loading" />
     <div class="flex justify-center margin-top-sm">
       <a-pagination
         showSizeChanger
@@ -36,7 +38,6 @@
         @showSizeChange="showSizeChange"
       />
     </div>
-    <a-empty class="empty-content" v-if="data.length == 0" />
     <a-modal
       :maskClosable="false"
       :width="referenceModal.width"
@@ -113,7 +114,8 @@ export default {
         fields: [],
         fieldNames: [],
         ids: []
-      }
+      },
+      loading: false
     }
   },
   created() {},
@@ -215,6 +217,7 @@ export default {
     getContentList() {
       this.data = []
       let self = this
+      self.loading = true
       let apiName = 'user' + self.custom.plural_name
       let fieldFormat = 'id'
       self.fields.forEach(item => {
@@ -250,9 +253,11 @@ export default {
         .then(data => {
           self.data = data.data[apiName].items
           self.total = data.data[apiName].cursor.total
+          self.loading = false
         })
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
+          self.loading = false
         })
     },
     showReferenceDialog(item, field, text) {
@@ -282,11 +287,11 @@ export default {
 }
 </style>
 <style lang="less" scoped>
-.empty-content {
-  position: absolute;
-  top: 400px;
-  left: 0;
-  right: 0;
-  margin: auto;
-}
+// .empty-content {
+//   position: absolute;
+//   top: 400px;
+//   left: 0;
+//   right: 0;
+//   margin: auto;
+// }
 </style>
