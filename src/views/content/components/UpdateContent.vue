@@ -186,12 +186,12 @@ export default {
             if (item.type == 'ASSET' || item.type == 'REFERENCE') {
               let assetItems = []
               if (item.is_multiple) {
-                self.form[item.name].forEach(assetItem => {
+                self.form[item.name + 'Asset'].forEach(assetItem => {
                   assetItems.push(assetItem.id)
                 })
-                data[item.name + item.type] = assetItems
+                data[item.name] = assetItems
               } else {
-                data[item.name + item.type] = self.form[item.name].length > 0 ? self.form[item.name][0].id : ''
+                data[item.name] = self.form[item.name + 'Asset'].length > 0 ? self.form[item.name + 'Asset'][0].id : ''
               }
             } else {
               data[item.name] = self.form[item.name]
@@ -307,12 +307,12 @@ export default {
     },
     removeAsset(item, name) {
       let data = []
-      this.form[name].forEach(formItem => {
+      this.form[name + 'Asset'].forEach(formItem => {
         if (formItem.id != item.id) {
           data.push(formItem)
         }
       })
-      this.form[name] = data
+      this.form[name + 'Asset'] = data
     },
     showReferenceDialog(item) {
       this.referenceModal.item = item
@@ -325,22 +325,22 @@ export default {
       if (is_multiple) {
         let data = []
         let isExist = false
-        if (this.form[name] && this.form[name].length > 0) {
-          this.form[name].forEach(item => {
+        if (this.form[name + 'Asset'] && this.form[name + 'Asset'].length > 0) {
+          this.form[name + 'Asset'].forEach(item => {
             if (item.id == value.id) {
               isExist = true
             }
           })
         }
         if (!isExist) {
-          if (this.form[name] && this.form[name].length > 0) {
-            this.form[name].push(value)
+          if (this.form[name + 'Asset'] && this.form[name + 'Asset'].length > 0) {
+            this.form[name + 'Asset'].push(value)
           } else {
-            this.form[name] = [value]
+            this.form[name + 'Asset'] = [value]
           }
         }
       } else {
-        this.form[name] = [value]
+        this.form[name + 'Asset'] = [value]
         if (type == 'asset') {
           this.closeAssetDialog()
         } else {
