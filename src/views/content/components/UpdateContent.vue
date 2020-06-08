@@ -3,7 +3,7 @@
     <a-layout style="background-color: white; margin-right: 240px">
       <a-layout-header class="header light" style="height: 50px; line-height: 50px;">
         <div class="flex align-center padding-lr-sm text-bold pointer text-black" @click="cancel">
-          <a-icon class="margin-right-xs" type="left" /> 创建 {{ model }}
+          <a-icon class="margin-right-xs" type="left" /> {{ dataForm && dataForm.id ? '编辑' : '创建' }} {{ model }}
         </div>
       </a-layout-header>
       <a-layout-content>
@@ -12,7 +12,7 @@
             <template v-for="(item, index) in fields">
               <template v-if="item.type == 'SINGLE_TEXT'">
                 <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
-                  <a-input v-model="form[item.name]" :placeholder="'请输入' + item.zh_name" />
+                  <a-input v-model="form[item.name]" :placeholder="'请输入' + item.zh_name" @change="formValueChange" />
                 </a-form-model-item>
               </template>
               <template v-else-if="item.type == 'MULTI_TEXT'">
@@ -56,7 +56,7 @@
       </div>
       <div class="text-df margin-tb">
         <div class="margin-bottom-xs">信息</div>
-        <div v-if="!data.id" class="text-sm text-grey margin-left-xs" style="font-style: italic;">保存后显示</div>
+        <div v-if="!(dataForm && dataForm.id)" class="text-sm text-grey margin-left-xs" style="font-style: italic;">保存后显示</div>
         <div v-else class="text-sm text-grey">
           <div class="flex justify-between"><span>创建</span><span>2020-04-09 18:17:54</span></div>
           <div class="flex justify-between"><span>更新</span><span>2020-04-09 18:17:54</span></div>
@@ -64,7 +64,7 @@
       </div>
       <div class="margin-tb">
         <div class="text-df margin-bottom-xs">发布于</div>
-        <div v-if="!data.id" class="text-sm text-grey margin-left-xs" style="font-style: italic;">尚未发布</div>
+        <div v-if="!(dataForm && dataForm.id)" class="text-sm text-grey margin-left-xs" style="font-style: italic;">尚未发布</div>
         <div
           v-else
           class="flex justify-between align-center padding-xs solid line-grey shadow radius"
@@ -133,7 +133,7 @@ import { Tag } from 'ant-design-vue'
 export default {
   name: 'UpdateContent',
   props: {
-    data: {
+    dataForm: {
       type: Object,
       default: () => {
         return {}
@@ -166,7 +166,11 @@ export default {
         width: '80%',
         item: {}
       },
-      formShow: true
+      formShow: true,
+      typeTexts: {
+        ASSET: 'Asset',
+        REFERENCE: 'Reference'
+      }
     }
   },
   computed: {},
@@ -186,12 +190,12 @@ export default {
             if (item.type == 'ASSET' || item.type == 'REFERENCE') {
               let assetItems = []
               if (item.is_multiple) {
-                self.form[item.name + 'Asset'].forEach(assetItem => {
+                self.form[item.name + self.typeTexts[item.type]].forEach(assetItem => {
                   assetItems.push(assetItem.id)
                 })
                 data[item.name] = assetItems
               } else {
-                data[item.name] = self.form[item.name + 'Asset'].length > 0 ? self.form[item.name + 'Asset'][0].id : ''
+                data[item.name] = self.form[item.name  + self.typeTexts[item.type]].length > 0 ? self.form[item.name + self.typeTexts[item.type]][0].id : ''
               }
             } else {
               data[item.name] = self.form[item.name]
@@ -247,36 +251,40 @@ export default {
           let itemNames = []
           let rules = {}
           self.formShow = false
-          const updateData = self.data
+          const updateData = self.dataForm
           customs.forEach(element => {
             items.push(element)
             itemNames.push(element.name)
             if (element.is_required) {
               rules[element.name] = [{ required: true, message: '请输入' + element.zh_name, trigger: 'blur' }]
             }
-            if (element.type == 'RICH_TEXT') {
-              self.form[element.name] = ''
-            }
-            self.form[element.name] = updateData[element.name]
-            if (element.type == 'ASSET' || element.type == 'REFERENCE') {
-              let type = ''
-              if (element.type == 'ASSET') {
-                type = 'Asset'
-              } else if (element.type == 'REFERENCE') {
-                type = 'Reference'
+            if (updateData && updateData.id) {
+              if (element.type == 'RICH_TEXT') {
+                self.form[element.name] = ''
               }
-              let assetItems = []
-              if (element.is_multiple) {
-                assetItems = updateData[element.name + type]
-              } else {
-                if (updateData[element.name + type]) {
-                  assetItems = [updateData[element.name + type]]
+              self.form[element.name] = updateData[element.name]
+              if (element.type == 'ASSET' || element.type == 'REFERENCE') {
+                const type = self.typeTexts[element.type]
+                let assetItems = []
+                if (element.is_multiple) {
+                  assetItems = updateData[element.name + type]
+                } else {
+                  if (updateData[element.name + type]) {
+                    assetItems = [updateData[element.name + type]]
+                  }
                 }
+                self.form[element.name + type] = assetItems
               }
-              self.form[element.name + type] = assetItems
             }
+            //  else {
+            //   self.form[element.name] = ''
+            //   if (element.type == 'ASSET' || element.type == 'REFERENCE') {
+            //     const type = self.typeTexts[element.type]
+            //     self.form[element.name + type] = []
+            //   }
+            // }
           })
-          if (updateData.id) {
+          if (updateData && updateData.id) {
             self.form['id'] = updateData.id
           } else {
             self.form['id'] = undefined
@@ -322,25 +330,31 @@ export default {
       this.referenceModal.visible = false
     },
     selectChange(type, value, name, is_multiple) {
+      let typeName = ''
+      if (type == 'asset') {
+        typeName = 'Asset'
+      } else {
+        typeName = 'Reference'
+      }
       if (is_multiple) {
         let data = []
         let isExist = false
-        if (this.form[name + 'Asset'] && this.form[name + 'Asset'].length > 0) {
-          this.form[name + 'Asset'].forEach(item => {
+        if (this.form[name + typeName] && this.form[name + typeName].length > 0) {
+          this.form[name + typeName].forEach(item => {
             if (item.id == value.id) {
               isExist = true
             }
           })
         }
         if (!isExist) {
-          if (this.form[name + 'Asset'] && this.form[name + 'Asset'].length > 0) {
-            this.form[name + 'Asset'].push(value)
+          if (this.form[name + typeName] && this.form[name + typeName].length > 0) {
+            this.form[name + typeName].push(value)
           } else {
-            this.form[name + 'Asset'] = [value]
+            this.form[name + typeName] = [value]
           }
         }
       } else {
-        this.form[name + 'Asset'] = [value]
+        this.form[name + typeName] = [value]
         if (type == 'asset') {
           this.closeAssetDialog()
         } else {
@@ -350,6 +364,9 @@ export default {
     },
     referenceSelectChange(value, name, is_multiple) {
       this.selectChange('reference', value, name, is_multiple)
+    },
+    formValueChange() {
+      this.form = Object.assign({}, this.form)
     }
   }
 }

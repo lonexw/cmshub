@@ -10,7 +10,7 @@
     <template v-slot:content>
       <contents v-if="show_list" @update="update" :custom="selectCustom"></contents>
       <update-content
-        :data="content"
+        :data-form="content"
         :custom="selectCustom"
         model="Admin"
         v-if="show_update"
@@ -100,7 +100,11 @@ export default {
     },
     update(item) {
       this.show_list = false
-      this.content = item || {}
+      if (item) {
+        this.content = item || {}
+      } else {
+        this.content = undefined
+      }
       let self = this
       setTimeout(function() {
         self.show_update = true

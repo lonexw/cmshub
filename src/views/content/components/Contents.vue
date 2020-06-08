@@ -2,7 +2,7 @@
   <div class="relative">
     <header class="padding-lr-sm padding-tb-xs flex align-center justify-between solid-bottom line-grey">
       <bg-tag :active="true">{{ custom ? custom.name : '' }}</bg-tag>
-      <a-button type="primary" @click="add"> <a-icon type="plus" />新增 </a-button>
+      <a-button type="primary" @click="add()"> <a-icon type="plus" />新增 </a-button>
     </header>
     <div class="flex align-center padding-lr-sm solid-bottom line-grey" style="height: 36px;">
       <span class="margin-right-sm">{{ select_num }} 选中</span>
