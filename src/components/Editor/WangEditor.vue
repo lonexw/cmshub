@@ -42,12 +42,14 @@ export default {
   methods: {
     initEditor() {
       this.editor = new WEditor(this.$refs.editor)
-      // this.editor.onchangeTimeout = 200
+      this.editor.onchangeTimeout = 200
       this.editor.customConfig.onchange = html => {
         this.editorContent = html
         this.$emit('change', [this.editorContent, this.name])
       }
+      this.editorContent = this.value
       this.editor.create()
+      this.editor.txt.html(this.value)
     }
   }
 }

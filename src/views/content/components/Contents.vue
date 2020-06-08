@@ -8,8 +8,8 @@
       <span class="margin-right-sm">{{ select_num }} 选中</span>
       <div class="flex" v-show="select_num > 0">
         <bg-tag class="text-red"> <a-icon type="delete" class="margin-right-xxs" /> 删除 </bg-tag>
-        <bg-tag class="text-green"> <a-icon type="up-square" class="margin-right-xxs" /> 发布 </bg-tag>
-        <bg-tag class="text-yellow"> <a-icon type="close-square" class="margin-right-xxs" /> 不发布 </bg-tag>
+        <!-- <bg-tag class="text-green"> <a-icon type="up-square" class="margin-right-xxs" /> 发布 </bg-tag>
+        <bg-tag class="text-yellow"> <a-icon type="close-square" class="margin-right-xxs" /> 不发布 </bg-tag> -->
       </div>
     </div>
     <a-table
@@ -124,8 +124,8 @@ export default {
     this.getFieldList()
   },
   methods: {
-    add() {
-      this.$emit('update')
+    add(item) {
+      this.$emit('update', item)
     },
     showSizeChange(current, size) {
       this.search.paginator.limit = size
@@ -203,6 +203,23 @@ export default {
                 })
               }
               itemNames.push(element.name)
+            }
+          })
+          columns.push({
+            title: '操作',
+            dataIndex: 'action',
+            customRender: (text, record) => {
+              let child = self.$createElement("a", {
+                domProps: {
+                  innerHTML: '编辑'
+                },
+                on: {
+                  click: function () {
+                    self.add(record)
+                  }
+                }
+              })
+              return child
             }
           })
           self.fields = items

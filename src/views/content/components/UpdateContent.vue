@@ -27,7 +27,7 @@
               </template>
               <template v-else-if="item.type == 'ASSET'">
                 <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
-                  <div v-for="(itemAsset, index) in form[item.name]" :key="index">
+                  <div v-for="(itemAsset, index) in form[item.name + 'Asset']" :key="index">
                     <tag closable @close="removeAsset(itemAsset, item.name)">{{ itemAsset.name }}</tag>
                   </div>
                   <a-button @click="showAssetDialog(item)">选择</a-button>
@@ -165,7 +165,8 @@ export default {
         visible: false,
         width: '80%',
         item: {}
-      }
+      },
+      formShow: true
     }
   },
   computed: {},
@@ -188,15 +189,20 @@ export default {
                 self.form[item.name].forEach(assetItem => {
                   assetItems.push(assetItem.id)
                 })
-                data[item.name] = assetItems
+                data[item.name + item.type] = assetItems
               } else {
-                data[item.name] = self.form[item.name].length > 0 ? self.form[item.name][0].id : ''
+                data[item.name + item.type] = self.form[item.name].length > 0 ? self.form[item.name][0].id : ''
               }
             } else {
               data[item.name] = self.form[item.name]
             }
           })
-          let apiName = 'userCreate' + self.custom.name
+          let apiName = 'userCreate'
+          if (self.form.id) {
+            apiName = 'userUpdate'
+            data['id'] = self.form.id
+          }
+          apiName = apiName + self.custom.name
           self.$apollo
             .mutate({
               mutation: gql`mutation ${apiName} ($data: ${self.custom.name}Input!) { 
@@ -240,16 +246,45 @@ export default {
           let items = []
           let itemNames = []
           let rules = {}
+          self.formShow = false
+          const updateData = self.data
           customs.forEach(element => {
             items.push(element)
             itemNames.push(element.name)
             if (element.is_required) {
               rules[element.name] = [{ required: true, message: '请输入' + element.zh_name, trigger: 'blur' }]
             }
+            if (element.type == 'RICH_TEXT') {
+              self.form[element.name] = ''
+            }
+            self.form[element.name] = updateData[element.name]
+            if (element.type == 'ASSET' || element.type == 'REFERENCE') {
+              let type = ''
+              if (element.type == 'ASSET') {
+                type = 'Asset'
+              } else if (element.type == 'REFERENCE') {
+                type = 'Reference'
+              }
+              let assetItems = []
+              if (element.is_multiple) {
+                assetItems = updateData[element.name + type]
+              } else {
+                if (updateData[element.name + type]) {
+                  assetItems = [updateData[element.name + type]]
+                }
+              }
+              self.form[element.name + type] = assetItems
+            }
           })
+          if (updateData.id) {
+            self.form['id'] = updateData.id
+          } else {
+            self.form['id'] = undefined
+          }
           self.rules = rules
           self.fields = items
           self.fieldNames = itemNames
+          self.formShow = true
         })
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
