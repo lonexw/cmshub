@@ -249,6 +249,14 @@ export default {
             type
           }`
         }
+        if (item.type == 'REFERENCE') {
+          fieldFormat += `,${item.name}Reference {
+            created_at,
+            updated_at,
+            id,
+            title
+          }`
+        }
       })
 
       self.$apollo

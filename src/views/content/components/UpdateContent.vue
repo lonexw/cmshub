@@ -8,7 +8,7 @@
       </a-layout-header>
       <a-layout-content>
         <div class="content-body padding-lr-sm">
-          <a-form-model layout="vertical" :model="form" ref="createForm" :rules="rules">
+          <a-form-model layout="vertical" :model="form" ref="createForm" :rules="rules" v-if="formShow">
             <template v-for="(item, index) in fields">
               <template v-if="item.type == 'SINGLE_TEXT'">
                 <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
@@ -35,6 +35,7 @@
               </template>
               <template v-else-if="item.type == 'REFERENCE'">
                 <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
+                  <a-input v-model="form[item.name]" type="hidden" v-if="item.is_required" />
                   <div v-for="(itemReference, index) in form[item.name + 'Reference']" :key="index">
                     <tag closable @close="removeReference(itemReference, item.name)">{{ itemReference.title }}</tag>
                   </div>
@@ -153,7 +154,9 @@ export default {
       form: {},
       fields: [],
       fieldNames: [],
-      rules: {},
+      rules: {
+        title: [{ required: true, message: '必填', trigger: 'blur' }]
+      },
       assetModal: {
         title: '选择关联附件',
         visible: false,
@@ -258,7 +261,11 @@ export default {
             items.push(element)
             itemNames.push(element.name)
             if (element.is_required) {
-              rules[element.name] = [{ required: true, message: '请输入' + element.zh_name, trigger: 'blur' }]
+              let messageText = '请输入'
+              if (element.type == 'ASSET' || element.type == 'REFERENCE') {
+                messageText = '请选择'
+              }
+              rules[element.name] = [{  type: 'string', required: true, message: messageText + element.zh_name, trigger: 'blur' }]
             }
             if (updateData && updateData.id) {
               if (element.type == 'RICH_TEXT') {
@@ -348,6 +355,7 @@ export default {
       this.referenceModal.visible = false
     },
     selectChange(type, value, name, is_multiple) {
+      console.log(this.$refs.createForm)
       let typeName = ''
       if (type == 'asset') {
         typeName = 'Asset'
@@ -376,6 +384,7 @@ export default {
             this.form[name] = value.id
           }
         }
+        this.$refs.createForm.clearValidate()
       } else {
         this.form[name + typeName] = [value]
         if (is_multiple) {
@@ -383,6 +392,7 @@ export default {
         } else {
           this.form[name] = value.id
         }
+        this.$refs.createForm.clearValidate()
         if (type == 'asset') {
           this.closeAssetDialog()
         } else {
