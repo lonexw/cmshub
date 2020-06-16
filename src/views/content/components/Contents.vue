@@ -35,6 +35,7 @@
         :pageSize="search.paginator.limit"
         :defaultCurrent="1"
         :pageSizeOptions="['10', '30', '50', '100']"
+        @change="change"
         @showSizeChange="showSizeChange"
       />
     </div>
@@ -129,6 +130,12 @@ export default {
     },
     showSizeChange(current, size) {
       this.search.paginator.limit = size
+      this.getContentList()
+    },
+    change(page, pageSize) {
+      this.search.paginator.page = page
+      this.search.paginator.limit = pageSize
+      this.getContentList()
     },
     getFieldList() {
       this.data = []
