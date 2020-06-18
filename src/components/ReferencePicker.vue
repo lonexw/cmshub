@@ -87,6 +87,11 @@ export default {
       }
     }
   },
+  watch: {
+    formName () {
+      this.getCustom()
+    }
+  },
   computed: {},
   mounted() {
     this.getCustom()
