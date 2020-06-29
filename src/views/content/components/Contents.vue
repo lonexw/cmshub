@@ -128,6 +128,35 @@ export default {
     add(item) {
       this.$emit('update', item)
     },
+    deleteItem(item) {
+      let self = this
+      let apiName = 'userDelete' + self.custom.name
+      this.$confirm({
+        title: '确认删除吗？',
+        confirmLoading: true,
+        onOk() {
+          self.$apollo
+            .mutate({
+              mutation: gql`mutation ${apiName} ($id: Int!) { 
+                ${apiName} (id: $id)
+              }`,
+              variables: {
+                id: item.id
+              },
+              fetchPolicy: 'no-cache',
+              context: {
+                uri: api.projectUri + store.state.common.currentProject.id
+              }
+            })
+            .then(() => {
+              self.getContentList()
+            })
+            .catch(err => {
+              this.$message.warning(formatGraphErr(err.message))
+            })
+        }
+      })
+    },
     showSizeChange(current, size) {
       this.search.paginator.limit = size
       this.getContentList()
@@ -216,6 +245,7 @@ export default {
             title: '操作',
             dataIndex: 'action',
             customRender: (text, record) => {
+              let children = []
               let child = self.$createElement("a", {
                 domProps: {
                   innerHTML: '编辑'
@@ -226,7 +256,26 @@ export default {
                   }
                 }
               })
-              return child
+              let childSpan = self.$createElement("span", {
+                domProps: {
+                  innerHTML: '|',
+                  width: '10px'
+                }
+              })
+              let childDelete = self.$createElement("a", {
+                domProps: {
+                  innerHTML: '删除'
+                },
+                on: {
+                  click: function () {
+                    self.deleteItem(record)
+                  }
+                }
+              })
+              children.push(child)
+              children.push(childSpan)
+              children.push(childDelete)
+              return children
             }
           })
           self.fields = items
