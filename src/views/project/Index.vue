@@ -4,8 +4,8 @@
       <logo />
     </header>
     <div class="project-body">
-      <project-list v-if="!is_create" @create="create"></project-list>
-      <project-create v-else @cancel="cancelCreate"></project-create>
+      <project-list v-if="!is_create" @create="create" @update="update"></project-list>
+      <project-create v-else @cancel="cancelCreate" :form-data="formData"></project-create>
     </div>
     <footer class="solid-top padding-xxs project-footer">
       <a-popover placement="topLeft">
@@ -35,13 +35,19 @@ export default {
   data() {
     return {
       domTitle,
-      is_create: false
+      is_create: false,
+      formData: {}
     }
   },
   created() {},
   methods: {
     ...mapActions(['Logout']),
     create() {
+      this.formData = {}
+      this.is_create = true
+    },
+    update(item) {
+      this.formData = item
       this.is_create = true
     },
     cancelCreate() {

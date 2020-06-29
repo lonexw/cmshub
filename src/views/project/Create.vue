@@ -10,6 +10,7 @@
               v-decorator="[
                 'name',
                 {
+                  initialValue: formData ? formData.name : '',
                   rules: [{ required: true, message: '请输入项目名称' }]
                 }
               ]"
@@ -23,7 +24,8 @@
               v-decorator="[
                 'description',
                 {
-                  rules: [{ required: false, message: '请输入项目名称' }]
+                  initialValue: formData ? formData.description : '',
+                  rules: [{ required: false, message: '请输入项目描述' }]
                 }
               ]"
             />
@@ -32,26 +34,43 @@
       </a-row>
       <div class="flex justify-center margin-top">
         <a-button type="link" class="margin-right" :loading="submit_loading" @click="cancel">取消</a-button>
-        <a-button type="primary" html-type="submit" :loading="submit_loading">创建</a-button>
+        <a-button type="primary" html-type="submit" :loading="submit_loading">
+          {{ formData && formData.id > 0 ? '保存' : '创建' }}
+        </a-button>
       </div>
     </a-form>
   </div>
 </template>
 
 <script>
-import { userCreateProject } from '@/graphql/project.graphql'
+import { userCreateProject, userUpdateProject } from '@/graphql/project.graphql'
 import { formatGraphErr } from '@/utils/util'
 import store from '@/store'
 
 export default {
   components: {},
+  props: {
+    formData: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    }
+  },
   data() {
     return {
       form: this.$form.createForm(this),
       submit_loading: false
     }
   },
-  created() {},
+  created() {
+    console.log(this.formData)
+  },
+  watch: {
+    formData(newVal, oldVal) {
+      console.log(newVal, oldVal)
+    }
+  },
   methods: {
     cancel() {
       this.$emit('cancel')
@@ -68,16 +87,16 @@ export default {
         }
         self.$apollo
           .mutate({
-            mutation: userCreateProject,
+            mutation: self.formData && self.formData.id > 0 ? userUpdateProject : userCreateProject,
             variables: {
-              id: '',
+              id: self.formData && self.formData.id > 0 ? self.formData.id : '',
               name: values.name,
               description: values.description
             },
             fetchPolicy: 'no-cache'
           })
           .then(response => {
-            store.dispatch('SetCurrentProject', response.data.userCreateProject).then(() => {
+            store.dispatch('SetCurrentProject', self.formData && self.formData.id > 0 ? response.data.userUpdateProject : response.data.userCreateProject).then(() => {
               this.$router.push({ name: 'Schema' })
             })
             this.goSchema()

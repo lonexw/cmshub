@@ -3,10 +3,17 @@
     <h1 class="text-lg margin-bottom">我的项目</h1>
     <div class="flex flex-wrap">
       <template v-for="(item, index) in list">
-        <div class="project" @click="goSchema(item)" :key="index">
-          <div class="icon">{{ item.name }}</div>
-          <div class="margin-top text-bold text-black">{{ item.name }}</div>
-        </div>
+        <a-dropdown :key="index">
+          <div class="project" @click="goSchema(item)" :key="index">
+            <div class="icon">{{ item.name }}</div>
+            <div class="margin-top text-bold text-black">{{ item.name }}</div>
+          </div>
+          <a-menu slot="overlay">
+            <a-menu-item>
+              <a href="javascript:;" @click="update(item)">编辑</a>
+            </a-menu-item>
+          </a-menu>
+        </a-dropdown>
       </template>
       <div class="project" @click="create">
         <a-icon type="plus-circle" class="add-icon" />
@@ -34,6 +41,9 @@ export default {
   methods: {
     create() {
       this.$emit('create')
+    },
+    update(item) {
+      this.$emit('update', item)
     },
     goSchema(project) {
       store.dispatch('SetCurrentProject', project).then(() => {
