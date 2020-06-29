@@ -6,7 +6,7 @@
     </header>
     <div class="flex align-center padding-lr-sm solid-bottom line-grey" style="height: 36px;">
       <span class="margin-right-sm">{{ select_num }} 选中</span>
-      <div class="flex" v-show="select_num > 0">
+      <div class="flex" v-show="select_num > 0" @click="batchDelete">
         <bg-tag class="text-red"> <a-icon type="delete" class="margin-right-xxs" /> 删除 </bg-tag>
         <!-- <bg-tag class="text-green"> <a-icon type="up-square" class="margin-right-xxs" /> 发布 </bg-tag>
         <bg-tag class="text-yellow"> <a-icon type="close-square" class="margin-right-xxs" /> 不发布 </bg-tag> -->
@@ -80,8 +80,12 @@ export default {
   data() {
     const rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
-        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
         this.select_num = selectedRows.length
+        let ids = []
+        selectedRows.forEach((element) => {
+          ids.push(element.id)
+        })
+        this.ids = ids
       },
       onSelect: (record, selected, selectedRows) => {
         console.log(record, selected, selectedRows)
@@ -97,6 +101,7 @@ export default {
       fields: [],
       fieldNames: [],
       select_num: 0,
+      ids: [],
       show_create: false,
       total: 30,
       search: {
@@ -127,6 +132,37 @@ export default {
   methods: {
     add(item) {
       this.$emit('update', item)
+    },
+    batchDelete() {
+      let self = this
+      let apiName = 'userDeleteBatch' + self.custom.name
+      this.$confirm({
+        title: '确认删除选中数据吗？',
+        confirmLoading: true,
+        onOk() {
+          self.$apollo
+            .mutate({
+              mutation: gql`mutation ${apiName} ($ids: [Int]!) { 
+                ${apiName} (ids: $ids)
+              }`,
+              variables: {
+                ids: self.ids
+              },
+              fetchPolicy: 'no-cache',
+              context: {
+                uri: api.projectUri + store.state.common.currentProject.id
+              }
+            })
+            .then(() => {
+              self.getContentList()
+              self.select_num = 0
+              self.ids = []
+            })
+            .catch(err => {
+              this.$message.warning(formatGraphErr(err.message))
+            })
+        }
+      })
     },
     deleteItem(item) {
       let self = this
