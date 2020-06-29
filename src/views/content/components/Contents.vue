@@ -159,7 +159,7 @@ export default {
               self.ids = []
             })
             .catch(err => {
-              this.$message.warning(formatGraphErr(err.message))
+              self.$message.warning(formatGraphErr(err.message))
             })
         }
       })
@@ -188,7 +188,7 @@ export default {
               self.getContentList()
             })
             .catch(err => {
-              this.$message.warning(formatGraphErr(err.message))
+              self.$message.warning(formatGraphErr(err.message))
             })
         }
       })
