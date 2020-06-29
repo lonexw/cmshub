@@ -63,14 +63,7 @@ export default {
       submit_loading: false
     }
   },
-  created() {
-    console.log(this.formData)
-  },
-  watch: {
-    formData(newVal, oldVal) {
-      console.log(newVal, oldVal)
-    }
-  },
+  created() {},
   methods: {
     cancel() {
       this.$emit('cancel')
@@ -96,9 +89,16 @@ export default {
             fetchPolicy: 'no-cache'
           })
           .then(response => {
-            store.dispatch('SetCurrentProject', self.formData && self.formData.id > 0 ? response.data.userUpdateProject : response.data.userCreateProject).then(() => {
-              this.$router.push({ name: 'Schema' })
-            })
+            store
+              .dispatch(
+                'SetCurrentProject',
+                self.formData && self.formData.id > 0
+                  ? response.data.userUpdateProject
+                  : response.data.userCreateProject
+              )
+              .then(() => {
+                this.$router.push({ name: 'Schema' })
+              })
             this.goSchema()
           })
           .catch(err => {
