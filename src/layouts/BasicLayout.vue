@@ -5,14 +5,14 @@
         <div>
           <img src="~@/assets/logo.svg" width="45px" class="margin-bottom-sm pointer" @click="goProject" />
           <div class="text-icon margin-bottom pointer" @click="goProject">{{ project ? project.name : '' }}</div>
-          <a-tooltip placement="right" class="margin-bottom-sm">
+          <!-- <a-tooltip placement="right" class="margin-bottom-sm">
             <template slot="title">
               <span>模型管理</span>
             </template>
             <div :class="(page === 'Schema' ? 'text-blue ' : '') + 'pointer text-xxl'" @click="goSchema">
               <a-icon type="profile" />
             </div>
-          </a-tooltip>
+          </a-tooltip> -->
           <a-tooltip placement="right" class="margin-bottom-sm">
             <template slot="title">
               <span>内容管理</span>

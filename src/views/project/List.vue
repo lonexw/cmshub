@@ -37,8 +37,11 @@ export default {
     },
     goSchema(project) {
       store.dispatch('SetCurrentProject', project).then(() => {
-        this.$router.push({ name: 'Schema' })
+        this.$router.push({ name: 'Content' })
       })
+      // store.dispatch('SetCurrentProject', project).then(() => {
+      //   this.$router.push({ name: 'Schema' })
+      // })
     },
     getList() {
       let self = this
