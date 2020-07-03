@@ -28,7 +28,6 @@ import { userCreateBatchAsset } from '@/graphql/asset.graphql'
 import { formatGraphErr } from '@/utils/util'
 import store from '@/store'
 import api from '@/config/api'
-// import { uploadImage } from '@/graphql/index'
 import { AreaUpload } from '@/components'
 
 export default {
