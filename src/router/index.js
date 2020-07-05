@@ -14,7 +14,7 @@ VueRouter.prototype.push = function push(location, onResolve, onReject) {
 Vue.use(VueRouter)
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   scrollBehavior: () => ({ y: 0 }),
   routes

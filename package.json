@@ -41,6 +41,7 @@
     "less": "^2.7.3",
     "less-loader": "^5.0.0",
     "prettier": "^1.19.1",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "webpack-oss": "^2.1.6"
   }
 }
