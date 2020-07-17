@@ -20,3 +20,7 @@ query userAssets($paginator: PaginatorInput
 mutation userCreateBatchAsset($data: [AssetInput!]!) {
   userCreateBatchAsset(data: $data)
 }
+
+mutation userDeleteBatchAsset($ids: [Int]!) {
+  userDeleteBatchAsset(ids: $ids)
+}

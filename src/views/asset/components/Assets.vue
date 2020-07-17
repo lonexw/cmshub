@@ -10,10 +10,10 @@
     </header>
     <div class="flex align-center padding-lr-sm solid-bottom line-grey" style="height: 36px;">
       <span class="margin-right-sm">{{ select_num }} 选中</span>
-      <div class="flex" v-show="select_num > 0">
+      <div class="flex" v-show="select_num > 0" @click="batchDelete">
         <bg-tag class="text-red"> <a-icon type="delete" class="margin-right-xxs" /> 删除 </bg-tag>
-        <bg-tag class="text-green"> <a-icon type="up-square" class="margin-right-xxs" /> 发布 </bg-tag>
-        <bg-tag class="text-yellow"> <a-icon type="close-square" class="margin-right-xxs" /> 不发布 </bg-tag>
+        <!-- <bg-tag class="text-green"> <a-icon type="up-square" class="margin-right-xxs" /> 发布 </bg-tag>
+        <bg-tag class="text-yellow"> <a-icon type="close-square" class="margin-right-xxs" /> 不发布 </bg-tag> -->
       </div>
     </div>
     <div class="flex justify-center margin-top-sm">
@@ -32,7 +32,6 @@
     <a-table
       size="middle"
       rowKey="id"
-      v-if="data.length > 0"
       :rowSelection="rowSelection"
       :columns="columns"
       :dataSource="data"
@@ -49,7 +48,7 @@
 
 <script>
 import { BgTag } from '@/components'
-import { userAssets } from '@/graphql/asset.graphql'
+import { userAssets, userDeleteBatchAsset } from '@/graphql/asset.graphql'
 import { formatGraphErr } from '@/utils/util'
 import store from '@/store'
 import api from '@/config/api'
@@ -85,14 +84,12 @@ export default {
     ]
     const rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
-        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
         this.select_num = selectedRows.length
-      },
-      onSelect: (record, selected, selectedRows) => {
-        console.log(record, selected, selectedRows)
-      },
-      onSelectAll: (selected, selectedRows, changeRows) => {
-        console.log(selected, selectedRows, changeRows)
+        let ids = []
+        selectedRows.forEach((element) => {
+          ids.push(element.id)
+        })
+        this.ids = ids
       }
     }
     return {
@@ -100,6 +97,7 @@ export default {
       columns,
       data: [],
       select_num: 0,
+      ids: [],
       show_create: false,
       total: 30,
       search: {
@@ -148,6 +146,35 @@ export default {
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
         })
+    },
+    batchDelete() {
+      let self = this
+      this.$confirm({
+        title: '确认删除选中数据吗？',
+        confirmLoading: true,
+        onOk() {
+          self.$apollo
+            .mutate({
+              mutation: userDeleteBatchAsset,
+              variables: {
+                ids: self.ids
+              },
+              fetchPolicy: 'no-cache',
+              context: {
+                uri: api.projectUri + store.state.common.currentProject.id
+              }
+            })
+            .then(() => {
+              self.$message.success('删除成功')
+              self.getList()
+              self.select_num = 0
+              self.ids = []
+            })
+            .catch(err => {
+              self.$message.warning(formatGraphErr(err.message))
+            })
+        }
+      })
     }
   }
 }

@@ -19,7 +19,6 @@
     <a-table
       size="middle"
       rowKey="id"
-      v-if="data.length > 0"
       :columns="columns"
       :dataSource="data"
       :loading="loading"
