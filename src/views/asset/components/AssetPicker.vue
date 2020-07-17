@@ -3,8 +3,20 @@
     <header class="padding-lr-sm padding-tb-xs flex align-center justify-between solid-bottom line-grey">
       <bg-tag :active="true">Asset</bg-tag>
     </header>
+    <div class="flex justify-center margin-top-sm">
+      <a-pagination
+        showSizeChanger
+        showQuickJumper
+        :total="total"
+        :showTotal="total => `共 ${total} 条`"
+        :pageSize="search.paginator.limit"
+        :defaultCurrent="1"
+        :pageSizeOptions="['10', '30', '50', '100']"
+        @change="change"
+        @showSizeChange="showSizeChange"
+      />
+    </div>
     <a-table
-      class="content-table"
       size="middle"
       rowKey="id"
       v-if="data.length > 0"
@@ -22,20 +34,6 @@
         <a @click="selectItem(record)">选择</a>
       </template>
     </a-table>
-    <a-empty class="empty-content" v-if="data.length == 0 && !loading" />
-    <div class="flex justify-center margin-top-sm">
-      <a-pagination
-        showSizeChanger
-        showQuickJumper
-        :total="total"
-        :showTotal="total => `共 ${total} 条`"
-        :pageSize="search.paginator.limit"
-        :defaultCurrent="1"
-        :pageSizeOptions="['10', '30', '50', '100']"
-        @change="change"
-        @showSizeChange="showSizeChange"
-      />
-    </div>
   </div>
 </template>
 

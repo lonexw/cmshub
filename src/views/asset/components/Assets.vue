@@ -16,23 +16,6 @@
         <bg-tag class="text-yellow"> <a-icon type="close-square" class="margin-right-xxs" /> 不发布 </bg-tag>
       </div>
     </div>
-    <a-table
-      class="content-table"
-      size="middle"
-      rowKey="id"
-      v-if="data.length > 0"
-      :rowSelection="rowSelection"
-      :columns="columns"
-      :dataSource="data"
-      :pagination="false"
-      :scroll="{ x: 1200, y: 'calc(100vh - 210px)', scrollToFirstRowOnChange: true }"
-    >
-      <template slot="url" slot-scope="url, record">
-        <preview-image :src="url" height="30px" v-if="record.type.indexOf('image') > -1"></preview-image>
-        <span v-else>{{ url }}</span>
-      </template>
-    </a-table>
-    <a-empty class="empty-content" v-if="data.length == 0" />
     <div class="flex justify-center margin-top-sm">
       <a-pagination
         showSizeChanger
@@ -46,6 +29,21 @@
         @showSizeChange="showSizeChange"
       />
     </div>
+    <a-table
+      size="middle"
+      rowKey="id"
+      v-if="data.length > 0"
+      :rowSelection="rowSelection"
+      :columns="columns"
+      :dataSource="data"
+      :pagination="false"
+      :scroll="{ x: 1200, y: 'calc(100vh - 210px)', scrollToFirstRowOnChange: true }"
+    >
+      <template slot="url" slot-scope="url, record">
+        <preview-image :src="url" height="30px" v-if="record.type.indexOf('image') > -1"></preview-image>
+        <span v-else>{{ url }}</span>
+      </template>
+    </a-table>    
   </div>
 </template>
 
