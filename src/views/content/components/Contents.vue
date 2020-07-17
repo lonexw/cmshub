@@ -12,20 +12,6 @@
         <bg-tag class="text-yellow"> <a-icon type="close-square" class="margin-right-xxs" /> 不发布 </bg-tag> -->
       </div>
     </div>
-    <a-table
-      class="content-table"
-      size="middle"
-      v-if="data.length > 0"
-      rowKey="id"
-      :rowSelection="rowSelection"
-      :columns="columns"
-      :dataSource="data"
-      :loading="loading"
-      :pagination="false"
-      :scroll="{ x: 1200, y: 'calc(100vh - 210px)', scrollToFirstRowOnChange: true }"
-    >
-    </a-table>
-    <a-empty class="empty-content" v-if="data.length == 0 && !loading" />
     <div class="flex justify-center margin-top-sm">
       <a-pagination
         showSizeChanger
@@ -39,6 +25,18 @@
         @showSizeChange="showSizeChange"
       />
     </div>
+    <a-table
+      size="middle"
+      rowKey="id"
+      :rowSelection="rowSelection"
+      :columns="columns"
+      :dataSource="data"
+      :loading="loading"
+      :pagination="false"
+      :locale="{ emptyText: '暂无数据' }"
+      :scroll="{ scrollToFirstRowOnChange: true }"
+    >
+    </a-table>
     <a-modal
       :maskClosable="false"
       :width="referenceModal.width"
@@ -103,7 +101,7 @@ export default {
       select_num: 0,
       ids: [],
       show_create: false,
-      total: 30,
+      total: 0,
       search: {
         paginator: {
           page: 1,
