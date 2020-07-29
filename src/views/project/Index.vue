@@ -10,11 +10,29 @@
     <footer class="solid-top padding-xxs project-footer">
       <a-popover placement="topLeft">
         <template slot="content">
-          <a-button type="link" @click="logout"><a-icon type="logout" />退出</a-button>
+          <div>
+            <a-button type="link" @click="updatePwdVisible = true"><a-icon type="edit" />修改密码</a-button>
+          </div>
+          <div>
+            <a-button type="link" @click="logout"><a-icon type="logout" />退出</a-button>
+          </div>
         </template>
         <img src="~@/assets/logo.svg" width="40px" class="margin-left round pointer" />
       </a-popover>
     </footer>
+    <a-modal v-model="updatePwdVisible" title="修改密码" @ok="updatePwdSubmit">
+      <a-form-model :model="formPwd" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-form-model-item label="原密码">
+          <a-input v-model="formPwd.old_password" type="password" />
+        </a-form-model-item>
+        <a-form-model-item label="新密码">
+          <a-input v-model="formPwd.password" type="password" />
+        </a-form-model-item>
+        <a-form-model-item label="确认密码">
+          <a-input v-model="formPwd.password_confirmation" type="password" />
+        </a-form-model-item>
+      </a-form-model>
+    </a-modal>
   </div>
 </template>
 
@@ -25,6 +43,8 @@ import ProjectList from './List'
 import ProjectCreate from './Create'
 import { mapActions } from 'vuex'
 import { userLogout } from '@/graphql/login.graphql'
+import { userUpdatePwd } from '@/graphql/user.graphql'
+import { formatGraphErr } from '@/utils/util'
 
 export default {
   components: {
@@ -34,9 +54,13 @@ export default {
   },
   data() {
     return {
+      labelCol: { span: 4 },
+      wrapperCol: { span: 14 },
       domTitle,
       is_create: false,
-      formData: {}
+      updatePwdVisible: false,
+      formData: {},
+      formPwd: {}
     }
   },
   created() {},
@@ -73,6 +97,24 @@ export default {
             })
         }
       })
+    },
+    updatePwdSubmit() {
+      let self = this
+      self.$apollo
+        .mutate({
+          mutation: userUpdatePwd,
+          variables: {
+            data: self.formPwd
+          },
+          fetchPolicy: 'no-cache'
+        })
+        .then(() => {
+          this.$message.success('保存成功')
+          self.formPwd = {}
+        }) 
+        .catch(error => {
+          this.$message.warning(formatGraphErr(error.message))
+        })
     }
   }
 }

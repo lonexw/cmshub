@@ -5,3 +5,7 @@ query userMe {
     email
   }
 }
+
+mutation userUpdatePwd ($data: UpdatePwdInput!) {
+  userUpdatePwd (data: $data)
+}
