@@ -5,7 +5,7 @@
       <div>
         <a-button type="primary" @click="add"> <a-icon type="plus" />新增 </a-button>
         <span></span>
-        <a-button type="primary" @click="batchAdd"> <a-icon type="plus" />上传 </a-button>
+        <a-button type="primary" @click="batchAdd"> <a-icon type="plus" />批量上传 </a-button>
       </div>
     </header>
     <div class="flex align-center padding-lr-sm solid-bottom line-grey" style="height: 36px;">
