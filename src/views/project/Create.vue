@@ -1,35 +1,30 @@
 <template>
   <div>
     <h1 class="text-lg margin-bottom">创建新项目</h1>
-    <a-form :form="form" @submit="handleSubmit">
+    <a-form-model
+      ref="ruleForm"
+      :model="form"
+      :rules="rules"
+      :label-col="labelCol"
+      :wrapper-col="wrapperCol"
+      @submit="handleSubmit"
+    >
       <a-row :gutter="32">
         <a-col :span="12">
-          <a-form-item label="项目名称">
+          <a-form-model-item label="项目名称" prop="name">
             <a-input
               size="large"
-              v-decorator="[
-                'name',
-                {
-                  initialValue: formData ? formData.name : '',
-                  rules: [{ required: true, message: '请输入项目名称' }]
-                }
-              ]"
+              v-model="form.name"
             />
-          </a-form-item>
+          </a-form-model-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="项目描述">
+          <a-form-model-item label="项目描述" prop="description">
             <a-input
               size="large"
-              v-decorator="[
-                'description',
-                {
-                  initialValue: formData ? formData.description : '',
-                  rules: [{ required: false, message: '请输入项目描述' }]
-                }
-              ]"
+              v-model="form.description"
             />
-          </a-form-item>
+          </a-form-model-item>
         </a-col>
       </a-row>
       <div class="flex justify-center margin-top">
@@ -38,7 +33,7 @@
           {{ formData && formData.id > 0 ? '保存' : '创建' }}
         </a-button>
       </div>
-    </a-form>
+    </a-form-model>
   </div>
 </template>
 
@@ -59,11 +54,23 @@ export default {
   },
   data() {
     return {
-      form: this.$form.createForm(this),
+      form: {},
+      labelCol: { span: 4 },
+      wrapperCol: { span: 14 },
+      rules: {
+        name: [
+          { required: true, message: '请输入项目名称', trigger: 'blur' }
+        ],
+        description: [
+          { required: false, message: '请输入项目描述', trigger: 'blur' }
+        ]
+      },
       submit_loading: false
     }
   },
-  created() {},
+  created() {
+    this.form = Object.assign({}, this.formData)
+  },
   methods: {
     cancel() {
       this.$emit('cancel')
@@ -74,17 +81,15 @@ export default {
     handleSubmit(e) {
       e.preventDefault()
       let self = this
-      this.form.validateFields((err, values) => {
-        if (err) {
-          return
-        }
-        self.$apollo
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          self.$apollo
           .mutate({
             mutation: self.formData && self.formData.id > 0 ? userUpdateProject : userCreateProject,
             variables: {
               id: self.formData && self.formData.id > 0 ? self.formData.id : '',
-              name: values.name,
-              description: values.description
+              name: self.form.name,
+              description: self.form.description
             },
             fetchPolicy: 'no-cache'
           })
@@ -104,6 +109,7 @@ export default {
           .catch(err => {
             this.$message.warning(formatGraphErr(err.message))
           })
+        }
       })
     }
   }

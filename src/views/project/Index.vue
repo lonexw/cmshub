@@ -111,7 +111,7 @@ export default {
         .then(() => {
           this.$message.success('保存成功')
           self.formPwd = {}
-        }) 
+        })
         .catch(error => {
           this.$message.warning(formatGraphErr(error.message))
         })
