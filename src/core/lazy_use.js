@@ -25,7 +25,8 @@ import {
   Icon,
   Input,
   Popover,
-  Tooltip
+  Tooltip,
+  Avatar
 } from 'ant-design-vue'
 
 Vue.use(Layout)
@@ -50,6 +51,7 @@ Vue.use(Row)
 Vue.use(Col)
 Vue.use(Checkbox)
 Vue.use(Popover)
+Vue.use(Avatar)
 Vue.use(message)
 Vue.use(notification)
 Vue.use(Tooltip)

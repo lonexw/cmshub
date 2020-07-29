@@ -5,7 +5,10 @@
       <template v-for="(item, index) in list">
         <a-dropdown :key="index">
           <div class="project" @click="goSchema(item)" :key="index">
-            <div class="icon">{{ item.name }}</div>
+            <div class="icon" v-if="!item.url && item.url != ''">{{ item.name }}</div>
+            <div v-else>
+              <a-avatar :src="item.url" class="icon" />
+            </div>
             <div class="margin-top text-bold text-black">{{ item.name }}</div>
           </div>
           <a-menu slot="overlay">
