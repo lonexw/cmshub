@@ -1,7 +1,7 @@
 <template>
   <div class="relative">
     <header class="padding-lr-sm padding-tb-xs flex align-center justify-between solid-bottom line-grey">
-      <bg-tag :active="true">Asset</bg-tag>
+      <bg-tag :active="true">附件管理</bg-tag>
       <div>
         <a-button type="primary" @click="add"> <a-icon type="plus" />新增 </a-button>
         <span></span>
