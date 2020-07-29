@@ -4,7 +4,13 @@
       <div class="flex flex-direction align-center justify-between" style="height: 100%;">
         <div>
           <img src="~@/assets/logo.svg" width="45px" class="margin-bottom-sm pointer" @click="goProject" />
-          <div class="text-icon margin-bottom pointer" @click="goProject" v-if="project && !project.url && project.url != ''">{{ project.name }}</div>
+          <div
+            class="text-icon margin-bottom pointer"
+            @click="goProject"
+            v-if="project && !project.url && project.url != ''"
+          >
+            {{ project.name }}
+          </div>
           <div v-else @click="goProject">
             <a-avatar :src="project.url" class="text-icon margin-bottom pointer" />
           </div>
