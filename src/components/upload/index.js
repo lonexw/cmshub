@@ -1,3 +1,4 @@
 import AreaUpload from './AreaUpload.vue'
 import BatchUpload from './BatchUpload.vue'
-export { AreaUpload, BatchUpload }
+import UploadImage from './UploadImage.vue'
+export { AreaUpload, BatchUpload, UploadImage }

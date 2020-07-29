@@ -9,27 +9,18 @@
       :wrapper-col="wrapperCol"
       @submit="handleSubmit"
     >
-      <a-row :gutter="32">
-        <a-col :span="12">
-          <a-form-model-item label="项目名称" prop="name">
-            <a-input
-              size="large"
-              v-model="form.name"
-            />
-          </a-form-model-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-model-item label="项目描述" prop="description">
-            <a-input
-              size="large"
-              v-model="form.description"
-            />
-          </a-form-model-item>
-        </a-col>
-      </a-row>
+      <a-form-model-item label="项目名称" prop="name">
+        <a-input v-model="form.name" />
+      </a-form-model-item>
+      <a-form-model-item label="项目描述" prop="description">
+        <a-input v-model="form.description" />
+      </a-form-model-item>
+      <a-form-model-item label="logo" prop="url">
+        <upload-image v-model="form.url" uploadText="上传图片"></upload-image>
+      </a-form-model-item>
       <div class="flex justify-center margin-top">
-        <a-button type="link" class="margin-right" :loading="submit_loading" @click="cancel">取消</a-button>
-        <a-button type="primary" html-type="submit" :loading="submit_loading">
+        <a-button type="link" :loading="submit_loading" @click="cancel">取消</a-button>
+        <a-button type="primary" :loading="submit_loading" @click="handleSubmit">
           {{ formData && formData.id > 0 ? '保存' : '创建' }}
         </a-button>
       </div>
@@ -39,11 +30,14 @@
 
 <script>
 import { userCreateProject, userUpdateProject } from '@/graphql/project.graphql'
+import { UploadImage } from '@/components'
 import { formatGraphErr } from '@/utils/util'
 import store from '@/store'
 
 export default {
-  components: {},
+  components: {
+    UploadImage
+  },
   props: {
     formData: {
       type: Object,
@@ -58,12 +52,8 @@ export default {
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
       rules: {
-        name: [
-          { required: true, message: '请输入项目名称', trigger: 'blur' }
-        ],
-        description: [
-          { required: false, message: '请输入项目描述', trigger: 'blur' }
-        ]
+        name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
+        description: [{ required: false, message: '请输入项目描述', trigger: 'blur' }]
       },
       submit_loading: false
     }
@@ -78,37 +68,46 @@ export default {
     goSchema() {
       this.$router.push({ name: 'Schema' })
     },
-    handleSubmit(e) {
-      e.preventDefault()
+    handleSubmit() {
       let self = this
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
+          if (self.submit_loading) {
+            return
+          }
+          self.submit_loading = true
           self.$apollo
-          .mutate({
-            mutation: self.formData && self.formData.id > 0 ? userUpdateProject : userCreateProject,
-            variables: {
-              id: self.formData && self.formData.id > 0 ? self.formData.id : '',
-              name: self.form.name,
-              description: self.form.description
-            },
-            fetchPolicy: 'no-cache'
-          })
-          .then(response => {
-            store
-              .dispatch(
-                'SetCurrentProject',
-                self.formData && self.formData.id > 0
-                  ? response.data.userUpdateProject
-                  : response.data.userCreateProject
-              )
-              .then(() => {
-                this.$router.push({ name: 'Schema' })
-              })
-            this.goSchema()
-          })
-          .catch(err => {
-            this.$message.warning(formatGraphErr(err.message))
-          })
+            .mutate({
+              mutation: self.formData && self.formData.id > 0 ? userUpdateProject : userCreateProject,
+              variables: {
+                data: {
+                  id: self.formData && self.formData.id > 0 ? self.formData.id : '',
+                  name: self.form.name,
+                  description: self.form.description,
+                  url: self.form.url
+                }
+              },
+              fetchPolicy: 'no-cache'
+            })
+            .then(response => {
+              store
+                .dispatch(
+                  'SetCurrentProject',
+                  self.formData && self.formData.id > 0
+                    ? response.data.userUpdateProject
+                    : response.data.userCreateProject
+                )
+                .then(() => {
+                  this.$router.push({ name: 'Schema' })
+                })
+              this.goSchema()
+            })
+            .catch(err => {
+              this.$message.warning(formatGraphErr(err.message))
+            })
+            .finally(() => {
+              self.submit_loading = false
+            })
         }
       })
     }

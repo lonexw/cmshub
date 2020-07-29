@@ -3,7 +3,7 @@ import BasePage from '@/components/basePage'
 import BgTag from '@/components/bgTag'
 import Preview from '@/components/preview'
 import BModal from '@/components/bModal'
-import { AreaUpload, BatchUpload } from '@/components/upload'
+import { AreaUpload, BatchUpload, UploadImage } from '@/components/upload'
 import PreviewImage from '@/components/PreviewImage'
 import WangEditor from '@/components/Editor/WangEditor'
 import ReferencePicker from '@/components/ReferencePicker'
@@ -20,5 +20,6 @@ export {
   BModal,
   WangEditor,
   ReferencePicker,
-  ContentShow
+  ContentShow,
+  UploadImage
 }

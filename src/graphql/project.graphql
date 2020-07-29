@@ -2,28 +2,22 @@ query userProjects {
   userProjects {
     id,
     name,
-    description
+    description,
+    url
   }
 }
 
-mutation userCreateProject($id: ID, $name: String!, $description: String) {
-  userCreateProject(data: {
-    id: $id,
-    name: $name,
-    description: $description
-  }) {
+mutation userCreateProject($data: ProjectInput) {
+  userCreateProject(data: $data) {
     description,
     name,
-    id
+    id,
+    url
   }
 }
 
-mutation userUpdateProject($id: ID, $name: String!, $description: String) {
-  userUpdateProject (data: {
-    id: $id,
-    name: $name,
-    description: $description
-  }) {
-    id, name, description
+mutation userUpdateProject($data: ProjectInput) {
+  userUpdateProject (data: $data) {
+    id, name, description, url
   }
 }
