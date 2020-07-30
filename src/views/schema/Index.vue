@@ -1,25 +1,26 @@
 <template>
-  <base-page title="模型">
+  <base-page title="模型管理">
     <template v-slot:sider>
       <div class="flex justify-between align-center">
-        <bg-tag :toggle="true" :toggleDirection="toggleDirection" @click.native="toggleModels">Models</bg-tag>
+        <bg-tag :toggle="true" :toggleDirection="toggleDirection" @click.native="toggleModels">模型列表</bg-tag>
         <bg-tag class="text-blue text-sm" @click.native="showCreate"><a-icon type="plus" /> 添加</bg-tag>
       </div>
       <div ref="models" :class="(show_models ? '' : 'hidden') + ' margin-top-xs models'">
-        <bg-tag class="flex align-center margin-left-xs text-black" :active="true">
-          Asset
-          <span class="tag bg-gray margin-left-xs">system</span>
-        </bg-tag>
+        <a-menu>
+          <a-menu-item v-for="item in customs" :key="item.id" @click="menuClick">
+            {{ item.zh_name }}
+          </a-menu-item>
+        </a-menu>
       </div>
     </template>
     <template v-slot:content>
       <div class="text-center" style="margin-top: 200px;" v-if="init">
         <h1 class="text-xxxl">开启项目</h1>
-        <h1 class="text-xxxl">创建第一个 Model</h1>
-        <a-button type="primary" size="large" @click="showCreate"><a-icon type="plus" />创建 Model</a-button>
+        <h1 class="text-xxxl">创建第一个 模型</h1>
+        <a-button type="primary" size="large" @click="showCreate"><a-icon type="plus" />创建 模型</a-button>
       </div>
-      <detail-model v-else :visible="show_create"></detail-model>
-      <update-model :visible="show_create" @cancel="cancelCreate"></update-model>
+      <!-- <detail-model v-else :visible="show_create"></detail-model> -->
+      <update-model :visible="show_create" @cancel="cancelCreate" :id="updateId"></update-model>
     </template>
   </base-page>
 </template>
@@ -27,21 +28,25 @@
 <script>
 import { BasePage, BgTag } from '@/components'
 import UpdateModel from './components/UpdateModel'
-import DetailModel from './components/DetailModel'
+// import DetailModel from './components/DetailModel'
+import { userCustoms } from '@/graphql/custom.graphql'
+import { formatGraphErr } from '@/utils/util'
 
 export default {
   components: {
     BasePage,
     BgTag,
-    UpdateModel,
-    DetailModel
+    UpdateModel
+    // DetailModel
   },
   data() {
     return {
       init: false,
       show_models: true,
       show_create: false,
-      models_height: '0px'
+      updateId: undefined,
+      models_height: '0px',
+      customs: []
     }
   },
   computed: {
@@ -50,8 +55,9 @@ export default {
     }
   },
   mounted() {
-    this.models_height = this.$refs.models.offsetHeight + 'px'
-    this.$refs.models.style.height = this.models_height
+    // this.models_height = this.$refs.models.offsetHeight + 'px'
+    // this.$refs.models.style.height = this.models_height
+    this.getCustomList()
   },
   methods: {
     toggleModels() {
@@ -63,7 +69,40 @@ export default {
     },
     cancelCreate() {
       this.show_create = false
-    }
+    },
+    menuClick(item) {
+      let self = this
+      self.updateId = parseInt(item.key)
+      self.show_create = true
+    },
+    getCustomList() {
+      let self = this
+      self.$apollo
+        .query({
+          query: userCustoms,
+          variables: {
+            paginator: {
+              limit: 50
+            }
+          },
+          fetchPolicy: 'no-cache'
+        })
+        .then(data => {
+          let customs = data.data.userCustoms.items
+          let items = []
+          customs.forEach(element => {
+            items.push(
+              Object.assign(element, {
+                active: false
+              })
+            )
+          })
+          self.customs = items
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
+    },
   }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-modal :title="(this.id ? '创建' : '编辑') + '模型'" :visible="visible" :footer="null" @cancel="cancel" :maskClosable="false">
+    <a-modal title="创建 模型" :visible="visible" :footer="null" @cancel="cancel" :maskClosable="false">
       <a-form-model layout="vertical" :model="form" ref="createForm" :rules="rules">
         <a-form-model-item label="展示名称" prop="zh_name">
           <div class="text-sm text-gray margin-bottom-xs">
@@ -18,7 +18,7 @@
           <div class="text-sm text-gray margin-bottom-xs">
             API ID 复数形式（字母、数字、下划线，字母开头）
           </div>
-          <a-input v-model="form.plural_name" placeholder="API ID 复数形式" />
+          <a-input v-model="form.name" placeholder="API ID 复数形式" />
         </a-form-model-item>
         <a-form-model-item label="描述" prop="description">
           <a-input v-model="form.description" type="textarea" placeholder="请输入描述" />
@@ -37,18 +37,12 @@
 </template>
 
 <script>
-import { userCreateCustom, userUpdateCustom, userCustom } from '@/graphql/custom.graphql'
-import { formatGraphErr } from '@/utils/util'
 export default {
   name: 'UpdateModel',
   props: {
     visible: {
       type: Boolean,
       required: true
-    },
-    id: {
-      type: Number,
-      default: 0
     }
   },
   components: {},
@@ -62,74 +56,21 @@ export default {
       }
     }
   },
-  watch: {
-    id(newVal) {
-      if (newVal) {
-        this.getCustom()
-      }
-    }
-  },
   computed: {},
-  mounted() {
-    if (this.id) {
-      this.getCustom()
-    }
-  },
+  mounted() {},
   methods: {
     cancel() {
       this.$emit('cancel')
     },
     submit() {
-      const self = this
       this.$refs.createForm.validate(valid => {
         if (valid) {
-          self.$apollo
-            .mutate({
-              mutation: self.id ? userUpdateCustom : userCreateCustom,
-              variables: {
-                data: self.form
-              },
-              fetchPolicy: 'no-cache'
-            })
-            .then(() => {
-              self.$emit('cancel')
-            })
-            .catch(err => {
-              self.$message.warning(formatGraphErr(err.message))
-            })
-            .finally(() => {
-              self.submit_loading = false
-            })
+          alert('submit!')
         } else {
           console.log('error submit!!')
           return false
         }
       })
-    },
-    getCustom() {
-      let self = this
-      console.log(self.id)
-      self.$apollo
-        .query({
-          query: userCustom,
-          variables: {
-            id: self.id
-          },
-          fetchPolicy: 'no-cache'
-        })
-        .then(data => {
-          const custom = data.data.userCustom
-          self.form = {
-            id: custom.id,
-            name: custom.name,
-            zh_name: custom.zh_name,
-            description: custom.description,
-            plural_name: custom.plural_name
-          }
-        })
-        .catch(err => {
-          this.$message.warning(formatGraphErr(err.message))
-        })
     }
   }
 }

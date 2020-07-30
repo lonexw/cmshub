@@ -42,7 +42,7 @@
         <preview-image :src="url" height="30px" v-if="record.type.indexOf('image') > -1"></preview-image>
         <span v-else>{{ url }}</span>
       </template>
-    </a-table>    
+    </a-table>
   </div>
 </template>
 
@@ -86,7 +86,7 @@ export default {
       onChange: (selectedRowKeys, selectedRows) => {
         this.select_num = selectedRows.length
         let ids = []
-        selectedRows.forEach((element) => {
+        selectedRows.forEach(element => {
           ids.push(element.id)
         })
         this.ids = ids

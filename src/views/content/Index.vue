@@ -1,5 +1,5 @@
 <template>
-  <base-page title="内容">
+  <base-page title="内容管理">
     <template v-slot:sider>
       <a-menu>
         <a-menu-item v-for="(item, index) in customs" :key="index" @click="menuClick">
