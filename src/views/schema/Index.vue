@@ -24,7 +24,11 @@
       </div>
       <!-- <detail-model v-else :visible="show_create"></detail-model> -->
       <update-model :visible="show_create" @cancel="cancelCreate($event)" :id="updateId"></update-model>
-      <update-category :visible="show_category_create" @cancel="cancelCategoryCreate($event)" :id="updateCategoryId"></update-category>
+      <update-category
+        :visible="show_category_create"
+        @cancel="cancelCategoryCreate($event)"
+        :id="updateCategoryId"
+      ></update-category>
     </template>
   </base-page>
 </template>
