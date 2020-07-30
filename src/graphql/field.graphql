@@ -2,12 +2,12 @@ query userFields($paginator: PaginatorInput,
   $more: FieldPaginatorInput) {
   userFields(paginator: $paginator, more: $more) {
     items {
-      id,
-      name,
-      zh_name,
-      type,
-      is_required,
-      is_multiple,
+      id
+      name
+      zh_name
+      type
+      is_required
+      is_multiple
       reference_custom_id
     },
     cursor {

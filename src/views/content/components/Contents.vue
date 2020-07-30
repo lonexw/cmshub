@@ -290,6 +290,11 @@ export default {
             }
           })
           columns.push({
+            title: '添加时间',
+            dataIndex: 'created_at'
+          })
+          itemNames.push('created_at')
+          columns.push({
             title: '操作',
             dataIndex: 'action',
             customRender: (text, record) => {
@@ -340,7 +345,7 @@ export default {
       let self = this
       self.loading = true
       let apiName = 'user' + self.custom.plural_name
-      let fieldFormat = 'id'
+      let fieldFormat = 'id, created_at'
       self.fields.forEach(item => {
         fieldFormat += `,${item.name}`
         if (item.type == 'ASSET') {
@@ -361,7 +366,7 @@ export default {
             title
           }`
         }
-      })
+      }) 
 
       self.$apollo
         .query({
