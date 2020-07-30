@@ -16,6 +16,9 @@ query userCategoryList {
         id
         name
         zh_name
+        plural_name
+        description
+        category_id
       }
     }
   }

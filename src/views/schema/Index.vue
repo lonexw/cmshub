@@ -23,8 +23,8 @@
         <a-button type="primary" size="large" @click="showCreate"><a-icon type="plus" />创建 模型</a-button>
       </div>
       <!-- <detail-model v-else :visible="show_create"></detail-model> -->
-      <update-model :visible="show_create" @cancel="cancelCreate" :id="updateId"></update-model>
-      <update-category :visible="show_category_create" @cancel="cancelCategoryCreate" :id="updateCategoryId"></update-category>
+      <update-model :visible="show_create" @cancel="cancelCreate($event)" :id="updateId"></update-model>
+      <update-category :visible="show_category_create" @cancel="cancelCategoryCreate($event)" :id="updateCategoryId"></update-category>
     </template>
   </base-page>
 </template>
@@ -77,11 +77,17 @@ export default {
     showCategoryCreate() {
       this.show_category_create = true
     },
-    cancelCreate() {
+    cancelCreate(flag) {
       this.show_create = false
+      if (flag) {
+        this.getCustomList()
+      }
     },
-    cancelCategoryCreate() {
+    cancelCategoryCreate(flag) {
       this.show_category_create = false
+      if (flag) {
+        this.getCustomList()
+      }
     },
     menuClick(item) {
       let self = this

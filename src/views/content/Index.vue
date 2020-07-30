@@ -89,7 +89,15 @@ export default {
       this.show_update = false
       let self = this
       setTimeout(function() {
-        self.selectCustom = self.customs[item.key]
+        let thisCustom = null
+        self.categories.forEach(category => {
+          category.customs.forEach(custom => {
+            if (custom.id === item.key) {
+              thisCustom = custom
+            }
+          })
+        })
+        self.selectCustom = thisCustom
         self.show_list = true
       }, 100)
     },

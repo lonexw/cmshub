@@ -108,7 +108,7 @@ export default {
               fetchPolicy: 'no-cache'
             })
             .then(() => {
-              self.$emit('cancel')
+              self.$emit('cancel', true)
             })
             .catch(err => {
               self.$message.warning(formatGraphErr(err.message))
