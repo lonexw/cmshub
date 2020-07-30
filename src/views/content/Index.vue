@@ -1,11 +1,16 @@
 <template>
   <base-page title="内容管理">
     <template v-slot:sider>
-      <a-menu>
-        <a-menu-item v-for="(item, index) in customs" :key="index" @click="menuClick">
-          {{ item.zh_name }}
-        </a-menu-item>
-      </a-menu>
+      <div class="models">
+        <a-menu v-for="category in categories" :key="category.id" :default-open-keys="openKeys" mode="inline">
+          <a-sub-menu :key="category.id">
+            <span slot="title">{{ category.title }}</span>
+            <a-menu-item v-for="item in category.customs" :key="item.id" @click="menuClick">
+              {{ item.zh_name }}
+            </a-menu-item>
+          </a-sub-menu>
+        </a-menu>
+      </div>
     </template>
     <template v-slot:content>
       <contents v-if="show_list" @update="update" :custom="selectCustom"></contents>
@@ -24,7 +29,7 @@
 import { BasePage } from '@/components'
 import Contents from './components/Contents'
 import UpdateContent from './components/UpdateContent'
-import { userCustoms } from '@/graphql/custom.graphql'
+import { userCategoryList } from '@/graphql/category.graphql'
 import { formatGraphErr } from '@/utils/util'
 
 export default {
@@ -44,7 +49,9 @@ export default {
       selectCustom: null,
       show_update: false,
       show_models: true,
-      models_height: '0px'
+      models_height: '0px',
+      categories: [],
+      openKeys: []
     }
   },
   computed: {
@@ -60,25 +67,17 @@ export default {
       let self = this
       self.$apollo
         .query({
-          query: userCustoms,
-          variables: {
-            paginator: {
-              limit: 50
-            }
-          },
+          query: userCategoryList,
+          variables: {},
           fetchPolicy: 'no-cache'
         })
         .then(data => {
-          let customs = data.data.userCustoms.items
-          let items = []
-          customs.forEach(element => {
-            items.push(
-              Object.assign(element, {
-                active: false
-              })
-            )
+          self.categories = data.data.userCategories.items
+          const keys = []
+          self.categories.forEach(element => {
+            keys.push(element.id)
           })
-          self.customs = items
+          self.openKeys = keys
         })
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
@@ -117,8 +116,6 @@ export default {
 .models {
   transition: all 0.2s ease-in-out;
   overflow: hidden;
-}
-.ant-menu {
   height: calc(~'100vh - 100px');
   overflow-y: auto;
 }

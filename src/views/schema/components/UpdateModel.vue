@@ -1,6 +1,12 @@
 <template>
   <div>
-    <a-modal :title="(this.id ? '创建' : '编辑') + '模型'" :visible="visible" :footer="null" @cancel="cancel" :maskClosable="false">
+    <a-modal
+      :title="(this.id ? '编辑' : '创建') + '模型'"
+      :visible="visible"
+      :footer="null"
+      @cancel="cancel"
+      :maskClosable="false"
+    >
       <a-form-model layout="vertical" :model="form" ref="createForm" :rules="rules">
         <a-form-model-item label="展示名称" prop="zh_name">
           <div class="text-sm text-gray margin-bottom-xs">
@@ -23,6 +29,13 @@
         <a-form-model-item label="描述" prop="description">
           <a-input v-model="form.description" type="textarea" placeholder="请输入描述" />
         </a-form-model-item>
+        <a-form-model-item label="所属分类" prop="category_id">
+          <a-select v-model="form.category_id">
+            <a-select-option :value="item.id" v-for="item in categories" :key="item.id">
+              {{ item.title }}
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
         <a-form-model-item style="margin-bottom: 0;" class="text-right">
           <a-button @click="cancel" class="margin-right-sm">
             取消
@@ -38,6 +51,7 @@
 
 <script>
 import { userCreateCustom, userUpdateCustom, userCustom } from '@/graphql/custom.graphql'
+import { userCategories } from '@/graphql/category.graphql'
 import { formatGraphErr } from '@/utils/util'
 export default {
   name: 'UpdateModel',
@@ -58,8 +72,10 @@ export default {
       rules: {
         zh_name: [{ required: true, message: '请输入展示名称', trigger: 'blur' }],
         name: [{ required: true, message: '请输入 API ID', trigger: 'blur' }],
-        plural_name: [{ required: true, message: '请输入 API ID 的复数形式', trigger: 'blur' }]
-      }
+        plural_name: [{ required: true, message: '请输入 API ID 的复数形式', trigger: 'blur' }],
+        category_id: [{ required: true, message: '请选择分类', trigger: 'blur' }]
+      },
+      categories: []
     }
   },
   watch: {
@@ -107,8 +123,8 @@ export default {
       })
     },
     getCustom() {
+      this.getCategories()
       let self = this
-      console.log(self.id)
       self.$apollo
         .query({
           query: userCustom,
@@ -124,8 +140,24 @@ export default {
             name: custom.name,
             zh_name: custom.zh_name,
             description: custom.description,
-            plural_name: custom.plural_name
+            plural_name: custom.plural_name,
+            category_id: custom.category_id + ''
           }
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
+    },
+    getCategories() {
+      let self = this
+      self.$apollo
+        .query({
+          query: userCategories,
+          variables: {},
+          fetchPolicy: 'no-cache'
+        })
+        .then(data => {
+          self.categories = data.data.userCategories.items
         })
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))

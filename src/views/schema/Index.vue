@@ -2,14 +2,17 @@
   <base-page title="模型管理">
     <template v-slot:sider>
       <div class="flex justify-between align-center">
-        <bg-tag :toggle="true" :toggleDirection="toggleDirection" @click.native="toggleModels">模型列表</bg-tag>
-        <bg-tag class="text-blue text-sm" @click.native="showCreate"><a-icon type="plus" /> 添加</bg-tag>
+        <bg-tag class="text-blue text-sm" @click.native="showCreate"><a-icon type="plus" /> 添加模型</bg-tag>
+        <bg-tag class="text-blue text-sm" @click.native="showCategoryCreate"><a-icon type="plus" /> 添加分类</bg-tag>
       </div>
       <div ref="models" :class="(show_models ? '' : 'hidden') + ' margin-top-xs models'">
-        <a-menu>
-          <a-menu-item v-for="item in customs" :key="item.id" @click="menuClick">
-            {{ item.zh_name }}
-          </a-menu-item>
+        <a-menu v-for="category in categories" :key="category.id" :default-open-keys="openKeys" mode="inline">
+          <a-sub-menu :key="category.id">
+            <span slot="title">{{ category.title }}</span>
+            <a-menu-item v-for="item in category.customs" :key="item.id" @click="menuClick">
+              {{ item.zh_name }}
+            </a-menu-item>
+          </a-sub-menu>
         </a-menu>
       </div>
     </template>
@@ -21,6 +24,7 @@
       </div>
       <!-- <detail-model v-else :visible="show_create"></detail-model> -->
       <update-model :visible="show_create" @cancel="cancelCreate" :id="updateId"></update-model>
+      <update-category :visible="show_category_create" @cancel="cancelCategoryCreate" :id="updateCategoryId"></update-category>
     </template>
   </base-page>
 </template>
@@ -28,15 +32,17 @@
 <script>
 import { BasePage, BgTag } from '@/components'
 import UpdateModel from './components/UpdateModel'
+import UpdateCategory from './components/UpdateCategory'
 // import DetailModel from './components/DetailModel'
-import { userCustoms } from '@/graphql/custom.graphql'
+import { userCategoryList } from '@/graphql/category.graphql'
 import { formatGraphErr } from '@/utils/util'
 
 export default {
   components: {
     BasePage,
     BgTag,
-    UpdateModel
+    UpdateModel,
+    UpdateCategory
     // DetailModel
   },
   data() {
@@ -44,9 +50,12 @@ export default {
       init: false,
       show_models: true,
       show_create: false,
+      show_category_create: false,
       updateId: undefined,
+      updateCategoryId: undefined,
       models_height: '0px',
-      customs: []
+      categories: [],
+      openKeys: []
     }
   },
   computed: {
@@ -55,8 +64,6 @@ export default {
     }
   },
   mounted() {
-    // this.models_height = this.$refs.models.offsetHeight + 'px'
-    // this.$refs.models.style.height = this.models_height
     this.getCustomList()
   },
   methods: {
@@ -67,8 +74,14 @@ export default {
     showCreate() {
       this.show_create = true
     },
+    showCategoryCreate() {
+      this.show_category_create = true
+    },
     cancelCreate() {
       this.show_create = false
+    },
+    cancelCategoryCreate() {
+      this.show_category_create = false
     },
     menuClick(item) {
       let self = this
@@ -79,30 +92,22 @@ export default {
       let self = this
       self.$apollo
         .query({
-          query: userCustoms,
-          variables: {
-            paginator: {
-              limit: 50
-            }
-          },
+          query: userCategoryList,
+          variables: {},
           fetchPolicy: 'no-cache'
         })
         .then(data => {
-          let customs = data.data.userCustoms.items
-          let items = []
-          customs.forEach(element => {
-            items.push(
-              Object.assign(element, {
-                active: false
-              })
-            )
+          self.categories = data.data.userCategories.items
+          const keys = []
+          self.categories.forEach(element => {
+            keys.push(element.id)
           })
-          self.customs = items
+          self.openKeys = keys
         })
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
         })
-    },
+    }
   }
 }
 </script>
@@ -110,5 +115,7 @@ export default {
 .models {
   transition: all 0.2s ease-in-out;
   overflow: hidden;
+  height: calc(~'100vh - 130px');
+  overflow-y: auto;
 }
 </style>

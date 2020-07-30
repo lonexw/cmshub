@@ -1,0 +1,43 @@
+query userCategories {
+  userCategories {
+    items {
+      id,
+      title
+    }
+  }
+}
+
+query userCategoryList {
+  userCategories {
+    items {
+      id
+      title
+      customs {
+        id
+        name
+        zh_name
+      }
+    }
+  }
+}
+
+query userCategory ($id: Int!) {
+  userCategory (id: $id) {
+    id
+    title
+  }
+}
+
+mutation userCreateCategory($data: CategoryInput!) {
+  userCreateCategory(data: $data) {
+    id,
+    title
+  }
+}
+
+mutation userUpdateCategory($data: CategoryInput!) {
+  userUpdateCategory(data: $data) {
+    id,
+    title
+  }
+}

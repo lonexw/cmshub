@@ -5,7 +5,8 @@ query userCustoms ($paginator: PaginatorInput, $more: CustomPaginatorInput) {
       name,
       zh_name,
       plural_name,
-      description
+      description,
+      category_id
     },
     cursor {
       total
@@ -19,7 +20,8 @@ query userCustom ($id: Int!) {
     name,
     zh_name,
     plural_name,
-    description
+    description,
+    category_id
   }
 }
 
@@ -29,7 +31,8 @@ mutation userCreateCustom($data: CustomInput!) {
     name,
     zh_name,
     plural_name,
-    description
+    description,
+    category_id
   }
 }
 
@@ -38,6 +41,7 @@ mutation userUpdateCustom($data: CustomInput!) {
     id,
     name,
     zh_name,
-    plural_name
+    plural_name,
+    category_id
   }
 }
