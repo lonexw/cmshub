@@ -76,9 +76,11 @@ export default {
       this.$refs.models.style.height = this.show_models ? this.models_height : '0px'
     },
     showCreate() {
+      this.updateId = undefined
       this.show_create = true
     },
     showCategoryCreate() {
+      this.updateCategoryId = undefined
       this.show_category_create = true
     },
     cancelCreate(flag) {

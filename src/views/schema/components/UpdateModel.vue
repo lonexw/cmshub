@@ -80,6 +80,7 @@ export default {
   },
   watch: {
     id(newVal) {
+      this.form = {}
       if (newVal) {
         this.getCustom()
       }
