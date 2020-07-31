@@ -6,14 +6,21 @@
         <bg-tag class="text-blue text-sm" @click.native="showCategoryCreate"><a-icon type="plus" /> 添加分类</bg-tag>
       </div>
       <div ref="models" :class="(show_models ? '' : 'hidden') + ' margin-top-xs models'">
-        <a-menu v-for="category in categories" :key="category.id" :default-open-keys="openKeys" mode="inline">
-          <a-sub-menu :key="category.id">
-            <span slot="title">{{ category.title }}<a-icon type="edit" style="margin-left: 10px;" @click.stop="showCategory(category.id)" /></span>
-            <a-menu-item v-for="item in category.customs" :key="item.id" @click="menuClick">
-              {{ item.zh_name }}
-            </a-menu-item>
-          </a-sub-menu>
-        </a-menu>
+        <draggable
+          :list="categories"
+          ghost-class="ghost"
+          @update="updateCategorySort"
+          class="list-group"
+        >
+          <a-menu v-for="category in categories" :key="category.id" :default-open-keys="openKeys" mode="inline">
+            <a-sub-menu :key="category.id">
+              <span slot="title"><a-icon type="ordered-list" />{{ category.title }}<a-icon type="edit" style="margin-left: 10px;" @click.stop="showCategory(category.id)" /></span>
+              <a-menu-item v-for="item in category.customs" :key="item.id" @click="menuClick">
+                {{ item.zh_name }}
+              </a-menu-item>
+            </a-sub-menu>
+          </a-menu>
+        </draggable>
       </div>
     </template>
     <template v-slot:content>
@@ -38,15 +45,17 @@ import { BasePage, BgTag } from '@/components'
 import UpdateModel from './components/UpdateModel'
 import UpdateCategory from './components/UpdateCategory'
 // import DetailModel from './components/DetailModel'
-import { userCategoryList } from '@/graphql/category.graphql'
+import { userCategoryList, userUpdateSequenceCategory } from '@/graphql/category.graphql'
 import { formatGraphErr } from '@/utils/util'
+import draggable from 'vuedraggable'
 
 export default {
   components: {
     BasePage,
     BgTag,
     UpdateModel,
-    UpdateCategory
+    UpdateCategory,
+    draggable
     // DetailModel
   },
   data() {
@@ -105,6 +114,29 @@ export default {
       self.updateCategoryId = parseInt(id)
       self.show_category_create = true
     },
+    updateCategorySort() {
+      const items = []
+      this.categories.forEach((element, index) => {
+        items.push({
+          id: element.id,
+          sequence: index
+        })
+      })
+      this.$apollo
+        .mutate({
+          mutation: userUpdateSequenceCategory,
+          variables: {
+            data: items
+          },
+          fetchPolicy: 'no-cache'
+        })
+        .then(() => {
+          this.getCustomList()
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
+    },
     getCustomList() {
       let self = this
       self.$apollo
@@ -134,5 +166,9 @@ export default {
   overflow: hidden;
   height: calc(~'100vh - 130px');
   overflow-y: auto;
+}
+.ghost {
+  opacity: 0.5;
+  background: #c8ebfb;
 }
 </style>

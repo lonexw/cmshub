@@ -44,3 +44,7 @@ mutation userUpdateCategory($data: CategoryInput!) {
     title
   }
 }
+
+mutation userUpdateSequenceCategory($data: [CategorySequenceInput]!) {
+  userUpdateSequenceCategory(data: $data)
+}
