@@ -8,7 +8,7 @@
       <div ref="models" :class="(show_models ? '' : 'hidden') + ' margin-top-xs models'">
         <a-menu v-for="category in categories" :key="category.id" :default-open-keys="openKeys" mode="inline">
           <a-sub-menu :key="category.id">
-            <span slot="title">{{ category.title }}</span>
+            <span slot="title">{{ category.title }}<a-icon type="edit" style="margin-left: 10px;" @click.stop="showCategory(category.id)" /></span>
             <a-menu-item v-for="item in category.customs" :key="item.id" @click="menuClick">
               {{ item.zh_name }}
             </a-menu-item>
@@ -99,6 +99,11 @@ export default {
       let self = this
       self.updateId = parseInt(item.key)
       self.show_create = true
+    },
+    showCategory(id) {
+      let self = this
+      self.updateCategoryId = parseInt(id)
+      self.show_category_create = true
     },
     getCustomList() {
       let self = this
