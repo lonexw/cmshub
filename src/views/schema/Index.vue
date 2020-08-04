@@ -6,15 +6,13 @@
         <bg-tag class="text-blue text-sm" @click.native="showCategoryCreate"><a-icon type="plus" /> 添加分类</bg-tag>
       </div>
       <div ref="models" :class="(show_models ? '' : 'hidden') + ' margin-top-xs models'">
-        <draggable
-          :list="categories"
-          ghost-class="ghost"
-          @update="updateCategorySort"
-          class="list-group"
-        >
+        <draggable :list="categories" ghost-class="ghost" @update="updateCategorySort" class="list-group">
           <a-menu v-for="category in categories" :key="category.id" :default-open-keys="openKeys" mode="inline">
             <a-sub-menu :key="category.id">
-              <span slot="title"><a-icon type="ordered-list" />{{ category.title }}<a-icon type="edit" style="margin-left: 10px;" @click.stop="showCategory(category.id)" /></span>
+              <span slot="title"
+                ><a-icon type="ordered-list"/>{{ category.title
+                }}<a-icon type="edit" style="margin-left: 10px;" @click.stop="showCategory(category.id)"
+              /></span>
               <a-menu-item v-for="item in category.customs" :key="item.id" @click="menuClick">
                 {{ item.zh_name }}
               </a-menu-item>
