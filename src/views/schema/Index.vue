@@ -27,7 +27,7 @@
         <h1 class="text-xxxl">创建第一个 模型</h1>
         <a-button type="primary" size="large" @click="showCreate"><a-icon type="plus" />创建 模型</a-button>
       </div>
-      <!-- <detail-model v-else :visible="show_create"></detail-model> -->
+      <detail-model :visible="show_detail" :id="updateId"></detail-model>
       <update-model :visible="show_create" @cancel="cancelCreate($event)" :id="updateId"></update-model>
       <update-category
         :visible="show_category_create"
@@ -42,7 +42,7 @@
 import { BasePage, BgTag } from '@/components'
 import UpdateModel from './components/UpdateModel'
 import UpdateCategory from './components/UpdateCategory'
-// import DetailModel from './components/DetailModel'
+import DetailModel from './components/DetailModel'
 import { userCategoryList, userUpdateSequenceCategory } from '@/graphql/category.graphql'
 import { formatGraphErr } from '@/utils/util'
 import draggable from 'vuedraggable'
@@ -53,14 +53,15 @@ export default {
     BgTag,
     UpdateModel,
     UpdateCategory,
-    draggable
-    // DetailModel
+    draggable,
+    DetailModel
   },
   data() {
     return {
       init: false,
       show_models: true,
       show_create: false,
+      show_detail: false,
       show_category_create: false,
       updateId: undefined,
       updateCategoryId: undefined,
@@ -105,7 +106,8 @@ export default {
     menuClick(item) {
       let self = this
       self.updateId = parseInt(item.key)
-      self.show_create = true
+      // self.show_create = true
+      self.show_detail = true
     },
     showCategory(id) {
       let self = this

@@ -5,8 +5,8 @@
         <div class="model-body padding-lr-sm">
           <header class="flex justify-between margin-bottom-xs">
             <div class="flex align-end">
-              <span class="zh-name">管理员</span>
-              <span class="name">#Admin</span>
+              <span class="zh-name">{{ form.zh_name }}</span>
+              <span class="name">#{{ form.name }}</span>
               <a-dropdown>
                 <a class="ant-dropdown-link" @click="e => e.preventDefault()">
                   <bg-tag><a-icon class="options" type="ellipsis"/></bg-tag>
@@ -15,21 +15,21 @@
                   <a-menu-item>
                     <a href="javascript:;"><a-icon type="edit" class="margin-right-xs" />编辑 模型</a>
                   </a-menu-item>
-                  <a-menu-item>
+                  <!-- <a-menu-item>
                     <a href="javascript:;"><a-icon type="delete" class="margin-right-xs" />删除 模型</a>
-                  </a-menu-item>
+                  </a-menu-item> -->
                 </a-menu>
               </a-dropdown>
             </div>
             <bg-tag>
-              <div class="text-blue pointer"><a-icon type="form" class="margin-right-xs" />添加内容</div>
+              <div class="text-blue pointer" @click="toContent"><a-icon type="form" class="margin-right-xs" />添加内容</div>
             </bg-tag>
           </header>
-          <div class="text-sm text-grey margin-bottom-xs">描述</div>
-          <div class="margin-bottom-xs">
+          <div class="text-sm text-grey margin-bottom-xs">{{ form.description }}</div>
+          <!-- <div class="margin-bottom-xs">
             <a-switch size="small" class="margin-right-xs" />
             <span class="text-sm">显示系统字段</span>
-          </div>
+          </div> -->
           <a-empty style="margin-top: 150px;" description="点击右侧 新增字段" />
         </div>
       </a-layout-content>
@@ -44,8 +44,10 @@
 </template>
 
 <script>
+import { userCustom } from '@/graphql/custom.graphql'
 import { BgTag } from '@/components'
 import Fields from './Fields'
+import { formatGraphErr } from '@/utils/util'
 
 export default {
   name: 'DetailModel',
@@ -53,6 +55,23 @@ export default {
     visible: {
       type: Boolean,
       required: true
+    },
+    id: {
+      type: Number,
+      default: 0
+    }
+  },
+  watch: {
+    id(newVal) {
+      this.form = {}
+      if (newVal) {
+        this.getCustom()
+      }
+    }
+  },
+  mounted() {
+    if (this.id) {
+      this.getCustom()
     }
   },
   components: {
@@ -60,13 +79,41 @@ export default {
     Fields
   },
   data() {
-    return {}
+    return {
+      form: {}
+    }
   },
-  computed: {},
-  mounted() {},
   methods: {
     cancel() {},
-    submit() {}
+    submit() {},
+    toContent() {
+      this.$router.push({ name: 'Content' })
+    },
+    getCustom() {
+      let self = this
+      self.$apollo
+        .query({
+          query: userCustom,
+          variables: {
+            id: self.id
+          },
+          fetchPolicy: 'no-cache'
+        })
+        .then(data => {
+          const custom = data.data.userCustom
+          self.form = {
+            id: custom.id,
+            name: custom.name,
+            zh_name: custom.zh_name,
+            description: custom.description,
+            plural_name: custom.plural_name,
+            category_id: custom.category_id + ''
+          }
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
+    }
   }
 }
 </script>

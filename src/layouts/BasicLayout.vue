@@ -18,7 +18,7 @@
             <template slot="title">
               <span>模型管理</span>
             </template>
-            <div :class="(page === 'Schema' ? 'text-blue ' : '') + 'pointer text-xxl'" @click="goSchema">
+            <div :class="($route.name === 'Schema' ? 'text-blue ' : '') + 'pointer text-xxl'" @click="goSchema">
               <a-icon type="profile" />
             </div>
           </a-tooltip>
@@ -26,7 +26,7 @@
             <template slot="title">
               <span>内容管理</span>
             </template>
-            <div :class="(page === 'Content' ? 'text-blue ' : '') + 'pointer text-xxl'" @click="goContent">
+            <div :class="($route.name === 'Content' ? 'text-blue ' : '') + 'pointer text-xxl'" @click="goContent">
               <a-icon type="edit" />
             </div>
           </a-tooltip>
@@ -34,7 +34,7 @@
             <template slot="title">
               <span>资源管理</span>
             </template>
-            <div :class="(page === 'Asset' ? 'text-blue ' : '') + 'pointer text-xxl'" @click="goAsset">
+            <div :class="($route.name === 'Asset' ? 'text-blue ' : '') + 'pointer text-xxl'" @click="goAsset">
               <a-icon type="link" />
             </div>
           </a-tooltip>
