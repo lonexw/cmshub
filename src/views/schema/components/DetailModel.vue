@@ -13,7 +13,9 @@
                 </a>
                 <a-menu slot="overlay">
                   <a-menu-item>
-                    <a href="javascript:;"><a-icon type="edit" class="margin-right-xs" />编辑 模型</a>
+                    <a href="javascript:;" @click="editCustom"
+                      ><a-icon type="edit" class="margin-right-xs" />编辑 模型</a
+                    >
                   </a-menu-item>
                   <!-- <a-menu-item>
                     <a href="javascript:;"><a-icon type="delete" class="margin-right-xs" />删除 模型</a>
@@ -22,7 +24,9 @@
               </a-dropdown>
             </div>
             <bg-tag>
-              <div class="text-blue pointer" @click="toContent"><a-icon type="form" class="margin-right-xs" />添加内容</div>
+              <div class="text-blue pointer" @click="toContent">
+                <a-icon type="form" class="margin-right-xs" />添加内容
+              </div>
             </bg-tag>
           </header>
           <div class="text-sm text-grey margin-bottom-xs">{{ form.description }}</div>
@@ -40,11 +44,13 @@
     >
       <fields></fields>
     </a-layout-sider>
+    <update-model :visible="show_create" @cancel="cancelCreate($event)" :id="id"></update-model>
   </a-layout>
 </template>
 
 <script>
 import { userCustom } from '@/graphql/custom.graphql'
+import UpdateModel from './UpdateModel'
 import { BgTag } from '@/components'
 import Fields from './Fields'
 import { formatGraphErr } from '@/utils/util'
@@ -76,10 +82,12 @@ export default {
   },
   components: {
     BgTag,
-    Fields
+    Fields,
+    UpdateModel
   },
   data() {
     return {
+      show_create: false,
       form: {}
     }
   },
@@ -88,6 +96,17 @@ export default {
     submit() {},
     toContent() {
       this.$router.push({ name: 'Content' })
+    },
+    editCustom() {
+      const self = this
+      self.show_create = true
+    },
+    cancelCreate(flag) {
+      this.show_create = false
+      if (flag) {
+        this.$emit('refresh')
+        this.getCustom()
+      }
     },
     getCustom() {
       let self = this
