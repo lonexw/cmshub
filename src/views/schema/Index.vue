@@ -7,12 +7,12 @@
       </div>
       <div ref="models" :class="(show_models ? '' : 'hidden') + ' margin-top-xs models'">
         <draggable :list="categories" ghost-class="ghost" @update="updateCategorySort" class="list-group">
-          <a-menu v-for="category in categories" :key="category.id" :default-open-keys="openKeys" mode="inline">
-            <a-sub-menu :key="category.id">
-              <span slot="title"
-                ><a-icon type="ordered-list"/>{{ category.title
-                }}<a-icon type="edit" style="margin-left: 10px;" @click.stop="showCategory(category.id)"
-              /></span>
+          <a-menu :open-keys.sync="openKeys" mode="inline">
+            <a-sub-menu v-for="category in categories" :key="'category' + category.id">
+              <span slot="title">
+                <a-icon type="ordered-list" />{{ category.title }}
+                <a-icon type="edit" style="margin-left: 10px;" @click.stop="showCategory(category.id)" />
+              </span>
               <a-menu-item v-for="item in category.customs" :key="item.id" @click="menuClick">
                 {{ item.zh_name }}
               </a-menu-item>
@@ -78,7 +78,7 @@ export default {
   methods: {
     toggleModels() {
       this.show_models = !this.show_models
-      this.$refs.models.style.height = this.show_models ? this.models_height : '0px'
+      // this.$refs.models.style.height = this.show_models ? this.models_height : '0px'
     },
     showCreate() {
       this.updateId = undefined
@@ -143,12 +143,12 @@ export default {
           fetchPolicy: 'no-cache'
         })
         .then(data => {
-          self.categories = data.data.userCategories.items
           const keys = []
-          self.categories.forEach(element => {
-            keys.push(element.id)
+          data.data.userCategories.items.forEach(element => {
+            keys.push('category' + element.id)
           })
           self.openKeys = keys
+          self.categories = data.data.userCategories.items
         })
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
