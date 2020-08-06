@@ -39,7 +39,7 @@
               <a-list-item slot="renderItem" slot-scope="item">
                 <div>
                   <div class="field_title">
-                    {{ item.zh_name }} (<span style="font-size: 12px;">{{ item.description }}</span>)
+                    {{ item.zh_name }} <span style="font-size: 12px;" v-if="item.description">({{ item.description }})</span>
                   </div>
                   {{ item.name }} - {{ item.type | field_type  }}{{ item.is_required ? ' - 必填' : '' }}
                   {{ item.is_unique ? ' - 唯一' : '' }}
