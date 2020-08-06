@@ -46,6 +46,7 @@
                 </div>
                 <div>
                   <a-icon type="edit" style="margin-left: 10px;" @click="editField(item)" />
+                  <a-icon type="delete" style="margin-left: 10px;" @click="deleteField(item)" />
                 </div>
               </a-list-item>
             </a-list>
@@ -77,7 +78,7 @@ import UpdateModel from './UpdateModel'
 import UpdateFieldModel from './UpdateFieldModel'
 import { BgTag } from '@/components'
 import Fields from './Fields'
-import { userFields } from '@/graphql/field.graphql'
+import { userFields, userDeleteField } from '@/graphql/field.graphql'
 import { formatGraphErr } from '@/utils/util'
 
 export default {
@@ -202,6 +203,32 @@ export default {
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
         })
+    },
+    deleteField(item) {
+      const self = this
+      this.$confirm({
+        title: '确认删除吗？',
+        confirmLoading: true,
+        onOk() {
+          self.$apollo
+            .mutate({
+              mutation: userDeleteField,
+              variables: {
+                id: item.id
+              },
+              fetchPolicy: 'no-cache'
+            })
+            .then(() => {
+              self.getFieldList()
+            })
+            .catch(err => {
+              self.$message.warning(formatGraphErr(err.message))
+            })
+            .finally(() => {
+              self.submit_loading = false
+            })
+        }
+      })
     }
   }
 }

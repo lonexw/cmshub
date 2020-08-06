@@ -67,3 +67,7 @@ mutation userUpdateField($data: FieldInput!) {
     reference_field_id
   }
 }
+
+mutation userDeleteField($id: Int!) {
+  userDeleteField(id: $id)
+}
