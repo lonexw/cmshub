@@ -39,9 +39,13 @@
               <a-list-item slot="renderItem" slot-scope="item">
                 <div>
                   <div class="field_title">
-                    {{ item.zh_name }}
+                    {{ item.zh_name }} (<span style="font-size: 12px;">{{ item.description }}</span>)
                   </div>
-                  {{ item.name }} - {{ item.type | field_type  }}
+                  {{ item.name }} - {{ item.type | field_type  }}{{ item.is_required ? ' - 必填' : '' }}
+                  {{ item.is_unique ? ' - 唯一' : '' }}
+                </div>
+                <div>
+                  <a-icon type="edit" style="margin-left: 10px;" @click="editField(item)" />
                 </div>
               </a-list-item>
             </a-list>
@@ -57,12 +61,14 @@
       <fields></fields>
     </a-layout-sider>
     <update-model :visible="show_create" @cancel="cancelCreate($event)" :id="id"></update-model>
+    <update-field-model :visible="showFieldCreate" @cancel="cancelFieldCreate($event)" :id="fieldId"></update-field-model>
   </a-layout>
 </template>
 
 <script>
 import { userCustom } from '@/graphql/custom.graphql'
 import UpdateModel from './UpdateModel'
+import UpdateFieldModel from './UpdateFieldModel'
 import { BgTag } from '@/components'
 import Fields from './Fields'
 import { userFields } from '@/graphql/field.graphql'
@@ -96,11 +102,14 @@ export default {
   components: {
     BgTag,
     Fields,
-    UpdateModel
+    UpdateModel,
+    UpdateFieldModel
   },
   data() {
     return {
       show_create: false,
+      showFieldCreate: false,
+      fieldId: undefined,
       form: {},
       fieldData: [],
       pagination: {
@@ -123,6 +132,16 @@ export default {
       if (flag) {
         this.$emit('refresh')
         this.getCustom()
+      }
+    },
+    editField(item) {
+      this.fieldId = Number(item.id)
+      this.showFieldCreate = true
+    },
+    cancelFieldCreate(flag) {
+      this.showFieldCreate = false
+      if (flag) {
+        this.getFieldList()
       }
     },
     getCustom() {

@@ -5,13 +5,65 @@ query userFields($paginator: PaginatorInput,
       id
       name
       zh_name
+      description
       type
       is_required
+      is_unique
       is_multiple
+      custom_id
       reference_custom_id
+      reference_field_id
     },
     cursor {
       total
     }
+  }
+}
+
+query userField($id: Int!) {
+  userField(id: $id) {
+    id
+    name
+    zh_name
+    description
+    type
+    is_required
+    is_unique
+    is_multiple
+    custom_id
+    reference_custom_id
+    reference_field_id
+  }
+}
+
+mutation userCreateField($data: FieldInput!) {
+  userCreateField(data: $data) {
+    id
+    name
+    zh_name
+    description
+    type
+    is_required
+    is_unique
+    is_multiple
+    custom_id
+    reference_custom_id
+    reference_field_id
+  }
+}
+
+mutation userUpdateField($data: FieldInput!) {
+  userUpdateField(data: $data) {
+    id
+    name
+    zh_name
+    description
+    type
+    is_required
+    is_unique
+    is_multiple
+    custom_id
+    reference_custom_id
+    reference_field_id
   }
 }
