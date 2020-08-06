@@ -58,10 +58,16 @@
       class="right-sider sider light"
       :style="{ overflow: 'auto', height: '100vh', position: 'fixed', right: 0 }"
     >
-      <fields></fields>
+      <fields @create="createField($event)"></fields>
     </a-layout-sider>
     <update-model :visible="show_create" @cancel="cancelCreate($event)" :id="id"></update-model>
-    <update-field-model :visible="showFieldCreate" @cancel="cancelFieldCreate($event)" :id="fieldId"></update-field-model>
+    <update-field-model
+      :visible="showFieldCreate"
+      @cancel="cancelFieldCreate($event)"
+      :id="fieldId"
+      :custom-id="id"
+      :type="fieldType"
+    ></update-field-model>
   </a-layout>
 </template>
 
@@ -110,6 +116,7 @@ export default {
       show_create: false,
       showFieldCreate: false,
       fieldId: undefined,
+      fieldType: undefined,
       form: {},
       fieldData: [],
       pagination: {
@@ -143,6 +150,10 @@ export default {
       if (flag) {
         this.getFieldList()
       }
+    },
+    createField(fieldItem) {
+      this.fieldType = fieldItem.flag
+      this.showFieldCreate = true
     },
     getCustom() {
       let self = this

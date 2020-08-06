@@ -1,7 +1,7 @@
 <template>
   <div class="padding-xs">
     <template v-for="(item, index) in fields">
-      <div :key="index">
+      <div :key="index" @click="showCreate(item)">
         <div class="text-grey margin-bottom-xs">{{ item.name }}</div>
         <div
           class="field flex align-center pointer margin-bottom-xs solid line-grey shadow text-ssm"
@@ -58,7 +58,11 @@ export default {
   },
   computed: {},
   mounted() {},
-  methods: {}
+  methods: {
+    showCreate(item) {
+      this.$emit('create', item)
+    }
+  }
 }
 </script>
 <style lang="less" scoped>

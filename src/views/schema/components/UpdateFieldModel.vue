@@ -58,6 +58,14 @@ export default {
     id: {
       type: Number,
       default: 0
+    },
+    customId: {
+      type: Number,
+      default: 0
+    },
+    type: {
+      type: String,
+      default: ''
     }
   },
   components: {},
@@ -77,12 +85,21 @@ export default {
       if (newVal) {
         this.getField()
       }
+    },
+    visible() {
+      if (!this.id) {
+        this.form.type = this.type
+        this.form.custom_id = this.customId
+      }
     }
   },
   computed: {},
   mounted() {
     if (this.id) {
       this.getField()
+    } else {
+      this.form.type = this.type
+      this.form.custom_id = this.customId
     }
   },
   methods: {
