@@ -1,21 +1,17 @@
 <template>
   <div class="padding-xs">
-    <div class="text-grey margin-bottom-xs">字符串</div>
-    <div
-      class="field flex align-center pointer margin-bottom-xs solid line-grey shadow text-ssm"
-      onselectstart="return false;"
-    >
-      <div class="text-icon">单</div>
-      <div class="name margin-left-xs">单行文本</div>
-    </div>
-    <div class="text-grey margin-bottom-xs">富文本</div>
-    <div
-      class="field flex align-center pointer margin-bottom-xs solid line-grey shadow text-ssm"
-      onselectstart="return false;"
-    >
-      <div class="text-icon">百</div>
-      <div class="name margin-left-xs">百度编辑器</div>
-    </div>
+    <template v-for="(item, index) in fields">
+      <div :key="index">
+        <div class="text-grey margin-bottom-xs">{{ item.name }}</div>
+        <div
+          class="field flex align-center pointer margin-bottom-xs solid line-grey shadow text-ssm"
+          onselectstart="return false;"
+        >
+          <div class="text-icon">{{ item.prefix }}</div>
+          <div class="name margin-left-xs">{{ item.flag }}</div>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -25,7 +21,40 @@ export default {
   props: {},
   components: {},
   data() {
-    return {}
+    return {
+      fields: [
+        {
+          name: '字符串',
+          prefix: '单',
+          allName: '单行文本',
+          flag: 'SINGLE_TEXT'
+        },
+        {
+          name: '字符串',
+          prefix: '多',
+          allName: '多行文本',
+          flag: 'MULTI_TEXT'
+        },
+        {
+          name: '富文本',
+          prefix: '百',
+          allName: '百度编辑器',
+          flag: 'RICH_TEXT'
+        },
+        {
+          name: '关联',
+          prefix: '附',
+          allName: '附件',
+          flag: 'ASSET'
+        },
+        {
+          name: '关联',
+          prefix: '模',
+          allName: '关联模型',
+          flag: 'REFERENCE'
+        }
+      ]
+    }
   },
   computed: {},
   mounted() {},
