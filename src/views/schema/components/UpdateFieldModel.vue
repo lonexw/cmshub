@@ -88,6 +88,7 @@ export default {
     },
     visible() {
       if (!this.id) {
+        this.form = {}
         this.form.type = this.type
         this.form.custom_id = this.customId
       }

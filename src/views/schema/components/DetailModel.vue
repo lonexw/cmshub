@@ -136,6 +136,7 @@ export default {
     },
     cancelCreate(flag) {
       this.show_create = false
+
       if (flag) {
         this.$emit('refresh')
         this.getCustom()
@@ -147,6 +148,7 @@ export default {
     },
     cancelFieldCreate(flag) {
       this.showFieldCreate = false
+      this.fieldId = undefined
       if (flag) {
         this.getFieldList()
       }
