@@ -84,6 +84,9 @@ export default {
       if (newVal) {
         this.getCustom()
       }
+    },
+    visible() {
+      this.getCategories()
     }
   },
   computed: {},
@@ -124,7 +127,6 @@ export default {
       })
     },
     getCustom() {
-      this.getCategories()
       let self = this
       self.$apollo
         .query({

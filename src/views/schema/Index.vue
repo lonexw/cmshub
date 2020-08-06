@@ -28,6 +28,7 @@
         <a-button type="primary" size="large" @click="showCreate"><a-icon type="plus" />创建 模型</a-button>
       </div>
       <detail-model :visible="show_detail" :id="updateId" @refresh="getCustomList" v-if="show_detail"></detail-model>
+      <update-model :visible="show_create" @cancel="cancelCreate($event)" :id="updateId"></update-model>
       <update-category
         :visible="show_category_create"
         @cancel="cancelCategoryCreate($event)"
@@ -39,6 +40,7 @@
 
 <script>
 import { BasePage, BgTag } from '@/components'
+import UpdateModel from './components/UpdateModel'
 import UpdateCategory from './components/UpdateCategory'
 import DetailModel from './components/DetailModel'
 import { userCategoryList, userUpdateSequenceCategory } from '@/graphql/category.graphql'
@@ -50,6 +52,7 @@ export default {
     BasePage,
     BgTag,
     UpdateCategory,
+    UpdateModel,
     draggable,
     DetailModel
   },
