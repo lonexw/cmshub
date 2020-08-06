@@ -41,7 +41,7 @@
                   <div class="field_title">
                     {{ item.zh_name }}
                   </div>
-                  {{ item.name }} - {{ item.type }}
+                  {{ item.name }} - {{ item.type | field_type  }}
                 </div>
               </a-list-item>
             </a-list>

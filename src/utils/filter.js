@@ -18,3 +18,17 @@ Vue.filter('dayjs', function(dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
 Vue.filter('moment', function(dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
   return moment(dataStr).format(pattern)
 })
+
+Vue.filter('field_type', function(value) {
+  if (value === 'SINGLE_TEXT') {
+    return '单行文本'
+  } else if (value === 'MULTI_TEXT') {
+    return '多行文本'
+  } else if (value === 'RICH_TEXT') {
+    return '富文本'
+  } else if (value === 'ASSET') {
+    return '附件'
+  } else if (value === 'REFERENCE') {
+    return '关联模型'
+  }
+})
