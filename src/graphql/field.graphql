@@ -33,6 +33,17 @@ query userField($id: Int!) {
     custom_id
     reference_custom_id
     reference_field_id
+    hasReferenceField {
+      id
+      name
+      zh_name
+      description
+      type
+      is_required
+      is_unique
+      is_multiple
+      custom_id
+    }
   }
 }
 

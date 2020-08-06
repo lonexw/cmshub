@@ -67,7 +67,7 @@
       @cancel="cancelFieldCreate($event)"
       :id="fieldId"
       :custom-id="id"
-      :type="fieldType"
+      :field-type="fieldType"
     ></update-field-model>
   </a-layout>
 </template>
