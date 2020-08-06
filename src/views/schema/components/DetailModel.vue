@@ -34,7 +34,19 @@
             <a-switch size="small" class="margin-right-xs" />
             <span class="text-sm">显示系统字段</span>
           </div> -->
-          <a-empty style="margin-top: 150px;" description="点击右侧 新增字段" />
+          <div class="content">
+            <a-list item-layout="horizontal" :pagination="pagination" :data-source="fieldData">
+              <a-list-item slot="renderItem" slot-scope="item">
+                <div>
+                  <div class="field_title">
+                    {{ item.zh_name }}
+                  </div>
+                  {{ item.name }} - {{ item.type }}
+                </div>
+              </a-list-item>
+            </a-list>
+          </div>
+          <!-- <a-empty style="margin-top: 150px;" description="点击右侧 新增字段" /> -->
         </div>
       </a-layout-content>
     </a-layout>
@@ -53,6 +65,7 @@ import { userCustom } from '@/graphql/custom.graphql'
 import UpdateModel from './UpdateModel'
 import { BgTag } from '@/components'
 import Fields from './Fields'
+import { userFields } from '@/graphql/field.graphql'
 import { formatGraphErr } from '@/utils/util'
 
 export default {
@@ -88,7 +101,11 @@ export default {
   data() {
     return {
       show_create: false,
-      form: {}
+      form: {},
+      fieldData: [],
+      pagination: {
+        pageSize: 10
+      }
     }
   },
   methods: {
@@ -128,6 +145,27 @@ export default {
             plural_name: custom.plural_name,
             category_id: custom.category_id + ''
           }
+          self.getFieldList()
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
+    },
+    getFieldList() {
+      this.data = []
+      let self = this
+      self.$apollo
+        .query({
+          query: userFields,
+          variables: {
+            more: {
+              custom_id: self.id
+            }
+          },
+          fetchPolicy: 'no-cache'
+        })
+        .then(data => {
+          self.fieldData = data.data.userFields.items
         })
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
@@ -166,6 +204,10 @@ export default {
       color: var(--blue);
     }
   }
+}
+.field_title {
+  font-size: 14px;
+  font-weight: bold;
 }
 .ant-popover-inner-content {
   padding: 0 !important;
