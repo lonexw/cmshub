@@ -209,6 +209,9 @@ export default {
           variables: {
             more: {
               custom_id: self.custom.id
+            },
+            paginator: {
+              limit: 100
             }
           },
           fetchPolicy: 'no-cache'
@@ -227,19 +230,23 @@ export default {
                   dataIndex: element.name,
                   customRender: (text, record) => {
                     if (element.is_multiple) {
-                      let assets = null
+                      let children = []
                       record[element.name + 'Asset'].forEach(assetItem => {
                         if (assetItem) {
-                          assets += <img src={assetItem.url} />
+                          let child = self.$createElement("div", {
+                            domProps: {
+                              innerHTML: '<img src=' + assetItem.url + ' height="30px" />'
+                            }
+                          })
+                          children.push(child)
                         }
                       })
-                      return assets
+                      return children
                     } else {
                       let data = record[element.name + 'Asset']
                       if (data) {
                         let url = record[element.name + 'Asset'].url
                         if (record[element.name + 'Asset'].type.indexOf('image') > -1) {
-                          // return <img src={url} />
                           return <preview-image src={url} height="30px"></preview-image>
                         }
                         return url

@@ -193,14 +193,16 @@ export default {
             if (item.type == 'ASSET' || item.type == 'REFERENCE') {
               let assetItems = []
               if (item.is_multiple) {
-                if (self.form[item.name + self.typeTexts[item.type]]) {
+                const value = self.form[item.name + self.typeTexts[item.type]]
+                if (value && value.length > 0) {
                   self.form[item.name + self.typeTexts[item.type]].forEach(assetItem => {
                     assetItems.push(assetItem.id)
                   })
                 }
                 data[item.name] = assetItems
               } else {
-                data[item.name] = self.form[item.name  + self.typeTexts[item.type]].length > 0 ? self.form[item.name + self.typeTexts[item.type]][0].id : ''
+                const value = self.form[item.name  + self.typeTexts[item.type]]
+                data[item.name] = value && value.length > 0 ? value[0].id : undefined
               }
             } else {
               data[item.name] = self.form[item.name]
@@ -246,6 +248,9 @@ export default {
           variables: {
             more: {
               custom_id: self.custom.id
+            },
+            paginator: {
+              limit: 100
             }
           },
           fetchPolicy: 'no-cache'

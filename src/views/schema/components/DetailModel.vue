@@ -99,6 +99,8 @@ export default {
       if (newVal) {
         this.getCustom()
       }
+      this.pagination.pageSize = 10
+      this.pagination.current = 1
     }
   },
   mounted() {
@@ -121,7 +123,17 @@ export default {
       form: {},
       fieldData: [],
       pagination: {
-        pageSize: 10
+        onChange: page => {
+          this.pagination.current = page
+        },
+        onShowSizeChange: (current, pageSize) => {
+          this.pagination.pageSize = pageSize
+          this.pagination.current = 1
+        },
+        pageSize: 10,
+        current: 1,
+        pageSizeOptions: ['10', '20', '30', '40', '50'],
+        showSizeChanger: true
       }
     }
   },
