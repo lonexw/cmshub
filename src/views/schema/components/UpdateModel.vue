@@ -86,6 +86,7 @@ export default {
       }
     },
     visible() {
+      this.form = {}
       this.getCategories()
     }
   },
