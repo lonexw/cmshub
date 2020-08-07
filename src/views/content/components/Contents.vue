@@ -34,7 +34,7 @@
       :loading="loading"
       :pagination="false"
       :locale="{ emptyText: '暂无数据' }"
-      :scroll="{ scrollToFirstRowOnChange: true }"
+      :scroll="columns.length > 5 ? { x: 2000 } : { x: 100 }"
     >
     </a-table>
     <a-modal
@@ -297,6 +297,7 @@ export default {
           columns.push({
             title: '操作',
             dataIndex: 'action',
+            fixed: 'right',
             customRender: (text, record) => {
               let children = []
               let child = self.$createElement("a", {
