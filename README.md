@@ -35,3 +35,8 @@ REGION = "oss-cn-beijing"
 BUCKET = "cmshub-server"
 PREFIX = "assets/dist"
 ```
+
+# 需注意的几点
+## 创建关联模型字段
+1 创建关联模型字段后不能修改，只能删除后重新添加
+2 创建关联模型字段的模型，必须要有 title 字段，内容列表和选择关联模型时会用到
