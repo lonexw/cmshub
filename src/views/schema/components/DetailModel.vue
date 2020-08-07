@@ -37,14 +37,14 @@
           <div class="content">
             <a-list item-layout="horizontal" :pagination="pagination" :data-source="fieldData">
               <a-list-item slot="renderItem" slot-scope="item">
-                <div>
+                <div style="width: calc(100vw - 100px)">
                   <div class="field_title">
                     {{ item.zh_name }} <span style="font-size: 12px;" v-if="item.description">({{ item.description }})</span>
                   </div>
                   {{ item.name }} - {{ item.type | field_type  }}{{ item.is_required ? ' - 必填' : '' }}
                   {{ item.is_unique ? ' - 唯一' : '' }}
                 </div>
-                <div>
+                <div style="width: 100px;">
                   <a-icon type="edit" style="margin-left: 10px;" @click="editField(item)" />
                   <a-icon type="delete" style="margin-left: 10px;" @click="deleteField(item)" />
                 </div>
