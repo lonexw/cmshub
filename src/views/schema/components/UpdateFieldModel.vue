@@ -35,7 +35,7 @@
           </a-form-model-item>
           <template v-if="type === 'REFERENCE'">
             <a-form-model-item label="关联模型">
-              <a-select v-model="form.reference_custom_id" placeholder="请选择关联模型">
+              <a-select v-model="form.reference_custom_id" placeholder="请选择关联模型" :disabled="id">
                 <a-select-option :value="item.id" v-for="(item, index) in customs" :key="index">
                   {{ item.name }} ({{ item.zh_name }})
                 </a-select-option>
