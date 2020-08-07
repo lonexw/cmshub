@@ -57,7 +57,9 @@
       </div>
       <div class="text-df margin-tb">
         <div class="margin-bottom-xs">信息</div>
-        <div v-if="!(dataForm && dataForm.id)" class="text-sm text-grey margin-left-xs" style="font-style: italic;">保存后显示</div>
+        <div v-if="!(dataForm && dataForm.id)" class="text-sm text-grey margin-left-xs" style="font-style: italic;">
+          保存后显示
+        </div>
         <div v-else class="text-sm text-grey">
           <div class="flex justify-between"><span>创建</span><span>2020-04-09 18:17:54</span></div>
           <div class="flex justify-between"><span>更新</span><span>2020-04-09 18:17:54</span></div>
@@ -65,7 +67,9 @@
       </div>
       <div class="margin-tb">
         <div class="text-df margin-bottom-xs">发布于</div>
-        <div v-if="!(dataForm && dataForm.id)" class="text-sm text-grey margin-left-xs" style="font-style: italic;">尚未发布</div>
+        <div v-if="!(dataForm && dataForm.id)" class="text-sm text-grey margin-left-xs" style="font-style: italic;">
+          尚未发布
+        </div>
         <div
           v-else
           class="flex justify-between align-center padding-xs solid line-grey shadow radius"
