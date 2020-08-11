@@ -86,7 +86,6 @@ export default {
       }
     },
     visible() {
-      this.form = {}
       this.getCategories()
     }
   },
@@ -98,6 +97,7 @@ export default {
   },
   methods: {
     cancel() {
+      this.form = {}
       this.$emit('cancel')
     },
     submit() {
