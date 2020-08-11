@@ -45,7 +45,7 @@
                   {{ item.name }} - {{ item.type | field_type }}{{ item.is_required ? ' - 必填' : '' }}
                   {{ item.is_unique ? ' - 唯一' : '' }}
                 </div>
-                <div style="width: 100px;">
+                <div style="width: 105px; display: flex;">
                   <a-icon type="edit" style="margin-left: 10px;" @click="editField(item)" />
                   <a-icon type="delete" style="margin-left: 10px;" @click="deleteField(item)" />
                 </div>
