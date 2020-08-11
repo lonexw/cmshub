@@ -27,7 +27,7 @@
           <a-form-model-item label="是否唯一">
             <a-switch v-model="form.is_unique" />
           </a-form-model-item>
-          <a-form-model-item label="是否复数" v-if="type !== 'REFERENCE'">
+          <a-form-model-item label="是否复数">
             <a-switch v-model="form.is_multiple" />
           </a-form-model-item>
           <a-form-model-item label="描述" prop="description">

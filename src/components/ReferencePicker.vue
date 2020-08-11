@@ -154,13 +154,18 @@ export default {
                   dataIndex: element.name,
                   customRender: (text, record) => {
                     if (element.is_multiple) {
-                      let assets = null
+                      let children = []
                       record[element.name + 'Asset'].forEach(assetItem => {
                         if (assetItem) {
-                          assets += <img src={assetItem.url} />
+                          let child = self.$createElement("div", {
+                            domProps: {
+                              innerHTML: '<img src=' + assetItem.url + ' height="30px" />'
+                            }
+                          })
+                          children.push(child)
                         }
                       })
-                      return assets
+                      return children
                     } else {
                       let data = record[element.name + 'Asset']
                       if (data) {
