@@ -1,0 +1,48 @@
+query userTokens($paginator: PaginatorInput, $more: TokenPaginatorInput) {
+  userTokens (paginator: $paginator, more: $more) {
+    items {
+      id
+      token
+      description
+      project_id
+      custom_ids
+      scopes
+    }
+    cursor {
+      total
+    }
+  }
+}
+
+mutation userCreateToken($data: TokenInput!) {
+  userCreateToken(data: $data) {
+    description
+    token
+    id
+  }
+}
+
+mutation userUpdateToken($data: TokenInput!) {
+  userUpdateToken (data: $data) {
+    id
+    token
+    description
+    project_id
+    scopes
+  }
+}
+
+mutation userDeleteToken($id: Int!) {
+  userDeleteToken (id: $id)
+}
+
+query userToken($id: Int!) {
+  userToken (id: $id) {
+    id
+    token
+    description
+    project_id
+    custom_ids
+    scopes
+  }
+}
