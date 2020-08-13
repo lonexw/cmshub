@@ -33,6 +33,12 @@ export const asyncRouterMap = [
             meta: { title: '内容管理' }
           },
           {
+              path: '/content/upload',
+              name: 'ContentUpload',
+              component: () => import('@/views/content/Upload'),
+              meta: { title: '内容管理' }
+          },
+          {
             path: '/asset',
             name: 'Asset',
             component: () => import('@/views/asset/Index'),

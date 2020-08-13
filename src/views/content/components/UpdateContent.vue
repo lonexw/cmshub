@@ -94,11 +94,13 @@
       :footer="null"
     >
       <asset-picker
+        v-if="assetModal.visible"
         @selectChange="assetSelectChange"
         :form-name="assetModal.item.name"
         :is-multiple="assetModal.item.is_multiple"
       ></asset-picker>
       <div style="text-align: right;">
+        <a-button type="primary" @click="batchAdd" style="margin-right: 5px"> <a-icon type="plus" />上传 </a-button>
         <a-button @click="closeAssetDialog" class="margin-right-sm">关闭</a-button>
       </div>
     </a-modal>
@@ -120,20 +122,46 @@
         <a-button @click="closeReferenceDialog" class="margin-right-sm">关闭</a-button>
       </div>
     </a-modal>
+    <a-modal
+            :maskClosable="false"
+            :width="uploadModal.width"
+            :title="uploadModal.title"
+            :visible="uploadModal.visible"
+            @cancel="closeUploadDialog"
+            :footer="null"
+    >
+      <div>
+        <a-layout style="background-color: white; margin-right: 240px">
+          <a-layout-content>
+            <div class="content-body padding-lr-sm">
+              <a-form-model layout="vertical" :model="uploadForm" ref="form">
+                <a-form-model-item label="" prop="url">
+                  <batch-upload v-if="uploadModal.visible" :data="{ id: 1 }" @change="handleChange"></batch-upload>
+                </a-form-model-item>
+              </a-form-model>
+            </div>
+          </a-layout-content>
+        </a-layout>
+      </div>
+      <div style="text-align: right;">
+        <a-button type="primary" @click="handleUpload" :loading="submit_loading">创建</a-button>
+        <a-button @click="closeUploadDialog" class="margin-right-sm">关闭</a-button>
+      </div>
+    </a-modal>
   </a-layout>
 </template>
 
 <script>
 /* eslint-disable */
-import { AreaUpload, WangEditor } from '@/components'
+import { AreaUpload, WangEditor, BatchUpload, ReferencePicker } from '@/components'
 import { userFields } from '@/graphql/field.graphql'
 import { formatGraphErr } from '@/utils/util'
 import store from '@/store'
 import api from '@/config/api'
 import gql from 'graphql-tag'
 import AssetPicker from '@/views/asset/components/AssetPicker'
-import { ReferencePicker } from '@/components'
 import { Tag } from 'ant-design-vue'
+import { userCreateBatchAsset } from '@/graphql/asset.graphql'
 
 export default {
   name: 'UpdateContent',
@@ -151,10 +179,13 @@ export default {
     }
   },
   components: {
-    AreaUpload, WangEditor, AssetPicker, Tag, ReferencePicker
+    AreaUpload, WangEditor, AssetPicker, Tag, ReferencePicker, BatchUpload
   },
   data() {
     return {
+      fileList: [],
+      uploadForm: this.$form.createForm(this),
+      submit_loading: false,
       form: {},
       fields: [],
       fieldNames: [],
@@ -166,6 +197,11 @@ export default {
         visible: false,
         width: '80%',
         item: {}
+      },
+      uploadModal: {
+          title: '上传',
+          visible: false,
+          width: '80%'
       },
       referenceModal: {
         title: '选择关联表',
@@ -185,6 +221,51 @@ export default {
     this.getFieldList()
   },
   methods: {
+    goSchema() {
+        this.$router.push({ name: 'Schema' })
+    },
+    handleChange(data) {
+        this.fileList = data
+    },
+    handleUpload(e) {
+        e.preventDefault()
+        let self = this
+        if (this.fileList.length === 0) {
+            this.$message.warning('请上传文件')
+            return
+        }
+        let data = []
+        this.fileList.forEach(element => {
+            data.push({
+                name: element.name,
+                url: element.url,
+                type: element.mime,
+                file_size: element.size,
+                is_system: 'false'
+            })
+        })
+        self.$apollo
+            .mutate({
+                mutation: userCreateBatchAsset,
+                variables: {
+                    data: data
+                },
+                fetchPolicy: 'no-cache',
+                context: {
+                    uri: api.projectUri + store.state.common.currentProject.id
+                }
+            })
+            .then(() => {
+                self.closeUploadDialog()
+                self.fileList = []
+            })
+            .catch(err => {
+                this.$message.warning(formatGraphErr(err.message))
+            })
+    },
+    batchAdd() {
+        this.showUploadDialog()
+    },
     cancel() {
       this.$emit('cancel')
     },
@@ -363,6 +444,16 @@ export default {
     closeReferenceDialog() {
       this.referenceModal.visible = false
     },
+    showUploadDialog() {
+        console.log(this.fileList)
+        this.fileList = []
+        this.assetModal.visible = false
+        this.uploadModal.visible = true
+    },
+    closeUploadDialog() {
+        this.uploadModal.visible = false
+        this.assetModal.visible = true
+    },
     selectChange(type, value, name, is_multiple) {
       console.log(this.$refs.createForm)
       let typeName = ''
@@ -424,5 +515,66 @@ export default {
   min-width: 0px;
   max-width: 720px;
   margin: 30px auto;
+}
+.project-header {
+  position: fixed;
+  top: 0;
+  z-index: 2;
+  width: 100%;
+  background-color: white;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.05);
+}
+.project-footer {
+  background-color: white;
+  position: fixed;
+  z-index: 2;
+  bottom: 0;
+  width: 100%;
+}
+.project-body {
+  width: 960px;
+  margin: 0 auto 50px auto;
+  padding-top: 90px;
+  .project {
+    position: relative;
+    z-index: 1;
+    transform: scale(1);
+    top: 0;
+    margin-left: 32px;
+    margin-bottom: 32px;
+    width: 200px;
+    box-sizing: border-box;
+    cursor: pointer;
+    padding: 48px 32px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 4px;
+    text-align: center;
+    border-radius: 4px;
+    border: 1px solid rgb(240, 242, 247);
+    transition: all 0.3s ease 0s;
+    .add-icon {
+      font-size: 80px;
+      color: #6663fd;
+    }
+    .icon {
+      width: 80px;
+      height: 80px;
+      background-color: black;
+      color: rgb(255, 255, 255);
+      font-size: 32px;
+      line-height: 80px;
+      text-align: center;
+      font-weight: 600;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 8px;
+    }
+  }
+
+  .project:hover {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 20px;
+    transform: scale(1.01);
+    top: -5px;
+  }
 }
 </style>
