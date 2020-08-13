@@ -45,6 +45,9 @@
       <a-form-model :model="tokenForm" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-model-item label="token">
           <a-input v-model="tokenForm.token" />
+          <a-button type="primary" @click="randToken">
+            生成token
+          </a-button>
         </a-form-model-item>
         <a-form-model-item label="描述">
           <a-input v-model="tokenForm.description" />
@@ -215,6 +218,11 @@ export default {
       })
       this.checkedList = items
       this.tokenFormVisible = true
+    },
+    randToken() {
+      const token = new Date().getTime()
+      this.tokenForm.token = token
+      this.tokenForm = Object.assign({}, this.tokenForm)
     },
     submitToken() {
       let self = this
