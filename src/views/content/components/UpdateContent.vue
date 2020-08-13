@@ -123,12 +123,12 @@
       </div>
     </a-modal>
     <a-modal
-            :maskClosable="false"
-            :width="uploadModal.width"
-            :title="uploadModal.title"
-            :visible="uploadModal.visible"
-            @cancel="closeUploadDialog"
-            :footer="null"
+      :maskClosable="false"
+      :width="uploadModal.width"
+      :title="uploadModal.title"
+      :visible="uploadModal.visible"
+      @cancel="closeUploadDialog"
+      :footer="null"
     >
       <div>
         <a-layout style="background-color: white; margin-right: 240px">

@@ -72,7 +72,7 @@ export default {
           }
         })
         .then(() => {
-            self.$router.push({ path: '/content' })
+          self.$router.push({ path: '/content' })
         })
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
