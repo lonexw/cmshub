@@ -37,6 +37,12 @@ export const asyncRouterMap = [
             name: 'Asset',
             component: () => import('@/views/asset/Index'),
             meta: { title: '资源管理' }
+          },
+          {
+            path: '/setting',
+            name: 'Setting',
+            component: () => import('@/views/setting/Index'),
+            meta: { title: '设置' }
           }
         ]
       }

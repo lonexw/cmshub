@@ -42,7 +42,12 @@
         <div>
           <a-popover placement="rightBottom">
             <template slot="content">
-              <a-button type="link" @click="logout"><a-icon type="logout" />退出</a-button>
+              <div>
+                <a-button type="link" @click="goSetting"><a-icon type="setting" />设置</a-button>
+              </div>
+              <div>
+                <a-button type="link" @click="logout"><a-icon type="logout" />退出</a-button>
+              </div>
             </template>
             <img src="~@/assets/logo.svg" width="40px" class="round pointer" />
           </a-popover>
@@ -82,17 +87,17 @@ export default {
   },
   methods: {
     ...mapActions(['Logout']),
+    goSetting() {
+      this.$router.push({ name: 'Setting' })
+    },
     goSchema() {
       this.$router.push({ name: 'Schema' })
-      this.page = 'Schema'
     },
     goContent() {
       this.$router.push({ name: 'Content' })
-      this.page = 'Content'
     },
     goAsset() {
       this.$router.push({ name: 'Asset' })
-      this.page = 'Asset'
     },
     goProject() {
       this.$router.push({ name: 'Project' })

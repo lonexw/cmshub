@@ -28,7 +28,8 @@ import {
   Tooltip,
   Avatar,
   Select,
-  List
+  List,
+  Card
 } from 'ant-design-vue'
 
 Vue.use(Layout)
@@ -56,6 +57,7 @@ Vue.use(Popover)
 Vue.use(Avatar)
 Vue.use(Select)
 Vue.use(List)
+Vue.use(Card)
 Vue.use(message)
 Vue.use(notification)
 Vue.use(Tooltip)
