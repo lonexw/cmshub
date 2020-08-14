@@ -276,7 +276,7 @@ export default {
           let data = {}
           self.fields.forEach(item => {
             if (item.type == 'ASSET' || item.type == 'REFERENCE') {
-              let assetItems = []
+              const assetItems = []
               if (item.is_multiple) {
                 const value = self.form[item.name + self.typeTexts[item.type]]
                 if (value && value.length > 0) {
@@ -455,7 +455,6 @@ export default {
         this.assetModal.visible = true
     },
     selectChange(type, value, name, is_multiple) {
-      console.log(this.$refs.createForm)
       let typeName = ''
       if (type == 'asset') {
         typeName = 'Asset'
@@ -474,12 +473,25 @@ export default {
         }
         if (!isExist) {
           if (this.form[name + typeName] && this.form[name + typeName].length > 0) {
-            this.form[name + typeName].push(value)
+            if (!this.form[name + typeName]) {
+              this.form[name + typeName] = []
+            }
+            const assets = this.form[name + typeName]
+            if (!assets) {
+              assets = []
+            }
+            assets.push(value)
+            this.form[name + typeName] = assets
           } else {
             this.form[name + typeName] = [value]
           }
           if (is_multiple) {
-            this.form[name].push(value.id)
+            const assets = this.form[name]
+            if (!assets) {
+              assets = []
+            }
+            assets.push(value.id)
+            this.form[name] = assets
           } else {
             this.form[name] = value.id
           }
@@ -488,7 +500,12 @@ export default {
       } else {
         this.form[name + typeName] = [value]
         if (is_multiple) {
-          this.form[name].push(value.id)
+          const assets = this.form[name]
+          if (!assets) {
+            assets = []
+          }
+          assets.push(value.id)
+          this.form[name] = assets
         } else {
           this.form[name] = value.id
         }
