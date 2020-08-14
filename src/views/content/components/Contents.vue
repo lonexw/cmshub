@@ -277,6 +277,7 @@ export default {
                 columns.push({
                   title: element.zh_name,
                   dataIndex: element.name,
+                  ellipsis: true,
                   customRender: (text, record) => {
                     let child = self.$createElement("div", {
                       domProps: {
@@ -290,7 +291,8 @@ export default {
               } else {
                 columns.push({
                   title: element.zh_name,
-                  dataIndex: element.name
+                  dataIndex: element.name,
+                  ellipsis: true
                 })
               }
               itemNames.push(element.name)
