@@ -39,12 +39,21 @@ router.beforeEach((to, from, next) => {
               // console.log('addRoutes', store.getters.addRouters)
               router.addRoutes(store.getters.addRouters)
               let redirect = decodeURIComponent(from.query.redirect || to.path)
-              toSchema(redirect, store, to, next, false)
+              if (to.path == '/project') {
+                const tempTo = Object.assign({}, to)
+                next({ ...tempTo, replace: true })
+              } else {
+                toSchema(redirect, store, to, next, false)
+              }
             })
           } else {
             store.commit('SET_TOKEN', token)
             let redirect = decodeURIComponent(from.query.redirect || to.path)
-            toSchema(redirect, store, to, next, true)
+            if (to.path == '/project') {
+              next()
+            } else {
+              toSchema(redirect, store, to, next, true)
+            }
             // next()
           }
         })
@@ -72,7 +81,7 @@ router.afterEach(() => {
 function toSchema(redirect, store, to, next, isNext) {
   let currentProject = Vue.ls.get(CURRENT_PROJECT)
   let isToSchema = false
-  if (redirect == '/asset' || redirect == '/content') {
+  if (redirect == '/asset' || redirect == '/content' || redirect == '/schema') {
     if (!(currentProject && currentProject.id > 0)) {
       isToSchema = true
       next({ path: '/project' })

@@ -12,6 +12,11 @@ const common = {
       state.currentProject = info
       state.projectId = info ? info.id : 0
       Vue.ls.set(CURRENT_PROJECT, info, 7 * 24 * 60 * 60 * 1000)
+    },
+    REMOVE_CURRENT_PROJECT: (state) => {
+      state.currentProject = {}
+      state.projectId = 0
+      Vue.ls.remove(CURRENT_PROJECT)
     }
   },
 

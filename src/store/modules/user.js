@@ -62,10 +62,11 @@ const user = {
 
     // 登出
     // eslint-disable-next-line no-unused-vars
-    Logout({ commit, state }) {
+    Logout({ commit }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
         Vue.ls.remove(ACCESS_TOKEN)
+        commit('REMOVE_CURRENT_PROJECT')
         resolve()
       })
     }
