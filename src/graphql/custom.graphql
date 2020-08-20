@@ -45,3 +45,7 @@ mutation userUpdateCustom($data: CustomInput!) {
     category_id
   }
 }
+
+mutation userDeleteCustom($id: Int!) {
+  userDeleteCustom (id: $id)
+}

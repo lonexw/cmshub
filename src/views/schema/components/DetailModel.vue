@@ -17,9 +17,9 @@
                       ><a-icon type="edit" class="margin-right-xs" />编辑 模型</a
                     >
                   </a-menu-item>
-                  <!-- <a-menu-item>
-                    <a href="javascript:;"><a-icon type="delete" class="margin-right-xs" />删除 模型</a>
-                  </a-menu-item> -->
+                   <a-menu-item>
+                    <a href="javascript:;" @click="deleteCustom(form)"><a-icon type="delete" class="margin-right-xs" />删除 模型</a>
+                  </a-menu-item>
                 </a-menu>
               </a-dropdown>
             </div>
@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { userCustom } from '@/graphql/custom.graphql'
+import { userCustom, userDeleteCustom } from '@/graphql/custom.graphql'
 import UpdateModel from './UpdateModel'
 import UpdateFieldModel from './UpdateFieldModel'
 import { BgTag } from '@/components'
@@ -171,6 +171,24 @@ export default {
       this.fieldType = fieldItem.flag
       this.showFieldCreate = true
     },
+    deleteCustom(item) {
+        let self = this
+        self.$apollo
+            .mutate({
+                mutation: userDeleteCustom,
+                variables: {
+                    id: item.id
+                },
+                fetchPolicy: 'no-cache'
+            })
+            .then(() => {
+                this.$message.success('删除成功')
+                window.location.reload()
+            })
+            .catch(error => {
+                this.$message.warning(formatGraphErr(error.message))
+            })
+      },
     getCustom() {
       let self = this
       self.$apollo
