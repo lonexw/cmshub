@@ -17,8 +17,10 @@
                       ><a-icon type="edit" class="margin-right-xs" />编辑 模型</a
                     >
                   </a-menu-item>
-                   <a-menu-item>
-                    <a href="javascript:;" @click="deleteCustom(form)"><a-icon type="delete" class="margin-right-xs" />删除 模型</a>
+                  <a-menu-item>
+                    <a href="javascript:;" @click="deleteCustom(form)"
+                      ><a-icon type="delete" class="margin-right-xs" />删除 模型</a
+                    >
                   </a-menu-item>
                 </a-menu>
               </a-dropdown>
@@ -172,23 +174,23 @@ export default {
       this.showFieldCreate = true
     },
     deleteCustom(item) {
-        let self = this
-        self.$apollo
-            .mutate({
-                mutation: userDeleteCustom,
-                variables: {
-                    id: item.id
-                },
-                fetchPolicy: 'no-cache'
-            })
-            .then(() => {
-                this.$message.success('删除成功')
-                window.location.reload()
-            })
-            .catch(error => {
-                this.$message.warning(formatGraphErr(error.message))
-            })
-      },
+      let self = this
+      self.$apollo
+        .mutate({
+          mutation: userDeleteCustom,
+          variables: {
+            id: item.id
+          },
+          fetchPolicy: 'no-cache'
+        })
+        .then(() => {
+          this.$message.success('删除成功')
+          window.location.reload()
+        })
+        .catch(error => {
+          this.$message.warning(formatGraphErr(error.message))
+        })
+    },
     getCustom() {
       let self = this
       self.$apollo
