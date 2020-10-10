@@ -36,6 +36,9 @@
             </a-select-option>
           </a-select>
         </a-form-model-item>
+        <a-form-model-item label="是否多语言">
+          <a-switch v-model="form.is_mult_language" />
+        </a-form-model-item>
         <a-form-model-item style="margin-bottom: 0;" class="text-right">
           <a-button @click="cancel" class="margin-right-sm">
             取消
@@ -145,7 +148,8 @@ export default {
             zh_name: custom.zh_name,
             description: custom.description,
             plural_name: custom.plural_name,
-            category_id: custom.category_id + ''
+            category_id: custom.category_id + '',
+            is_mult_language: custom.is_mult_language
           }
         })
         .catch(err => {

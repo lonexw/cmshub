@@ -22,13 +22,16 @@
             <a-input v-model="form.name" placeholder="请输入 API ID" />
           </a-form-model-item>
           <a-form-model-item label="是否必填">
-            <a-switch v-model="form.is_required" />
-          </a-form-model-item>
+          <a-switch v-model="form.is_required" />
+        </a-form-model-item>
           <a-form-model-item label="是否唯一">
             <a-switch v-model="form.is_unique" />
           </a-form-model-item>
           <a-form-model-item label="是否复数">
             <a-switch v-model="form.is_multiple" />
+          </a-form-model-item>
+          <a-form-model-item label="是否多语言">
+            <a-switch v-model="form.is_mult_language" />
           </a-form-model-item>
           <a-form-model-item label="描述" prop="description">
             <a-input v-model="form.description" type="textarea" placeholder="请输入描述" />
@@ -78,6 +81,9 @@
         </a-form-model-item>
         <a-form-model-item label="是否复数">
           <a-switch v-model="referenceForm.is_multiple" />
+        </a-form-model-item>
+        <a-form-model-item label="是否多语言">
+          <a-switch v-model="referenceForm.is_mult_language" />
         </a-form-model-item>
         <a-form-model-item style="margin-bottom: 0;" class="text-right">
           <template v-if="type === 'REFERENCE'">
@@ -223,6 +229,7 @@ export default {
             is_required: field.is_required,
             is_unique: field.is_unique,
             is_multiple: field.is_multiple,
+            is_mult_language: field.is_mult_language,
             reference_custom_id: field.reference_custom_id ? '' + field.reference_custom_id : undefined,
             custom_id: field.custom_id,
             type: field.type,
@@ -234,7 +241,8 @@ export default {
               name: field.hasReferenceField.name,
               zh_name: field.hasReferenceField.zh_name,
               description: field.hasReferenceField.description,
-              is_multiple: field.hasReferenceField.is_multiple
+              is_multiple: field.hasReferenceField.is_multiple,
+              is_mult_language: field.is_mult_language
             }
           } else {
             self.referenceForm = {}

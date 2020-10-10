@@ -1,0 +1,35 @@
+query userAllLanguages {
+  userAllLanguages {
+    items {
+      id,
+      name,
+      code,
+      is_default
+    }
+  }
+}
+
+query userLanguages {
+  userLanguages {
+    items {
+      id,
+      code,
+      language{
+      code,
+      name,
+      is_default
+      }
+    }
+  }
+}
+
+mutation userCreateLanguage($data: LanguageInput!) {
+  userCreateLanguage(data: $data) {
+    id,
+    project_id
+  }
+}
+
+mutation userDeleteLanguage($id: Int!) {
+  userDeleteLanguage (id: $id)
+}

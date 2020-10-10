@@ -37,6 +37,33 @@
         </template>
       </a-table>
     </a-card>
+    <a-card title="语言管理" style="margin-top: 20px;">
+      <a-button type="primary" @click="createLanguage">
+        创建语言
+      </a-button>
+      <a-table
+        size="middle"
+        rowKey="id"
+        :columns="languageColumns"
+        :dataSource="languageData"
+        :loading="loading"
+        :pagination="false"
+        :locale="{ emptyText: '暂无数据' }"
+        :scroll="columns.length > 5 ? { x: 2000 } : { x: 100 }"
+      >
+        <template slot="language" slot-scope="language">
+          <span v-if="language.is_default === 1">
+            是
+          </span>
+          <span v-if="language.is_default === 0">
+            否
+          </span>
+        </template>
+        <template slot="action" slot-scope="text, record">
+          <a href="javascript:;" @click="removeLanguage(record)">移除</a>
+        </template>
+      </a-table>
+    </a-card>
     <a-modal
       v-model="tokenFormVisible"
       :title="tokenForm && tokenForm.id ? '编辑token' : '创建token'"
@@ -71,6 +98,17 @@
         </a-form-model-item>
       </a-form-model>
     </a-modal>
+    <a-modal v-model="languageFormVisible" @ok="submitLanguage">
+      <a-form-model :model="languageForm" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-form-model-item label="语言">
+          <a-select placeholder="请选择语言" v-model="languageForm.language_id">
+            <a-select-option :value="item.id" v-for="item in languages" :key="item.id">
+              {{ item.name }}
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+      </a-form-model>
+    </a-modal>
   </div>
 </template>
 
@@ -78,6 +116,7 @@
 import { mapState } from 'vuex'
 import { userTokens, userCreateToken, userUpdateToken, userDeleteToken } from '@/graphql/token.graphql'
 import { userCustoms } from '@/graphql/custom.graphql'
+import { userAllLanguages, userCreateLanguage, userLanguages, userDeleteLanguage } from '@/graphql/language.graphql'
 import { formatGraphErr } from '@/utils/util'
 
 export default {
@@ -86,7 +125,10 @@ export default {
     return {
       form: {},
       tokenFormVisible: false,
+      languages: [],
       tokenForm: {},
+      languageForm: {},
+      languageFormVisible: false,
       columns: [
         {
           title: 'token',
@@ -108,7 +150,29 @@ export default {
           scopedSlots: { customRender: 'action' }
         }
       ],
+      languageColumns: [
+        {
+          title: 'code',
+          dataIndex: 'language.code'
+        },
+        {
+          title: '名称',
+          dataIndex: 'language.name'
+        },
+        {
+          title: '是否默认',
+          dataIndex: 'language',
+          scopedSlots: { customRender: 'language' }
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          fixed: 'right',
+          scopedSlots: { customRender: 'action' }
+        }
+      ],
       data: [],
+      languageData: [],
       customList: [],
       checkedList: [],
       indeterminate: true,
@@ -130,6 +194,7 @@ export default {
     }
     this.getList()
     this.userCustoms()
+    this.getLanguages()
   },
   methods: {
     copyApiUrl() {
@@ -147,6 +212,38 @@ export default {
       this.$message.success('复制成功')
       document.body.removeChild(_input)
     },
+    getAllLanguages() {
+      let self = this
+      self.$apollo
+        .query({
+          query: userAllLanguages,
+          variables: {},
+          fetchPolicy: 'no-cache'
+        })
+        .then(data => {
+          self.languages = data.data.userAllLanguages.items
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
+    },
+    getLanguages() {
+      let self = this
+      self.$apollo
+        .query({
+            query: userLanguages,
+            variables: {},
+            fetchPolicy: 'no-cache'
+        })
+        .then(data => {
+            if (data.data.userLanguages !== null) {
+                self.languageData = data.data.userLanguages.items
+            }
+        })
+        .catch(err => {
+            this.$message.warning(formatGraphErr(err.message))
+        })
+      },
     userCustoms() {
       let self = this
       self.$apollo
@@ -210,6 +307,12 @@ export default {
       this.checkedList = []
       this.tokenFormVisible = true
     },
+    createLanguage() {
+      this.languageForm = {}
+      this.languages = []
+      this.languageFormVisible = true
+      this.getAllLanguages()
+    },
     edit(item) {
       this.tokenForm = Object.assign({}, item)
       const items = []
@@ -252,6 +355,28 @@ export default {
           this.$message.warning(formatGraphErr(error.message))
         })
     },
+    submitLanguage() {
+      let self = this
+      let params = {}
+      params.language_id = self.languageForm.language_id
+      self.$apollo
+        .mutate({
+            mutation: userCreateLanguage,
+            variables: {
+                data: params
+            },
+            fetchPolicy: 'no-cache'
+        })
+        .then(() => {
+            this.$message.success('保存成功')
+            self.languageForm = {}
+            self.languageFormVisible = false
+            self.getLanguages()
+        })
+        .catch(error => {
+            this.$message.warning(formatGraphErr(error.message))
+        })
+    },
     remove(item) {
       let self = this
       self.$apollo
@@ -269,7 +394,25 @@ export default {
         .catch(error => {
           this.$message.warning(formatGraphErr(error.message))
         })
-    }
+    },
+    removeLanguage(item) {
+      let self = this
+      self.$apollo
+        .mutate({
+            mutation: userDeleteLanguage,
+            variables: {
+                id: item.id
+            },
+            fetchPolicy: 'no-cache'
+        })
+        .then(() => {
+            this.$message.success('移除成功')
+            this.getLanguages()
+        })
+        .catch(error => {
+            this.$message.warning(formatGraphErr(error.message))
+        })
+      }
   }
 }
 </script>
