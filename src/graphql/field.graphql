@@ -13,6 +13,7 @@ query userFields($paginator: PaginatorInput,
       custom_id
       reference_custom_id
       reference_field_id
+      is_mult_language
     },
     cursor {
       total
@@ -30,6 +31,7 @@ query userField($id: Int!) {
     is_required
     is_unique
     is_multiple
+    is_mult_language
     custom_id
     reference_custom_id
     reference_field_id
@@ -42,6 +44,7 @@ query userField($id: Int!) {
       is_required
       is_unique
       is_multiple
+      is_mult_language
       custom_id
     }
   }
@@ -60,6 +63,7 @@ mutation userCreateField($data: FieldInput!) {
     custom_id
     reference_custom_id
     reference_field_id
+    is_mult_language
   }
 }
 
@@ -76,6 +80,7 @@ mutation userUpdateField($data: FieldInput!) {
     custom_id
     reference_custom_id
     reference_field_id
+    is_mult_language
   }
 }
 
