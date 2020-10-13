@@ -11,19 +11,52 @@
           <a-form-model layout="vertical" :model="form" ref="createForm" :rules="rules" v-if="formShow">
             <template v-for="(item, index) in fields">
               <template v-if="item.type == 'SINGLE_TEXT'">
-                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
-                  <a-input v-model="form[item.name]" :placeholder="'请输入' + item.zh_name" @change="formValueChange" />
-                </a-form-model-item>
+                <template v-if="item.is_mult_language == true && showEnglish == true">
+                  {{item.zh_name}}
+                  <a-form-model-item label="CN" :prop="item.name" :key="index">
+                    <a-input v-model="form[item.name]" :placeholder="'请输入' + item.zh_name" @change="formValueChange" />
+                  </a-form-model-item>
+                  <a-form-model-item label="EN" :prop="item.name" :key="index">
+                    <a-input v-model="enForm[item.name]" :placeholder="'请输入' + item.zh_name" @change="enFormValueChange" />
+                  </a-form-model-item>
+                </template>
+                <template v-else>
+                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
+                    <a-input v-model="form[item.name]" :placeholder="'请输入' + item.zh_name" @change="formValueChange" />
+                  </a-form-model-item>
+                </template>
               </template>
               <template v-else-if="item.type == 'MULTI_TEXT'">
-                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
-                  <a-input v-model="form[item.name]" type="textarea" :placeholder="'请输入' + item.zh_name" />
-                </a-form-model-item>
+                <template v-if="item.is_mult_language == true && showEnglish == true">
+                  {{item.zh_name}}
+                  <a-form-model-item label="CN" :prop="item.name" :key="index">
+                    <a-input v-model="form[item.name]" type="textarea" :placeholder="'请输入' + item.zh_name" />
+                  </a-form-model-item>
+                  <a-form-model-item label="EN" :prop="item.name" :key="index">
+                    <a-input v-model="enForm[item.name]" type="textarea" :placeholder="'请输入' + item.zh_name" />
+                  </a-form-model-item>
+                </template>
+                <template v-else>
+                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
+                    <a-input v-model="form[item.name]" type="textarea" :placeholder="'请输入' + item.zh_name" />
+                  </a-form-model-item>
+                </template>
               </template>
               <template v-else-if="item.type == 'RICH_TEXT'">
-                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
-                  <WangEditor v-model="form[item.name]" @change="richValueChange" :name="item.name"></WangEditor>
-                </a-form-model-item>
+                <template v-if="item.is_mult_language == true && showEnglish == true">
+                  {{item.zh_name}}
+                  <a-form-model-item label="CN" :prop="item.name" :key="index">
+                    <WangEditor v-model="form[item.name]" @change="richValueChange" :name="item.name"></WangEditor>
+                  </a-form-model-item>
+                  <a-form-model-item label="EN" :prop="item.name" :key="index">
+                    <WangEditor v-model="enForm[item.name]" @change="richValueChange" :name="item.name"></WangEditor>
+                  </a-form-model-item>
+                </template>
+                <template v-else>
+                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
+                    <WangEditor v-model="form[item.name]" @change="richValueChange" :name="item.name"></WangEditor>
+                  </a-form-model-item>
+                </template>
               </template>
               <template v-else-if="item.type == 'ASSET'">
                 <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
@@ -82,6 +115,12 @@
             </template>
             <a-icon type="delete" theme="filled" style="color: red;" class="pointer" />
           </a-tooltip>
+        </div>
+      </div>
+      <div class="text-df margin-tb">
+        <div class="margin-bottom-xs">语言</div>
+        <div class="text-sm text-grey margin-left-xs" style="font-style: italic;">
+          <a-checkbox-group v-model="checkedList" :options="customList" @change="onChange" />
         </div>
       </div>
     </a-layout-sider>
@@ -162,6 +201,7 @@ import gql from 'graphql-tag'
 import AssetPicker from '@/views/asset/components/AssetPicker'
 import { Tag } from 'ant-design-vue'
 import { userCreateBatchAsset } from '@/graphql/asset.graphql'
+import { userAllLanguages } from '@/graphql/language.graphql'
 
 export default {
   name: 'UpdateContent',
@@ -187,8 +227,12 @@ export default {
       uploadForm: this.$form.createForm(this),
       submit_loading: false,
       form: {},
+      enForm: {},
       fields: [],
       fieldNames: [],
+      checkedList: [],
+      customList: [],
+      showEnglish: false,
       rules: {
         title: [{ required: true, message: '必填', trigger: 'blur' }]
       },
@@ -219,6 +263,7 @@ export default {
   computed: {},
   mounted() {
     this.getFieldList()
+    this.getAllLanguages()
   },
   methods: {
     goSchema() {
@@ -299,6 +344,8 @@ export default {
             data['id'] = self.form.id
           }
           apiName = apiName + self.custom.name
+          data['translate'] = self.enForm
+          console.log(data)
           self.$apollo
             .mutate({
               mutation: gql`mutation ${apiName} ($data: ${self.custom.name}Input!) { 
@@ -389,6 +436,48 @@ export default {
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
         })
+    },
+    getAllLanguages() {
+      let self = this
+      self.$apollo
+        .query({
+            query: userAllLanguages,
+            variables: {},
+            fetchPolicy: 'no-cache'
+        })
+        .then(data => {
+          const customList = data.data.userAllLanguages.items
+          const items = []
+          const checkItems = []
+          customList.forEach(element => {
+            items.push({
+              value: element.id,
+              label: element.name
+            })
+            if (element.name === '中文(简)'){
+              checkItems.push(element.id)
+            }
+          })
+          self.customList = items
+          self.checkedList = checkItems
+          console.log(self.checkedList)
+        })
+        .catch(err => {
+            this.$message.warning(formatGraphErr(err.message))
+        })
+    },
+    onChange(checkedList) {
+      if (checkedList.length === 0) {
+          this.showEnglish = false
+      }
+      checkedList.forEach(element => {
+      console.log(element)
+      if (element === '2') {
+        this.showEnglish = true
+      } else {
+        this.showEnglish = false
+      }
+      })
     },
     richValueChange(values) {
       let value = values[0]
@@ -522,7 +611,10 @@ export default {
     },
     formValueChange() {
       this.form = Object.assign({}, this.form)
-    }
+    },
+    enFormValueChange() {
+      this.enForm = Object.assign({}, this.enForm)
+    },
   }
 }
 </script>
