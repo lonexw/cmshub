@@ -202,9 +202,13 @@ import AssetPicker from '@/views/asset/components/AssetPicker'
 import { Tag } from 'ant-design-vue'
 import { userCreateBatchAsset } from '@/graphql/asset.graphql'
 import { userAllLanguages } from '@/graphql/language.graphql'
+import { userUserItemTranslate, userArticleItemTranslate } from '@/graphql/item.graphql'
 
 export default {
   name: 'UpdateContent',
+  props: {
+    custom: {}
+  },
   props: {
     dataForm: {
       type: Object,
@@ -264,6 +268,7 @@ export default {
   mounted() {
     this.getFieldList()
     this.getAllLanguages()
+    this.getUserItemTranslate()
   },
   methods: {
     goSchema() {
@@ -271,6 +276,51 @@ export default {
     },
     handleChange(data) {
         this.fileList = data
+    },
+    getUserItemTranslate() {
+      let self = this
+      self.enForm = {}
+      console.log(self.custom.name)
+      if (self.custom.name === 'user') {
+          self.$apollo
+              .query({
+                  query: userUserItemTranslate,
+                  variables: {
+                      id: this.dataForm.id
+                  },
+                  fetchPolicy: 'no-cache',
+                  context: {
+                      uri: api.projectUri + store.state.common.currentProject.id
+                  }
+              })
+              .then(data => {
+                  self.enForm = data.data.userUserItemTranslate
+                  delete self.enForm.__typename
+              })
+              .catch(err => {
+                  this.$message.warning(formatGraphErr(err.message))
+              })
+      }
+      if (self.custom.name === 'Article') {
+          self.$apollo
+              .query({
+                  query: userArticleItemTranslate,
+                  variables: {
+                      id: this.dataForm.id
+                  },
+                  fetchPolicy: 'no-cache',
+                  context: {
+                      uri: api.projectUri + store.state.common.currentProject.id
+                  }
+              })
+              .then(data => {
+                  self.enForm = data.data.userArticleItemTranslate
+                  delete self.enForm.__typename
+              })
+              .catch(err => {
+                  this.$message.warning(formatGraphErr(err.message))
+              })
+      }
     },
     handleUpload(e) {
         e.preventDefault()
@@ -345,7 +395,6 @@ export default {
           }
           apiName = apiName + self.custom.name
           data['translate'] = self.enForm
-          console.log(data)
           self.$apollo
             .mutate({
               mutation: gql`mutation ${apiName} ($data: ${self.custom.name}Input!) { 
@@ -460,7 +509,6 @@ export default {
           })
           self.customList = items
           self.checkedList = checkItems
-          console.log(self.checkedList)
         })
         .catch(err => {
             this.$message.warning(formatGraphErr(err.message))
@@ -471,7 +519,6 @@ export default {
           this.showEnglish = false
       }
       checkedList.forEach(element => {
-      console.log(element)
       if (element === '2') {
         this.showEnglish = true
       } else {
@@ -534,7 +581,6 @@ export default {
       this.referenceModal.visible = false
     },
     showUploadDialog() {
-        console.log(this.fileList)
         this.fileList = []
         this.assetModal.visible = false
         this.uploadModal.visible = true

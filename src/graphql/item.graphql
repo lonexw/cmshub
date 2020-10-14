@@ -1,0 +1,11 @@
+query userUserItemTranslate ($id: Int!) {
+  userUserItemTranslate (id: $id) {
+    name
+  }
+}
+query userArticleItemTranslate ($id: Int!) {
+  userArticleItemTranslate (id: $id) {
+    title
+    author
+  }
+}
