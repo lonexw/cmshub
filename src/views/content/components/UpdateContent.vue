@@ -268,7 +268,6 @@ export default {
   computed: {},
   mounted() {
      this.getFieldList()
-     this.getAllLanguages()
      this.userTranslateFields()
   },
   methods: {
@@ -279,7 +278,6 @@ export default {
         this.fileList = data
     },
     getUserItemTranslate() {
-      console.log(11111111111)
       let self = this
       self.enForm = {}
       let apiName = 'user' + self.custom.name + 'ItemTranslate'
@@ -497,7 +495,10 @@ export default {
             .then(data => {
                 let customs = data.data.userTranslateFields.items
                 self.translateFields = customs
-                self.getUserItemTranslate()
+                self.getAllLanguages()
+                if (self.dataForm.id) {
+                    self.getUserItemTranslate()
+                }
             })
             .catch(err => {
                 this.$message.warning(formatGraphErr(err.message))
@@ -516,12 +517,25 @@ export default {
           const items = []
           const checkItems = []
           customList.forEach(element => {
-            items.push({
-              value: element.id,
-              label: element.name
-            })
-            if (element.name === '中文(简)'){
-              checkItems.push(element.id)
+            if (element.code === 'CN'){
+                items.push({
+                    value: element.id,
+                    label: element.name,
+                    disabled: true
+                })
+            } else {
+                items.push({
+                    value: element.id,
+                    label: element.name
+                })
+            }
+            if (self.translateFields.length > 0 && self.dataForm.id) {
+                self.showEnglish = true
+                checkItems.push(element.id)
+            } else {
+                if (element.code === 'CN'){
+                    checkItems.push(element.id)
+                }
             }
           })
           self.customList = items
