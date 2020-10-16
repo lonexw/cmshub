@@ -50,6 +50,29 @@ query userField($id: Int!) {
   }
 }
 
+query userTranslateFields($paginator: PaginatorInput,
+  $more: FieldPaginatorInput) {
+  userTranslateFields(paginator: $paginator, more: $more) {
+    items {
+      id
+      name
+      zh_name
+      description
+      type
+      is_required
+      is_unique
+      is_multiple
+      custom_id
+      reference_custom_id
+      reference_field_id
+      is_mult_language
+    },
+    cursor {
+      total
+    }
+  }
+}
+
 mutation userCreateField($data: FieldInput!) {
   userCreateField(data: $data) {
     id

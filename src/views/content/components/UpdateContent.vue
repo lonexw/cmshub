@@ -193,7 +193,7 @@
 <script>
 /* eslint-disable */
 import { AreaUpload, WangEditor, BatchUpload, ReferencePicker } from '@/components'
-import { userFields } from '@/graphql/field.graphql'
+import { userFields, userTranslateFields } from '@/graphql/field.graphql'
 import { formatGraphErr } from '@/utils/util'
 import store from '@/store'
 import api from '@/config/api'
@@ -233,6 +233,7 @@ export default {
       form: {},
       enForm: {},
       fields: [],
+      translateFields: [],
       fieldNames: [],
       checkedList: [],
       customList: [],
@@ -266,9 +267,9 @@ export default {
   },
   computed: {},
   mounted() {
-    this.getFieldList()
-    this.getAllLanguages()
-    this.getUserItemTranslate()
+     this.getFieldList()
+     this.getAllLanguages()
+     this.userTranslateFields()
   },
   methods: {
     goSchema() {
@@ -278,49 +279,41 @@ export default {
         this.fileList = data
     },
     getUserItemTranslate() {
+      console.log(11111111111)
       let self = this
       self.enForm = {}
-      console.log(self.custom.name)
-      if (self.custom.name === 'user') {
-          self.$apollo
-              .query({
-                  query: userUserItemTranslate,
-                  variables: {
-                      id: this.dataForm.id
-                  },
-                  fetchPolicy: 'no-cache',
-                  context: {
-                      uri: api.projectUri + store.state.common.currentProject.id
-                  }
-              })
-              .then(data => {
-                  self.enForm = data.data.userUserItemTranslate
-                  delete self.enForm.__typename
-              })
-              .catch(err => {
-                  this.$message.warning(formatGraphErr(err.message))
-              })
-      }
-      if (self.custom.name === 'Article') {
-          self.$apollo
-              .query({
-                  query: userArticleItemTranslate,
-                  variables: {
-                      id: this.dataForm.id
-                  },
-                  fetchPolicy: 'no-cache',
-                  context: {
-                      uri: api.projectUri + store.state.common.currentProject.id
-                  }
-              })
-              .then(data => {
-                  self.enForm = data.data.userArticleItemTranslate
-                  delete self.enForm.__typename
-              })
-              .catch(err => {
-                  this.$message.warning(formatGraphErr(err.message))
-              })
-      }
+      let apiName = 'user' + self.custom.name + 'ItemTranslate'
+      const id = this.dataForm.id
+      let fieldFormat = ''
+        self.translateFields.forEach((item, index)=> {
+            if (index == 0) {
+                fieldFormat += `${item.name}`
+            } else{
+                fieldFormat += `,${item.name}`
+            }
+        })
+        self.$apollo
+          .query({
+              query: gql`query ${apiName} ($id: Int!) {
+            ${apiName} (id: $id) {
+              ${fieldFormat}
+              }
+          }`,
+              variables: {
+                  id: id
+              },
+              fetchPolicy: 'no-cache',
+              context: {
+                  uri: api.projectUri + store.state.common.currentProject.id
+              }
+            })
+          .then(data => {
+               self.enForm = data.data[apiName]
+               delete self.enForm.__typename
+          })
+          .catch(err => {
+              this.$message.warning(formatGraphErr(err.message))
+          })
     },
     handleUpload(e) {
         e.preventDefault()
@@ -485,6 +478,30 @@ export default {
         .catch(err => {
           this.$message.warning(formatGraphErr(err.message))
         })
+    },
+    userTranslateFields() {
+      let self = this
+        self.$apollo
+            .query({
+            query: userTranslateFields,
+            variables: {
+                more: {
+                    custom_id: self.custom.id
+                },
+                paginator: {
+                    limit: 100
+                }
+            },
+            fetchPolicy: 'no-cache'
+        })
+            .then(data => {
+                let customs = data.data.userTranslateFields.items
+                self.translateFields = customs
+                self.getUserItemTranslate()
+            })
+            .catch(err => {
+                this.$message.warning(formatGraphErr(err.message))
+            })
     },
     getAllLanguages() {
       let self = this
