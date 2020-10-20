@@ -17,6 +17,7 @@ import {
   Col,
   Switch,
   Checkbox,
+  Radio,
   Modal,
   Menu,
   message,
@@ -53,6 +54,7 @@ Vue.use(FormModel)
 Vue.use(Row)
 Vue.use(Col)
 Vue.use(Checkbox)
+Vue.use(Radio)
 Vue.use(Popover)
 Vue.use(Avatar)
 Vue.use(Select)

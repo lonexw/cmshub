@@ -16,7 +16,7 @@
                   <a-form-model-item label="CN" :prop="item.name" :key="index">
                     <a-input v-model="form[item.name]" :placeholder="'请输入' + item.zh_name" @change="formValueChange" />
                   </a-form-model-item>
-                  <a-form-model-item label="EN" :prop="item.name" :key="index">
+                  <a-form-model-item :label="checkCode" :prop="item.name" :key="index">
                     <a-input v-model="enForm[item.name]" :placeholder="'请输入' + item.zh_name" @change="enFormValueChange" />
                   </a-form-model-item>
                 </template>
@@ -32,7 +32,7 @@
                   <a-form-model-item label="CN" :prop="item.name" :key="index">
                     <a-input v-model="form[item.name]" type="textarea" :placeholder="'请输入' + item.zh_name" />
                   </a-form-model-item>
-                  <a-form-model-item label="EN" :prop="item.name" :key="index">
+                  <a-form-model-item :label="checkCode" :prop="item.name" :key="index">
                     <a-input v-model="enForm[item.name]" type="textarea" :placeholder="'请输入' + item.zh_name" />
                   </a-form-model-item>
                 </template>
@@ -118,9 +118,9 @@
         </div>
       </div>
       <div class="text-df margin-tb">
-        <div class="margin-bottom-xs">语言</div>
+        <div class="margin-bottom-xs">其它语言</div>
         <div class="text-sm text-grey margin-left-xs" style="font-style: italic;">
-          <a-checkbox-group v-model="checkedList" :options="customList" @change="onChange" />
+          <a-radio-group :options="customList" v-model="checkCode" @change="onChange" />
         </div>
       </div>
     </a-layout-sider>
@@ -201,8 +201,7 @@ import gql from 'graphql-tag'
 import AssetPicker from '@/views/asset/components/AssetPicker'
 import { Tag } from 'ant-design-vue'
 import { userCreateBatchAsset } from '@/graphql/asset.graphql'
-import { userAllLanguages } from '@/graphql/language.graphql'
-import { userUserItemTranslate, userArticleItemTranslate } from '@/graphql/item.graphql'
+import { userLanguages, userLanguageCode } from '@/graphql/language.graphql'
 
 export default {
   name: 'UpdateContent',
@@ -230,12 +229,12 @@ export default {
       fileList: [],
       uploadForm: this.$form.createForm(this),
       submit_loading: false,
+      checkCode: '',
       form: {},
       enForm: {},
       fields: [],
       translateFields: [],
       fieldNames: [],
-      checkedList: [],
       customList: [],
       showEnglish: false,
       rules: {
@@ -292,13 +291,14 @@ export default {
         })
         self.$apollo
           .query({
-              query: gql`query ${apiName} ($id: Int!) {
-            ${apiName} (id: $id) {
+              query: gql`query ${apiName} ($id: Int!, $code: String) {
+            ${apiName} (id: $id, code: $code) {
               ${fieldFormat}
               }
           }`,
               variables: {
-                  id: id
+                  id: id,
+                  code: self.checkCode
               },
               fetchPolicy: 'no-cache',
               context: {
@@ -385,7 +385,12 @@ export default {
             data['id'] = self.form.id
           }
           apiName = apiName + self.custom.name
-          data['translate'] = self.enForm
+          if (JSON.stringify(self.enForm) !== "{}") {
+              data['translate'] = self.enForm
+          } else {
+              data['translate'] = ''
+          }
+          data['code'] = self.checkCode
           self.$apollo
             .mutate({
               mutation: gql`mutation ${apiName} ($data: ${self.custom.name}Input!) { 
@@ -496,9 +501,7 @@ export default {
                 let customs = data.data.userTranslateFields.items
                 self.translateFields = customs
                 self.getAllLanguages()
-                if (self.dataForm.id) {
-                    self.getUserItemTranslate()
-                }
+                self.getCheckCode()
             })
             .catch(err => {
                 this.$message.warning(formatGraphErr(err.message))
@@ -508,54 +511,60 @@ export default {
       let self = this
       self.$apollo
         .query({
-            query: userAllLanguages,
+            query: userLanguages,
             variables: {},
             fetchPolicy: 'no-cache'
         })
         .then(data => {
-          const customList = data.data.userAllLanguages.items
+          const customList = data.data.userLanguages.items
           const items = []
           const checkItems = []
           customList.forEach(element => {
-            if (element.code === 'CN'){
-                items.push({
-                    value: element.id,
-                    label: element.name,
-                    disabled: true
-                })
-            } else {
-                items.push({
-                    value: element.id,
-                    label: element.name
-                })
-            }
+            items.push({
+                value: element.code,
+                label: element.language.name,
+            })
             if (self.translateFields.length > 0 && self.dataForm.id) {
                 self.showEnglish = true
-                checkItems.push(element.id)
             } else {
-                if (element.code === 'CN'){
-                    checkItems.push(element.id)
-                }
+                self.showEnglish = false
             }
           })
           self.customList = items
-          self.checkedList = checkItems
         })
         .catch(err => {
             this.$message.warning(formatGraphErr(err.message))
         })
     },
-    onChange(checkedList) {
-      if (checkedList.length === 0) {
-          this.showEnglish = false
+    getCheckCode() {
+      let self = this
+      if (self.dataForm.id) {
+        self.$apollo
+          .query({
+              query: userLanguageCode,
+              variables: {id: this.dataForm.id},
+              fetchPolicy: 'no-cache'
+          })
+          .then(data => {
+              if (data.data.userLanguageCode) {
+                  self.checkCode = data.data.userLanguageCode
+                  self.getUserItemTranslate()
+                  self.showEnglish = true
+              } else {
+                  self.showEnglish = false
+              }
+          })
+          .catch(err => {
+              this.$message.warning(formatGraphErr(err.message))
+          })
       }
-      checkedList.forEach(element => {
-      if (element === '2') {
-        this.showEnglish = true
-      } else {
-        this.showEnglish = false
+    },
+    onChange(e) {
+        console.log(e.target.value)
+      if (e.target.value) {
+          this.showEnglish = true
       }
-      })
+      this.checkCode = e.target.value
     },
     richValueChange(values) {
       let value = values[0]

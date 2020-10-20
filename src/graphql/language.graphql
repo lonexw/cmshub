@@ -33,3 +33,9 @@ mutation userCreateLanguage($data: LanguageInput!) {
 mutation userDeleteLanguage($id: Int!) {
   userDeleteLanguage (id: $id)
 }
+
+query userLanguageCode ($id: Int!) {
+  userLanguageCode (id: $id)
+}
+
+
