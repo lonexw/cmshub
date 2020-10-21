@@ -385,10 +385,10 @@ export default {
             data['id'] = self.form.id
           }
           apiName = apiName + self.custom.name
-          if (JSON.stringify(self.enForm) !== "{}") {
-              data['translate'] = self.enForm
-          } else {
-              data['translate'] = ''
+          if (self.enForm) {
+              if (JSON.stringify(self.enForm) !== "{}") {
+                  data['translate'] = self.enForm
+              }
           }
           data['code'] = self.checkCode
           self.$apollo
