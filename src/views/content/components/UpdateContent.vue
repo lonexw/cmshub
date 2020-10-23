@@ -13,15 +13,15 @@
               <template v-if="item.type == 'SINGLE_TEXT'">
                 <template v-if="item.is_mult_language == true && showEnglish == true">
                   {{item.zh_name}}
-                  <a-form-model-item label="CN" :prop="item.name" :key="index">
+                  <a-form-model-item label="CN" :prop="item.name" :key="form[item.name] +index">
                     <a-input v-model="form[item.name]" :placeholder="'请输入' + item.zh_name" @change="formValueChange" />
                   </a-form-model-item>
-                  <a-form-model-item :label="checkCode" :prop="item.name" :key="index">
-                    <a-input v-model="enForm[item.name]" :placeholder="'请输入' + item.zh_name" @change="enFormValueChange" />
+                  <a-form-model-item :label="checkCode" :prop="item.name" :key="'en' + form[item.name] + index">
+                    <a-input v-model="enForm[item.name]" :placeholder="'22' + item.zh_name" @change="enFormValueChange" />
                   </a-form-model-item>
                 </template>
                 <template v-else>
-                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
+                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="form[item.name] +index">
                     <a-input v-model="form[item.name]" :placeholder="'请输入' + item.zh_name" @change="formValueChange" />
                   </a-form-model-item>
                 </template>
@@ -29,15 +29,15 @@
               <template v-else-if="item.type == 'MULTI_TEXT'">
                 <template v-if="item.is_mult_language == true && showEnglish == true">
                   {{item.zh_name}}
-                  <a-form-model-item label="CN" :prop="item.name" :key="index">
+                  <a-form-model-item label="CN" :prop="item.name" :key="form[item.name] +index">
                     <a-input v-model="form[item.name]" type="textarea" :placeholder="'请输入' + item.zh_name" />
                   </a-form-model-item>
-                  <a-form-model-item :label="checkCode" :prop="item.name" :key="index">
+                  <a-form-model-item :label="checkCode" :prop="item.name" :key="'en' + form[item.name] + index">
                     <a-input v-model="enForm[item.name]" type="textarea" :placeholder="'请输入' + item.zh_name" />
                   </a-form-model-item>
                 </template>
                 <template v-else>
-                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
+                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="form[item.name] +index">
                     <a-input v-model="form[item.name]" type="textarea" :placeholder="'请输入' + item.zh_name" />
                   </a-form-model-item>
                 </template>
@@ -45,31 +45,31 @@
               <template v-else-if="item.type == 'RICH_TEXT'">
                 <template v-if="item.is_mult_language == true && showEnglish == true">
                   {{item.zh_name}}
-                  <a-form-model-item label="CN" :prop="item.name" :key="index">
+                  <a-form-model-item label="CN" :prop="item.name" :key="form[item.name] + index">
                     <WangEditor v-model="form[item.name]" @change="richValueChange" :name="item.name"></WangEditor>
                   </a-form-model-item>
-                  <a-form-model-item :label="checkCode" :prop="item.name" :key="index">
+                  <a-form-model-item :label="checkCode" :prop="item.name" :key="'en' + form[item.name] + index">
                     <WangEditor v-model="enForm[item.name]" @change="richValueEnChange" :name="item.name"></WangEditor>
                   </a-form-model-item>
                 </template>
                 <template v-else>
-                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
+                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="form[item.name] + index">
                     <WangEditor v-model="form[item.name]" @change="richValueChange" :name="item.name"></WangEditor>
                   </a-form-model-item>
                 </template>
               </template>
               <template v-else-if="item.type == 'ASSET'">
-                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
-                  <div v-for="(itemAsset, index) in form[item.name + 'Asset']" :key="index">
+                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="'asset'+ index">
+                  <div v-for="(itemAsset, assetIndex) in form[item.name + 'Asset']" :key="assetIndex">
                     <tag closable @close="removeAsset(itemAsset, item.name)">{{ itemAsset.name }}</tag>
                   </div>
                   <a-button @click="showAssetDialog(item)">选择</a-button>
                 </a-form-model-item>
               </template>
               <template v-else-if="item.type == 'REFERENCE'">
-                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="index">
+                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="'reference'+ index">
                   <a-input v-model="form[item.name]" type="hidden" v-if="item.is_required" />
-                  <div v-for="(itemReference, index) in form[item.name + 'Reference']" :key="index">
+                  <div v-for="(itemReference, refIndex) in form[item.name + 'Reference']" :key="refIndex">
                     <tag closable @close="removeReference(itemReference, item.name)">{{ itemReference.title }}</tag>
                   </div>
                   <a-button @click="showReferenceDialog(item)">选择</a-button>
@@ -271,10 +271,10 @@ export default {
   },
   methods: {
     goSchema() {
-        this.$router.push({ name: 'Schema' })
+      this.$router.push({ name: 'Schema' })
     },
     handleChange(data) {
-        this.fileList = data
+      this.fileList = data
     },
     getUserItemTranslate() {
       let self = this
@@ -291,63 +291,63 @@ export default {
         })
         self.$apollo
           .query({
-              query: gql`query ${apiName} ($id: Int!, $code: String) {
-            ${apiName} (id: $id, code: $code) {
-              ${fieldFormat}
-              }
+            query: gql`query ${apiName} ($id: Int!, $code: String) {
+          ${apiName} (id: $id, code: $code) {
+            ${fieldFormat}
+            }
           }`,
-              variables: {
-                  id: id,
-                  code: self.checkCode
-              },
-              fetchPolicy: 'no-cache',
-              context: {
-                  uri: api.projectUri + store.state.common.currentProject.id
-              }
+            variables: {
+              id: id,
+              code: self.checkCode
+            },
+            fetchPolicy: 'no-cache',
+            context: {
+              uri: api.projectUri + store.state.common.currentProject.id
+            }
             })
           .then(data => {
-               self.enForm = data.data[apiName]
-               delete self.enForm.__typename
+             self.enForm = data.data[apiName]
+             delete self.enForm.__typename
           })
           .catch(err => {
-              this.$message.warning(formatGraphErr(err.message))
+            this.$message.warning(formatGraphErr(err.message))
           })
     },
     handleUpload(e) {
-        e.preventDefault()
-        let self = this
-        if (this.fileList.length === 0) {
-            this.$message.warning('请上传文件')
-            return
-        }
-        let data = []
-        this.fileList.forEach(element => {
-            data.push({
-                name: element.name,
-                url: element.url,
-                type: element.mime,
-                file_size: element.size,
-                is_system: 'false'
-            })
+      e.preventDefault()
+      let self = this
+      if (this.fileList.length === 0) {
+        this.$message.warning('请上传文件')
+        return
+      }
+      let data = []
+      this.fileList.forEach(element => {
+        data.push({
+          name: element.name,
+          url: element.url,
+          type: element.mime,
+          file_size: element.size,
+          is_system: 'false'
         })
-        self.$apollo
-            .mutate({
-                mutation: userCreateBatchAsset,
-                variables: {
-                    data: data
-                },
-                fetchPolicy: 'no-cache',
-                context: {
-                    uri: api.projectUri + store.state.common.currentProject.id
-                }
-            })
-            .then(() => {
-                self.closeUploadDialog()
-                self.fileList = []
-            })
-            .catch(err => {
-                this.$message.warning(formatGraphErr(err.message))
-            })
+      })
+      self.$apollo
+        .mutate({
+          mutation: userCreateBatchAsset,
+          variables: {
+              data: data
+          },
+          fetchPolicy: 'no-cache',
+          context: {
+              uri: api.projectUri + store.state.common.currentProject.id
+          }
+        })
+        .then(() => {
+          self.closeUploadDialog()
+          self.fileList = []
+        })
+        .catch(err => {
+          this.$message.warning(formatGraphErr(err.message))
+        })
     },
     batchAdd() {
         this.showUploadDialog()
@@ -485,27 +485,27 @@ export default {
     userTranslateFields() {
       let self = this
         self.$apollo
-            .query({
-            query: userTranslateFields,
-            variables: {
-                more: {
-                    custom_id: self.custom.id
-                },
-                paginator: {
-                    limit: 100
-                }
+          .query({
+          query: userTranslateFields,
+          variables: {
+            more: {
+              custom_id: self.custom.id
             },
+            paginator: {
+              limit: 100
+            }
+          },
             fetchPolicy: 'no-cache'
         })
-            .then(data => {
-                let customs = data.data.userTranslateFields.items
-                self.translateFields = customs
-                self.getAllLanguages()
-                self.getCheckCode()
-            })
-            .catch(err => {
-                this.$message.warning(formatGraphErr(err.message))
-            })
+          .then(data => {
+            let customs = data.data.userTranslateFields.items
+            self.translateFields = customs
+            self.getAllLanguages()
+            self.getCheckCode()
+          })
+          .catch(err => {
+            this.$message.warning(formatGraphErr(err.message))
+          })
     },
     getAllLanguages() {
       let self = this
@@ -524,11 +524,11 @@ export default {
                 value: element.code,
                 label: element.language.name,
             })
-            if (self.translateFields.length > 0 && self.dataForm.id) {
-                self.showEnglish = true
-            } else {
-                self.showEnglish = false
-            }
+            // if (self.translateFields.length > 0 && self.dataForm.id) {
+            //     self.showEnglish = true
+            // } else {
+            //     self.showEnglish = false
+            // }
           })
           self.customList = items
         })
@@ -541,18 +541,18 @@ export default {
       if (self.dataForm.id) {
         self.$apollo
           .query({
-              query: userLanguageCode,
-              variables: {id: this.dataForm.id},
-              fetchPolicy: 'no-cache'
+            query: userLanguageCode,
+            variables: {id: this.dataForm.id},
+            fetchPolicy: 'no-cache'
           })
           .then(data => {
-              if (data.data.userLanguageCode) {
-                  self.checkCode = data.data.userLanguageCode
-                  self.getUserItemTranslate()
-                  self.showEnglish = true
-              } else {
-                  self.showEnglish = false
-              }
+            if (data.data.userLanguageCode) {
+              self.checkCode = data.data.userLanguageCode
+              self.getUserItemTranslate()
+              self.showEnglish = true
+            } else {
+              self.showEnglish = false
+            }
           })
           .catch(err => {
               this.$message.warning(formatGraphErr(err.message))
