@@ -58,7 +58,7 @@ export default {
       return true
     },
     handleRemove(file) {
-      console.log(file)
+      //console.log(file)
       let files = []
       this.files.forEach(item => {
         if (item.uid != file.uid) {
@@ -129,7 +129,7 @@ export default {
         this.files.push(this.newData)
         that.$emit('change', this.files)
       } catch (e) {
-        console.log('upload-fail', e)
+        //console.log('upload-fail', e)
         this.loading = false
         this.$message.error('上传失败，请重试')
         return false

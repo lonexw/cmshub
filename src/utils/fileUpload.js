@@ -29,7 +29,7 @@ export const fileClient = {
             })
             .catch(err => {
               reject(err)
-              console.error('error: %j', err)
+              //console.error('error: %j', err)
             })
         })
     })

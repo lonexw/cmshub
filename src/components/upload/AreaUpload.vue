@@ -76,17 +76,15 @@ export default {
       this.newData = Object.assign({}, this.newData, { url: null })
     },
     download() {
-      console.log(this.newData)
+      //console.log(this.newData)
 
       window.open(this.newData.url)
     },
-    beforeUpload(file) {
-      console.log('beforeUpload', file)
-
+    beforeUpload() {
       return true
     },
     async handleChange(info) {
-      console.log('handleChange', info)
+      //console.log('handleChange', info)
 
       const that = this
       this.percent = 0
@@ -116,8 +114,8 @@ export default {
       try {
         // object-key可以自定义为文件名（例如file.txt）或目录（例如abc/test/file.txt）的形式，实现将文件上传至当前Bucket或Bucket下的指定目录。
         await client.multipartUpload(file_name, info.file, {
-          progress: function(p, checkpoint) {
-            console.log(checkpoint)
+          progress: function(p) {
+            //console.log(checkpoint)
 
             // 断点记录点。浏览器重启后无法直接继续上传，您需要手动触发继续上传。
             // tempCheckpoint = checkpoint
@@ -155,7 +153,7 @@ export default {
         }
         that.$emit('change', this.newData)
       } catch (e) {
-        console.log('upload-fail', e)
+        //console.log('upload-fail', e)
         this.loading = false
         this.$message.error('上传失败，请重试')
         return false

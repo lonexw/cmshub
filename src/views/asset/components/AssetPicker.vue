@@ -88,16 +88,13 @@ export default {
     ]
     const rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
-        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
+        //console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
         this.select_num = selectedRows.length
       },
-      onSelect: (record, selected, selectedRows) => {
-        console.log(record, selected, selectedRows)
+      onSelect: (record) => {
+        //console.log(record, selected, selectedRows)
         this.$emit('selectChange', record, this.formName, this.isMultiple)
       },
-      onSelectAll: (selected, selectedRows, changeRows) => {
-        console.log(selected, selectedRows, changeRows)
-      }
     }
     return {
       rowSelection,

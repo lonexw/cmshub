@@ -48,8 +48,8 @@
                   <a-form-model-item label="CN" :prop="item.name" :key="index">
                     <WangEditor v-model="form[item.name]" @change="richValueChange" :name="item.name"></WangEditor>
                   </a-form-model-item>
-                  <a-form-model-item label="EN" :prop="item.name" :key="index">
-                    <WangEditor v-model="enForm[item.name]" @change="richValueChange" :name="item.name"></WangEditor>
+                  <a-form-model-item :label="checkCode" :prop="item.name" :key="index">
+                    <WangEditor v-model="enForm[item.name]" @change="richValueEnChange" :name="item.name"></WangEditor>
                   </a-form-model-item>
                 </template>
                 <template v-else>
@@ -570,6 +570,11 @@ export default {
       let value = values[0]
       let name = values[1]
       this.form[name] = value
+    },
+    richValueEnChange(values) {
+      let value = values[0]
+      let name = values[1]
+      this.enForm[name] = value
     },
     showAssetDialog(item) {
       this.assetModal.item = item
