@@ -17,7 +17,7 @@
                     <a-input v-model="form[item.name]" :placeholder="'请输入' + item.zh_name" @change="formValueChange" />
                   </a-form-model-item>
                   <a-form-model-item :label="checkCode" :prop="item.name" :key="'en' + form[item.name] + index">
-                    <a-input v-model="enForm[item.name]" :placeholder="'22' + item.zh_name" @change="enFormValueChange" />
+                    <a-input v-model="enForm[item.name]" :placeholder="'请输入' + item.zh_name" @change="enFormValueChange" />
                   </a-form-model-item>
                 </template>
                 <template v-else>
