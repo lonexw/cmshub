@@ -118,10 +118,13 @@
         </div>
       </div>
       <div class="text-df margin-tb">
-        <div class="margin-bottom-xs">其它语言</div>
-        <div class="text-sm text-grey margin-left-xs" style="font-style: italic;">
-          <a-radio-group :options="customList" v-model="checkCode" @change="onChange" />
-        </div>
+        <template v-if="showOtherLanguage">
+          <div class="margin-bottom-xs">其它语言</div>
+          <div class="text-sm text-grey margin-left-xs" style="font-style: italic;">
+            <a-checkbox-group :options="customList" v-model="checkList" @change="onChange" />
+            <!--<a-radio-group :options="customList" v-model="checkCode" @change="onChange" />-->
+          </div>
+        </template>
       </div>
     </a-layout-sider>
     <a-modal
@@ -229,7 +232,9 @@ export default {
       fileList: [],
       uploadForm: this.$form.createForm(this),
       submit_loading: false,
+      showOtherLanguage: false,
       checkCode: '',
+      checkList: [],
       form: {},
       enForm: {},
       fields: [],
@@ -442,6 +447,9 @@ export default {
           customs.forEach(element => {
             items.push(element)
             itemNames.push(element.name)
+            if (element.is_mult_language) {
+                self.showOtherLanguage = true
+            }
             if (element.is_required) {
               let messageText = '请输入'
               if (element.type == 'ASSET' || element.type == 'REFERENCE') {
@@ -548,6 +556,9 @@ export default {
           .then(data => {
             if (data.data.userLanguageCode) {
               self.checkCode = data.data.userLanguageCode
+              if (self.checkCode) {
+                  self.checkList.push( self.checkCode)
+              }
               self.getUserItemTranslate()
               self.showEnglish = true
             } else {
@@ -559,12 +570,20 @@ export default {
           })
       }
     },
-    onChange(e) {
-        console.log(e.target.value)
-      if (e.target.value) {
+    onChange(checkedList) {
+      checkedList.forEach((item, index)=> {
+          if (index !== (checkedList.length - 1)) {
+            checkedList.remove(item)
+          }
+      })
+      this.checkList = checkedList
+      if (checkedList.length > 0) {
+          this.checkCode = checkedList[0]
           this.showEnglish = true
+      } else {
+          this.checkCode = ''
+          this.showEnglish = false
       }
-      this.checkCode = e.target.value
     },
     richValueChange(values) {
       let value = values[0]
