@@ -70,6 +70,7 @@
       @cancel="cancelFieldCreate($event)"
       :id="fieldId"
       :custom-id="id"
+      :custom-name="form.name"
       :field-type="fieldType"
     ></update-field-model>
   </a-layout>

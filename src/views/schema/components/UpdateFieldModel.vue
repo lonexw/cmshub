@@ -30,9 +30,11 @@
           <a-form-model-item label="是否复数">
             <a-switch v-model="form.is_multiple" />
           </a-form-model-item>
-          <a-form-model-item label="是否多语言">
-            <a-switch v-model="form.is_mult_language" />
-          </a-form-model-item>
+          <template v-if="customName !== 'Asset' && (form.type === 'SINGLE_TEXT' || type === 'MULTI_TEXT' || type === 'RICH_TEXT')">
+            <a-form-model-item label="是否多语言">
+              <a-switch v-model="form.is_mult_language" />
+            </a-form-model-item>
+          </template>
           <a-form-model-item label="描述" prop="description">
             <a-input v-model="form.description" type="textarea" placeholder="请输入描述" />
           </a-form-model-item>
@@ -82,9 +84,11 @@
         <a-form-model-item label="是否复数">
           <a-switch v-model="referenceForm.is_multiple" />
         </a-form-model-item>
-        <a-form-model-item label="是否多语言">
-          <a-switch v-model="referenceForm.is_mult_language" />
-        </a-form-model-item>
+        <template v-if="customName !== 'Asset' && (form.type === 'SINGLE_TEXT' || type === 'MULTI_TEXT' || type === 'RICH_TEXT')">
+          <a-form-model-item label="是否多语言">
+            <a-switch v-model="referenceForm.is_mult_language" />
+          </a-form-model-item>
+        </template>
         <a-form-model-item style="margin-bottom: 0;" class="text-right">
           <template v-if="type === 'REFERENCE'">
             <a-button @click="cancel" class="margin-right-sm">
@@ -123,6 +127,10 @@ export default {
     customId: {
       type: Number,
       default: 0
+    },
+    customName: {
+      type: String,
+      default: ''
     },
     fieldType: {
       type: String,
