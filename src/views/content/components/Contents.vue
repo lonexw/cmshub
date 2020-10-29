@@ -273,27 +273,12 @@ export default {
                     return child
                   }
                 })
-              } else if (element.type == 'RICH_TEXT') {
-                columns.push({
-                  title: element.zh_name,
-                  dataIndex: element.name,
-                  ellipsis: true,
-                  customRender: (text, record) => {
-                    let child = self.$createElement("div", {
-                      domProps: {
-                        innerHTML: text,
-                        style: 'height: 100px; overflow-y: scroll; width: 200px;'
-                      }
-                    })
-                    return child
-                  }
-                })
-              } else {
-                columns.push({
-                  title: element.zh_name,
-                  dataIndex: element.name,
-                  ellipsis: true
-                })
+              } else if (element.type == 'SINGLE_TEXT') {
+                  columns.push({
+                      title: element.zh_name,
+                      dataIndex: element.name,
+                      ellipsis: true
+                  })
               }
               itemNames.push(element.name)
             }
