@@ -306,7 +306,7 @@ export default {
               })
               let childSpan = self.$createElement("span", {
                 domProps: {
-                  innerHTML: '|',
+                  innerHTML: ' | ',
                   width: '10px'
                 }
               })
