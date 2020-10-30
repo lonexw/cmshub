@@ -34,7 +34,7 @@
       :loading="loading"
       :pagination="false"
       :locale="{ emptyText: '暂无数据' }"
-      :scroll="columns.length > 5 ? { x: 2000 } : { x: 100 }"
+      :scroll="columns.length > 5 && data.length > 8 ? { x: 2000, y: 1200 } : { x: 100, y: 300 }"
     >
     </a-table>
     <a-modal

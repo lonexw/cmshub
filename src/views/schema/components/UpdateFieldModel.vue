@@ -22,8 +22,8 @@
             <a-input v-model="form.name" placeholder="请输入 API ID" />
           </a-form-model-item>
           <a-form-model-item label="是否必填">
-          <a-switch v-model="form.is_required" />
-        </a-form-model-item>
+            <a-switch v-model="form.is_required" />
+          </a-form-model-item>
           <a-form-model-item label="是否唯一">
             <a-switch v-model="form.is_unique" />
           </a-form-model-item>
