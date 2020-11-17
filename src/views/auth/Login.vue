@@ -12,7 +12,7 @@
         <a-input
           size="large"
           type="text"
-          placeholder="账户: admin"
+          placeholder="账户"
           v-decorator="[
             'username',
             {
@@ -29,7 +29,7 @@
           size="large"
           type="password"
           autocomplete="false"
-          placeholder="密码: ant.design"
+          placeholder="密码"
           v-decorator="['password', { rules: [{ required: true, message: '请输入密码' }], validateTrigger: 'blur' }]"
         >
           <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }" />

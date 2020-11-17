@@ -1,5 +1,6 @@
 import { getAliyunOssSts } from '@/graphql/common.graphql'
 import apolloProvider from '@/utils/apolloProvider'
+import store from '@/store'
 
 const OSS = require('ali-oss')
 export const fileClient = {
@@ -12,7 +13,12 @@ export const fileClient = {
   },
   uploadFile: function(dataF) {
     return new Promise((resolve, reject) => {
-      const nowName = `project/${new Date().getTime()}`
+      const projectId = store.state.common.currentProject.id
+      let nowName = `project/${new Date().getTime()}`
+      if (projectId) {
+        nowName = `project/${projectId}/${new Date().getTime()}`
+      }
+      
       apolloProvider.defaultClient
         .query({
           query: getAliyunOssSts,

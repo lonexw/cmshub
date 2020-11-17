@@ -43,6 +43,7 @@ let readableSize = require('readable-size')
 import moment from 'moment'
 import { Preview } from '@/components'
 import { getAliyunOssSts } from '@/graphql/common.graphql'
+import store from '@/store'
 
 export default {
   name: 'AreaUpload',
@@ -109,8 +110,12 @@ export default {
         stsToken: aliyunOssSts.sts_token,
         bucket: aliyunOssSts.bucket
       })
+      const projectId = store.state.common.currentProject.id
       //   var tempCheckpoint
       let file_name = 'uploads/' + moment().format('YYYYMMDDHHmmss') + '-' + info.file.name
+      if (projectId) {
+        file_name = 'uploads/' + projectId + '/' + moment().format('YYYYMMDDHHmmss') + '-' + info.file.name
+      }
       try {
         // object-key可以自定义为文件名（例如file.txt）或目录（例如abc/test/file.txt）的形式，实现将文件上传至当前Bucket或Bucket下的指定目录。
         await client.multipartUpload(file_name, info.file, {
