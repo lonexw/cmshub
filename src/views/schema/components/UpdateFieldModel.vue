@@ -30,7 +30,11 @@
           <a-form-model-item label="是否复数">
             <a-switch v-model="form.is_multiple" />
           </a-form-model-item>
-          <template v-if="customName !== 'Asset' && (form.type === 'SINGLE_TEXT' || type === 'MULTI_TEXT' || type === 'RICH_TEXT')">
+          <template
+            v-if="
+              customName !== 'Asset' && (form.type === 'SINGLE_TEXT' || type === 'MULTI_TEXT' || type === 'RICH_TEXT')
+            "
+          >
             <a-form-model-item label="是否多语言">
               <a-switch v-model="form.is_mult_language" />
             </a-form-model-item>
@@ -84,7 +88,11 @@
         <a-form-model-item label="是否复数">
           <a-switch v-model="referenceForm.is_multiple" />
         </a-form-model-item>
-        <template v-if="customName !== 'Asset' && (form.type === 'SINGLE_TEXT' || type === 'MULTI_TEXT' || type === 'RICH_TEXT')">
+        <template
+          v-if="
+            customName !== 'Asset' && (form.type === 'SINGLE_TEXT' || type === 'MULTI_TEXT' || type === 'RICH_TEXT')
+          "
+        >
           <a-form-model-item label="是否多语言">
             <a-switch v-model="referenceForm.is_mult_language" />
           </a-form-model-item>

@@ -231,19 +231,19 @@ export default {
       let self = this
       self.$apollo
         .query({
-            query: userLanguages,
-            variables: {},
-            fetchPolicy: 'no-cache'
+          query: userLanguages,
+          variables: {},
+          fetchPolicy: 'no-cache'
         })
         .then(data => {
-            if (data.data.userLanguages !== null) {
-                self.languageData = data.data.userLanguages.items
-            }
+          if (data.data.userLanguages !== null) {
+            self.languageData = data.data.userLanguages.items
+          }
         })
         .catch(err => {
-            this.$message.warning(formatGraphErr(err.message))
+          this.$message.warning(formatGraphErr(err.message))
         })
-      },
+    },
     userCustoms() {
       let self = this
       self.$apollo
@@ -361,20 +361,20 @@ export default {
       params.language_id = self.languageForm.language_id
       self.$apollo
         .mutate({
-            mutation: userCreateLanguage,
-            variables: {
-                data: params
-            },
-            fetchPolicy: 'no-cache'
+          mutation: userCreateLanguage,
+          variables: {
+            data: params
+          },
+          fetchPolicy: 'no-cache'
         })
         .then(() => {
-            this.$message.success('保存成功')
-            self.languageForm = {}
-            self.languageFormVisible = false
-            self.getLanguages()
+          this.$message.success('保存成功')
+          self.languageForm = {}
+          self.languageFormVisible = false
+          self.getLanguages()
         })
         .catch(error => {
-            this.$message.warning(formatGraphErr(error.message))
+          this.$message.warning(formatGraphErr(error.message))
         })
     },
     remove(item) {
@@ -399,20 +399,20 @@ export default {
       let self = this
       self.$apollo
         .mutate({
-            mutation: userDeleteLanguage,
-            variables: {
-                id: item.id
-            },
-            fetchPolicy: 'no-cache'
+          mutation: userDeleteLanguage,
+          variables: {
+            id: item.id
+          },
+          fetchPolicy: 'no-cache'
         })
         .then(() => {
-            this.$message.success('移除成功')
-            this.getLanguages()
+          this.$message.success('移除成功')
+          this.getLanguages()
         })
         .catch(error => {
-            this.$message.warning(formatGraphErr(error.message))
+          this.$message.warning(formatGraphErr(error.message))
         })
-      }
+    }
   }
 }
 </script>

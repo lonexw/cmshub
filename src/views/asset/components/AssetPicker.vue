@@ -91,10 +91,10 @@ export default {
         //console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
         this.select_num = selectedRows.length
       },
-      onSelect: (record) => {
+      onSelect: record => {
         //console.log(record, selected, selectedRows)
         this.$emit('selectChange', record, this.formName, this.isMultiple)
-      },
+      }
     }
     return {
       rowSelection,

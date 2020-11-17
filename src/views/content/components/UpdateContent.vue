@@ -12,54 +12,66 @@
             <template v-for="(item, index) in fields">
               <template v-if="item.type == 'SINGLE_TEXT'">
                 <template v-if="item.is_mult_language == true && showEnglish == true">
-                  {{item.zh_name}}
-                  <a-form-model-item label="CN" :prop="item.name" :key="form[item.name] +index">
-                    <a-input v-model="form[item.name]" :placeholder="'请输入' + item.zh_name" @change="formValueChange" />
+                  {{ item.zh_name }}
+                  <a-form-model-item label="CN" :prop="item.name" :key="item.name + index">
+                    <a-input
+                      v-model="form[item.name]"
+                      :placeholder="'请输入' + item.zh_name"
+                      @change="formValueChange"
+                    />
                   </a-form-model-item>
-                  <a-form-model-item :label="checkCode" :prop="item.name" :key="'en' + form[item.name] + index">
-                    <a-input v-model="enForm[item.name]" :placeholder="'请输入' + item.zh_name" @change="enFormValueChange" />
+                  <a-form-model-item :label="checkCode" :prop="item.name" :key="'en' + item.name + index">
+                    <a-input
+                      v-model="enForm[item.name]"
+                      :placeholder="'请输入' + item.zh_name"
+                      @change="enFormValueChange"
+                    />
                   </a-form-model-item>
                 </template>
                 <template v-else>
-                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="form[item.name] +index">
-                    <a-input v-model="form[item.name]" :placeholder="'请输入' + item.zh_name" @change="formValueChange" />
+                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="item.name + index">
+                    <a-input
+                      v-model="form[item.name]"
+                      :placeholder="'请输入' + item.zh_name"
+                      @change="formValueChange"
+                    />
                   </a-form-model-item>
                 </template>
               </template>
               <template v-else-if="item.type == 'MULTI_TEXT'">
                 <template v-if="item.is_mult_language == true && showEnglish == true">
-                  {{item.zh_name}}
-                  <a-form-model-item label="CN" :prop="item.name" :key="form[item.name] +index">
+                  {{ item.zh_name }}
+                  <a-form-model-item label="CN" :prop="item.name" :key="item.name + index">
                     <a-input v-model="form[item.name]" type="textarea" :placeholder="'请输入' + item.zh_name" />
                   </a-form-model-item>
-                  <a-form-model-item :label="checkCode" :prop="item.name" :key="'en' + form[item.name] + index">
+                  <a-form-model-item :label="checkCode" :prop="item.name" :key="'en' + item.name + index">
                     <a-input v-model="enForm[item.name]" type="textarea" :placeholder="'请输入' + item.zh_name" />
                   </a-form-model-item>
                 </template>
                 <template v-else>
-                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="form[item.name] +index">
+                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="item.name + index">
                     <a-input v-model="form[item.name]" type="textarea" :placeholder="'请输入' + item.zh_name" />
                   </a-form-model-item>
                 </template>
               </template>
               <template v-else-if="item.type == 'RICH_TEXT'">
                 <template v-if="item.is_mult_language == true && showEnglish == true">
-                  {{item.zh_name}}
-                  <a-form-model-item label="CN" :prop="item.name" :key="form[item.name] + index">
+                  {{ item.zh_name }}
+                  <a-form-model-item label="CN" :prop="item.name" :key="item.name + index">
                     <WangEditor v-model="form[item.name]" @change="richValueChange" :name="item.name"></WangEditor>
                   </a-form-model-item>
-                  <a-form-model-item :label="checkCode" :prop="item.name" :key="'en' + form[item.name] + index">
+                  <a-form-model-item :label="checkCode" :prop="item.name" :key="'en' + item.name + index">
                     <WangEditor v-model="enForm[item.name]" @change="richValueEnChange" :name="item.name"></WangEditor>
                   </a-form-model-item>
                 </template>
                 <template v-else>
-                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="form[item.name] + index">
+                  <a-form-model-item :label="item.zh_name" :prop="item.name" :key="item.name + index">
                     <WangEditor v-model="form[item.name]" @change="richValueChange" :name="item.name"></WangEditor>
                   </a-form-model-item>
                 </template>
               </template>
               <template v-else-if="item.type == 'ASSET'">
-                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="'asset'+ index">
+                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="'asset' + index">
                   <div v-for="(itemAsset, assetIndex) in form[item.name + 'Asset']" :key="assetIndex">
                     <tag closable @close="removeAsset(itemAsset, item.name)">{{ itemAsset.name }}</tag>
                   </div>
@@ -67,7 +79,7 @@
                 </a-form-model-item>
               </template>
               <template v-else-if="item.type == 'REFERENCE'">
-                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="'reference'+ index">
+                <a-form-model-item :label="item.zh_name" :prop="item.name" :key="'reference' + index">
                   <a-input v-model="form[item.name]" type="hidden" v-if="item.is_required" />
                   <div v-for="(itemReference, refIndex) in form[item.name + 'Reference']" :key="refIndex">
                     <tag closable @close="removeReference(itemReference, item.name)">{{ itemReference.title }}</tag>
@@ -271,8 +283,8 @@ export default {
   },
   computed: {},
   mounted() {
-     this.getFieldList()
-     this.userTranslateFields()
+    this.getFieldList()
+    this.userTranslateFields()
   },
   methods: {
     goSchema() {

@@ -18,7 +18,7 @@ export const fileClient = {
       if (projectId) {
         nowName = `project/${projectId}/${new Date().getTime()}`
       }
-      
+
       apolloProvider.defaultClient
         .query({
           query: getAliyunOssSts,
