@@ -67,6 +67,7 @@ export default {
       this.editor = new WEditor(this.$refs.editor)
       this.editor.onchangeTimeout = 200
       this.editor.customConfig.menus = this.menus // menu菜单
+      this.editor.customConfig.uploadImgMaxSize = 2 * 1024 * 1024 // 2M
       this.editor.customConfig.customUploadImg = async (files, insert) => {
         const res = await ossUpload(files[0])
         insert(res.url)
