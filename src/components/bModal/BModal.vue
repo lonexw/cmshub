@@ -6,6 +6,7 @@
     @cancel="cancel"
     :closable="false"
     :width="width"
+    centered
     class="relative"
   >
     <a-button

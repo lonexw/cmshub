@@ -1,5 +1,5 @@
 <template>
-  <base-page title="模型管理">
+  <base-page :title="title">
     <template v-slot:sider>
       <div class="flex justify-between align-center">
         <bg-tag class="text-blue text-sm" @click.native="showCreate"><a-icon type="plus" /> 添加模型</bg-tag>
@@ -67,7 +67,9 @@ export default {
       updateCategoryId: undefined,
       models_height: '0px',
       categories: [],
-      openKeys: []
+      openKeys: [],
+      is_prod: ['production', 'prod'].includes(process.env.NODE_ENV),
+      title: '模型管理'
     }
   },
   computed: {
@@ -77,6 +79,9 @@ export default {
   },
   mounted() {
     this.getCustomList()
+    if (!this.is_prod) {
+      this.title = '模型管理 【测试环境】'
+    }
   },
   methods: {
     toggleModels() {

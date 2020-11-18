@@ -75,7 +75,7 @@
                   <div v-for="(itemAsset, assetIndex) in form[item.name + 'Asset']" :key="assetIndex">
                     <tag closable @close="removeAsset(itemAsset, item.name)">{{ itemAsset.name }}</tag>
                   </div>
-                  <a-button @click="showAssetDialog(item)">选择</a-button>
+                  <a-button @click="showAssetDialog(item)" style="margin-top: 10px;">选择</a-button>
                 </a-form-model-item>
               </template>
               <template v-else-if="item.type == 'REFERENCE'">
@@ -84,7 +84,7 @@
                   <div v-for="(itemReference, refIndex) in form[item.name + 'Reference']" :key="refIndex">
                     <tag closable @close="removeReference(itemReference, item.name)">{{ itemReference.title }}</tag>
                   </div>
-                  <a-button @click="showReferenceDialog(item)">选择</a-button>
+                  <a-button @click="showReferenceDialog(item)" style="margin-top: 10px;">选择</a-button>
                 </a-form-model-item>
               </template>
             </template>
@@ -97,7 +97,7 @@
       :style="{ overflow: 'auto', height: '100vh', position: 'fixed', right: 0, backgroundColor: 'rgb(250, 250, 252)' }"
     >
       <div>
-        <a-button type="primary" class="margin-right-xs" @click="submit">保存</a-button>
+        <!-- <a-button type="primary" class="margin-right-xs" @click="submit">保存</a-button> -->
         <a-button type="danger" @click="submit">保存并发布</a-button>
       </div>
       <div class="text-df margin-tb">
@@ -153,7 +153,7 @@
         :form-name="assetModal.item.name"
         :is-multiple="assetModal.item.is_multiple"
       ></asset-picker>
-      <div style="text-align: right;">
+      <div style="text-align: right; margin-top: 20px;">
         <a-button type="primary" @click="batchAdd" style="margin-right: 5px"> <a-icon type="plus" />上传 </a-button>
         <a-button @click="closeAssetDialog" class="margin-right-sm">关闭</a-button>
       </div>

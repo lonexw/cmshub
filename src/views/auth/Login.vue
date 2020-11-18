@@ -1,13 +1,10 @@
 <template>
   <div class="main">
+    <div v-if="!is_prod" style="font-size:28px; text-align: center; margin-bottom: 10px; color: red;">
+      【这是测试环境】
+    </div>
     <a-form class="user-layout-login" ref="formLogin" :form="form" @submit="handleSubmit">
-      <a-alert
-        v-if="isLoginError"
-        type="error"
-        showIcon
-        style="margin-bottom: 24px;"
-        message="账户或密码错误（admin/ant.design )"
-      />
+      <a-alert v-if="isLoginError" type="error" showIcon style="margin-bottom: 24px;" message="账户或密码错误" />
       <a-form-item>
         <a-input
           size="large"
@@ -61,7 +58,8 @@ export default {
     return {
       isLoginError: false,
       form: this.$form.createForm(this),
-      submit_loading: false
+      submit_loading: false,
+      is_prod: ['production', 'prod'].includes(process.env.NODE_ENV)
     }
   },
   created() {},

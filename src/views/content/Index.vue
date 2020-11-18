@@ -1,5 +1,5 @@
 <template>
-  <base-page title="内容管理">
+  <base-page :title="title">
     <template v-slot:sider>
       <div class="models">
         <a-menu v-for="category in categories" :key="category.id" :default-open-keys="openKeys" mode="inline">
@@ -51,7 +51,9 @@ export default {
       show_models: true,
       models_height: '0px',
       categories: [],
-      openKeys: []
+      openKeys: [],
+      is_prod: ['production', 'prod'].includes(process.env.NODE_ENV),
+      title: '内容管理'
     }
   },
   computed: {
@@ -61,6 +63,9 @@ export default {
   },
   mounted() {
     this.getCustomList()
+    if (!this.is_prod) {
+      this.title = '内容管理 【测试环境】'
+    }
   },
   methods: {
     getCustomList() {

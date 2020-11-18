@@ -10,8 +10,11 @@ yarn build
 # 格式化代码
 npm run lint
 
-# 编译并发布 gh-pages 分支
+# 编译并发布到测试服, gh-pages 分支
 npm run deploy
+
+# 编译并发布 gh-pages-prod 分支
+npm run deploy:prod
 
 
 # env配置

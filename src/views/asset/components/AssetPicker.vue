@@ -1,8 +1,5 @@
 <template>
   <div class="relative">
-    <header class="padding-lr-sm padding-tb-xs flex align-center justify-between solid-bottom line-grey">
-      <bg-tag :active="true">Asset</bg-tag>
-    </header>
     <div class="flex justify-center margin-top-sm">
       <a-pagination
         showSizeChanger
@@ -37,7 +34,7 @@
 </template>
 
 <script>
-import { BgTag } from '@/components'
+// import { BgTag } from '@/components'
 import { userAssets } from '@/graphql/asset.graphql'
 import { formatGraphErr } from '@/utils/util'
 import store from '@/store'
@@ -57,7 +54,7 @@ export default {
     }
   },
   components: {
-    BgTag,
+    // BgTag,
     PreviewImage
   },
   data() {
