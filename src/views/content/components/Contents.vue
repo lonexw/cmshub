@@ -26,7 +26,7 @@
       />
     </div>
     <a-table
-      size="middle"
+      size="default"
       rowKey="id"
       :rowSelection="rowSelection"
       :columns="columns"
